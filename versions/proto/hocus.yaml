@@ -1,0 +1,70 @@
+name: Hocus Pocus (Prototype)
+sha1: a45e1c1746d55b3c84b82bedb28f8bd47f79222b
+options:
+  basename: hocus
+  base_path: ../..
+  asm_path: asm/proto
+  asset_path: assets/proto
+  target_path: hocus.proto.exe
+  platform: dos
+  is_unsupported_platform: true
+  allow_segment_overrides: true
+  extensions_path: tools/splat_ext/dos
+segments:
+  - name: mz_header
+    start: 0x0
+    type: bin
+
+  - name: code
+    start: 0x01A00
+    type: code
+    vram: 0x10000
+    subsegments:
+      #TEXT
+      - {start: 0x01A00, type: bin}
+      - {start: 0x063EA, type: asm, align: 1, name: hocus}
+      - {start: 0x06C0B, type: asm, align: 1, name: gr}
+      - {start: 0x07536, type: asm, align: 1, name: fileio}
+      - {start: 0x0780D, type: asm, align: 1, name: menus}
+      - {start: 0x0B85B, type: asm, align: 1, name: features}
+      - {start: 0x0B904, type: asm, align: 1, name: design}
+      - {start: 0x0E7EE, type: asm, align: 1, name: play}
+      - {start: 0x14EC7, type: asm, align: 1, name: play2}
+      - {start: 0x160FC, type: asm, align: 1, name: soundfx}
+      - {start: 0x16599, type: asm, align: 1, name: util}
+      - {start: 0x16C44, type: asm, align: 1, name: digisnd}
+      - {start: 0x1793B, type: asm, align: 1, name: seg012}
+      - {start: 0x17955, type: asm, align: 1, name: joystick}
+      - {start: 0x17F29, type: asm, align: 2, name: seg014}
+      - {start: 0x17F8C, type: bin}
+      #DATA
+      - {start: 0x1ACE0, type: .data}
+      - {start: 0x1AD74, type: data, name: hocus}
+      - {start: 0x1B6C4, type: data, name: gr}
+      - {start: 0x1B6D4, type: data, name: fileio}
+      - {start: 0x1B714, type: data, name: menus}
+      - {start: 0x1C095, type: data, name: design}
+      - {start: 0x1C824, type: data, name: play}
+      - {start: 0x1C9C7, type: data, name: soundfx}
+      - {start: 0x1C9D2, type: data, name: util}
+      - {start: 0x1C9E8, type: data, name: digisnd}
+      - {start: 0x1CAC1, type: data, name: joystick}
+      - {start: 0x1CB3E, type: .data}
+      #BSS
+      - {start: 0x1D132, type: bss, name: bss}
+      - {start: 0x2572E, type: .bss}
+
+  - name: tdinfo
+    type: bin
+    start: 0x258E0
+
+  - [0x353F0]
+
+
+
+
+
+
+
+
+

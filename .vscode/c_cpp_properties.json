@@ -1,0 +1,16 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "hocus",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src"
+            ],
+            "defines": [
+            ],
+            "cStandard": "c89",
+            "intelliSenseMode": "${default}"
+        }
+    ]
+}

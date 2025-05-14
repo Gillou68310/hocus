@@ -1,0 +1,7 @@
+asm/
+data/
+assets/
+build/
+.vscode/
+__pycache__/
+.dosemu/

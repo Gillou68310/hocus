@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Docker image",
+            "type": "shell",
+            "command": "docker --context=desktop-linux-mutagen run --rm -ti --mount src=$(pwd),target=/hocus,type=bind hocus",
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "echo": false,
+                "showReuseMessage": false,
+                "panel": "dedicated",
+                "clear": true,
+                "close": true
+            }
+        }
+    ]
+}
