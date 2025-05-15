@@ -1,5 +1,5 @@
 c0l.obj + 
-BUILD_PATH\asm\proto\hocus.obj +
+BUILD_PATH\src\hocus.obj +
 BUILD_PATH\src\gr.obj +
 BUILD_PATH\src\fileio.obj +
 BUILD_PATH\asm\proto\menus.obj +

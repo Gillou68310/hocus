@@ -1,46 +1,6 @@
 #ifndef __DECLS_H__
 #define __DECLS_H__
 
-// addr: 192E:0094
-// size: 1888
-extern struct struct_70 db[236];
-
-// addr: 192E:07F4
-// size: 2
-extern unsigned int _stklen;
-
-// addr: 192E:07F6
-// size: 2
-extern int reg;
-
-// addr: 192E:07F8
-// size: 18
-extern unsigned char keys[18];
-
-// addr: 192E:080A
-// size: 72
-extern unsigned char *key_label[18];
-
-// addr: 192E:0852
-// size: 8
-extern unsigned char pc_key[8];
-
-// addr: 192E:085A
-// size: 8
-extern unsigned char *errmsg[2];
-
-// addr: 192E:0862
-// size: 4
-extern unsigned char *textscreen;
-
-// addr: 192E:0866
-// size: 4
-extern unsigned char *vgabase;
-
-// addr: 192E:086A
-// size: 72
-extern int VOC_priority[12][3];
-
 // addr: 192E:0A34
 // size: 72
 extern unsigned int time2beat[4][9];

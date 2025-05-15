@@ -4,6 +4,7 @@
 #include "gr.h"
 #include "fileio.h"
 #include "util.h"
+#include "hocus.h"
 
 // module: GR
 // size: 0x4b

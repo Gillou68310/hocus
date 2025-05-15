@@ -1,5 +1,6 @@
 #include "common.h"
 #include "util.h"
+#include "hocus.h"
 
 // module: FILEIO
 // size: 0x33

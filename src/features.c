@@ -2,6 +2,7 @@
 #include "gr.h"
 #include "soundfx.h"
 #include "util.h"
+#include "hocus.h"
 
 // module: FEATURES
 // size: 0xa9

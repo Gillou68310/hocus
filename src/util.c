@@ -8,6 +8,7 @@
 #include "fileio.h"
 #include "soundfx.h"
 #include "util.h"
+#include "hocus.h"
 
 // module: UTIL
 // size: 0x60
