@@ -56,4 +56,25 @@ int play_menu(void);
 int do_eval(int didit, int tra, int trf, int mnstrs, int mnstrhts);
 void do_winscrn1(void);
 
+extern unsigned int time2beat[4][9];
+extern int icon_frame;
+extern int riconpos;
+extern int siconpos;
+extern unsigned char *footers[9];
+extern int mainmenuip;
+extern unsigned char *mainmenu[10];
+extern int beginmenuip;
+extern unsigned char *beginmenu[5];
+extern int gameopmenuip;
+extern unsigned char *gameopmenu[4];
+extern int levelmenuip;
+extern unsigned char *levelmenu[10];
+extern int skillmenuip;
+extern unsigned char *skillmenu[4];
+extern unsigned char *playmenu[7];
+extern unsigned char *keymenu[8];
+extern int *colortextbase;
+extern int colors[9];
+extern int mjoywait;
+
 #endif
