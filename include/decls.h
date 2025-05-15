@@ -1,26 +1,6 @@
 #ifndef __DECLS_H__
 #define __DECLS_H__
 
-// addr: 192E:13B6
-// size: 12
-extern unsigned char *mode_label[3];
-
-// addr: 192E:13C2
-// size: 966
-extern struct struct_130 ups[23];
-
-// addr: 192E:1788
-// size: 80
-extern int plat_pcx_ofs[4][10];
-
-// addr: 192E:17D8
-// size: 80
-extern int lvl_info_ofs[4][10];
-
-// addr: 192E:1828
-// size: 80
-extern int bdrop_pcxpal_ofs[4][10];
-
 // addr: 192E:1B44
 // size: 72
 extern int song2play[4][9];

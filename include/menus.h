@@ -7,7 +7,7 @@ void update_stars(void);
 void new_stars(void);
 void pstrs(int x, int y, int color, unsigned char *str);
 void pstrwiznote(int x, int y, int clr, unsigned char *str);
-void pstr(int x, int y, int color, unsigned char *str);
+//void pstr(int x, int y, int color, unsigned char *str);
 int pstrlen(unsigned char *str);
 void pstr_hilite(int x, int y, int hc, int nc, unsigned char *str);
 void pstrsh(int x, int y, int c, unsigned char *str);
