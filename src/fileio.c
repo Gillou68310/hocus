@@ -1,10 +1,15 @@
 #include "common.h"
+#include "util.h"
 
 // module: FILEIO
 // size: 0x33
 // addr: 05B3:0006
 void open_database(void)
 {
+    if ((databasefp = fopen("HOCUS.DAT", "r+b")) == NULL)
+    {
+        terminate_emsg(1, "DB");
+    }
 }
 
 // module: FILEIO
@@ -12,6 +17,7 @@ void open_database(void)
 // addr: 05B3:0039
 void close_database(void)
 {
+    fclose(databasefp);
 }
 
 // module: FILEIO
@@ -19,6 +25,7 @@ void close_database(void)
 // addr: 05B3:004D
 void point_to_data(long offset)
 {
+    fseek(databasefp, offset, 0);
 }
 
 // module: FILEIO
@@ -26,6 +33,7 @@ void point_to_data(long offset)
 // addr: 05B3:006B
 void point_to_data_record(int db_rec)
 {
+    fseek(databasefp, db[db_rec].ofs, 0);
 }
 
 // module: FILEIO
@@ -33,6 +41,8 @@ void point_to_data_record(int db_rec)
 // addr: 05B3:0092
 void load_to_byte_pointer(long offset, long length, void *ptr)
 {
+    fseek(databasefp, offset, 0);
+    fread(ptr, length, 1, databasefp);
 }
 
 // module: FILEIO
@@ -40,6 +50,8 @@ void load_to_byte_pointer(long offset, long length, void *ptr)
 // addr: 05B3:00CD
 void save_from_byte_pointer(long offset, long length, void *ptr)
 {
+    fseek(databasefp, offset, 0);
+    fwrite(ptr, length, 1, databasefp);
 }
 
 // module: FILEIO
@@ -53,6 +65,10 @@ void load_file_to_byte_pointer(int db_rec, void *ptr)
     // stack: [BP-8]
     // size: 4
     long length;
+
+    get_offset_length(db_rec, &offset, &length);
+    fseek(databasefp, offset, 0);
+    fread(ptr, length, 1, databasefp);
 }
 
 // module: FILEIO
@@ -66,6 +82,18 @@ long load_disk_file(unsigned char *fln, void *ptr)
     // stack: [BP-8]
     // size: 4
     long length;
+
+    fp = fopen(fln, "rb");
+    if (fp == NULL)
+    {
+        terminate("Bad Disk File Name");
+    }
+    fseek(fp, 0, 2);
+    length = ftell(fp);
+    fseek(fp, 0, 0);
+    fread(ptr, length, 1, fp);
+    fclose(fp);
+    return length;
 }
 
 // module: FILEIO
@@ -76,6 +104,15 @@ void save_disk_file(unsigned char *fln, void *ptr, unsigned int length)
     // stack: [BP-4]
     // size: 4
     FILE *fp;
+
+    unlink(fln);
+    fp = fopen(fln, "wb");
+    if (fp == NULL)
+    {
+        terminate("Cannot Save Disk File");
+    }
+    fwrite(ptr, length, 1, fp);
+    fclose(fp);
 }
 
 // module: FILEIO
@@ -89,6 +126,10 @@ void save_file_from_byte_pointer(int db_rec, void *ptr)
     // stack: [BP-8]
     // size: 4
     long length;
+
+    get_offset_length(db_rec, &offset, &length);
+    fseek(databasefp, offset, 0);
+    fwrite(ptr, length, 1, databasefp);
 }
 
 // module: FILEIO
@@ -96,4 +137,5 @@ void save_file_from_byte_pointer(int db_rec, void *ptr)
 // addr: 05B3:02C7
 unsigned char char_from_database(void)
 {
+    return fgetc(databasefp);
 }
