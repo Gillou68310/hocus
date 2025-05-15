@@ -6,7 +6,7 @@ BUILD_PATH\asm\proto\menus.obj +
 BUILD_PATH\src\features.obj +
 BUILD_PATH\asm\proto\design.obj +
 BUILD_PATH\asm\proto\play.obj +
-BUILD_PATH\asm\proto\play2.obj +
+BUILD_PATH\src\play2.obj +
 BUILD_PATH\asm\proto\soundfx.obj +
 BUILD_PATH\src\util.obj +
 BUILD_PATH\asm\proto\digisnd.obj +
