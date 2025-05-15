@@ -1,6 +1,9 @@
+#include <dos.h>
+#include <mem.h>
 #include "common.h"
-
-typedef unsigned char (*line_t)[80];
+#include "gr.h"
+#include "fileio.h"
+#include "util.h"
 
 // module: GR
 // size: 0x4b
@@ -13,6 +16,16 @@ void settext()
     // register: SI
     // size: 2
     int i;
+
+    regs.h.ah = 0;
+    regs.h.al = 3;
+    int86(0x10, &regs, &regs);
+    screen(0);
+    for (i = 0; i < 0x37; i++)
+    {
+        wait_for_retrace();
+    }
+    screen(1);
 }
 
 // module: GR
@@ -29,6 +42,15 @@ void setvpage(int page)
     // stack: [BP-3]
     // size: 1
     unsigned char raddr;
+
+    addr = vgapofs[page];
+    outportb(0x3d4, 0xc);
+    raddr = addr >> 8;
+    outportb(0x3d5, raddr);
+    outportb(0x3d4, 0xd);
+    raddr = addr;
+    outportb(0x3d5, raddr);
+    vpg = page;
 }
 
 // module: GR
@@ -48,6 +70,10 @@ void setapage(int page)
 // addr: 0520:00C1
 void wait_for_retrace(void)
 {
+    while ((inportb(0x3da) & 8))
+        ;
+    while (!(inportb(0x3da) & 8))
+        ;
 }
 
 // module: GR
@@ -55,6 +81,8 @@ void wait_for_retrace(void)
 // addr: 0520:00E0
 void setreadplane(unsigned char plane)
 {
+    outportb(0x3ce, 4);
+    outportb(0x3cf, plane);
 }
 
 // module: GR
@@ -62,6 +90,15 @@ void setreadplane(unsigned char plane)
 // addr: 0520:00F2
 void screen(unsigned char on)
 {
+    outportb(0x3c4, 1);
+    if (on != 0)
+    {
+        outportb(0x3c5, inportb(0x3c5) & 0xdf);
+    }
+    else
+    {
+        outportb(0x3c5, inportb(0x3c5) | 0x20);
+    }
 }
 
 // module: GR
@@ -69,6 +106,8 @@ void screen(unsigned char on)
 // addr: 0520:0115
 void enable_pixels(unsigned char mask)
 {
+    outportb(0x3c4, 2);
+    outportb(0x3c5, mask);
 }
 
 // module: GR
@@ -76,6 +115,8 @@ void enable_pixels(unsigned char mask)
 // addr: 0520:0127
 void latches(int on)
 {
+    outportb(0x3ce, 8);
+    outportb(0x3cf, (!on) * 0xFF);
 }
 
 // module: GR
@@ -86,6 +127,16 @@ void setvga(void)
     // register: DI
     // size: 2
     int i;
+
+    SET320X200();
+    for (i = 0; i < 4; i++)
+    {
+        vgapofs[i] = i * 16000;
+        vgap[i] = vgabase + i * 16000;
+        setmem(vgap[i], 16000, 0);
+    }
+    setapage(0);
+    setvpage(0);
 }
 
 // module: GR
@@ -93,6 +144,9 @@ void setvga(void)
 // addr: 0520:01B6
 void scopy(int dest, int src)
 {
+    latches(1);
+    enable_pixels(0xf);
+    MCPY(vgap[dest], vgap[src], 16000);
 }
 
 // module: GR
@@ -109,6 +163,15 @@ void copyblock(int sp, int lx, int ty, int rx, int by, int dp, int dx, int dy)
     // stack: [BP-2]
     // size: 2
     int l;
+
+    l = (rx - lx) + 1;
+    latches(1);
+    enable_pixels(0xf);
+    for (y = ty; y <= by; y++)
+    {
+        MCPY(&((line_t)vgap[dp])[dy][dx], &((line_t)vgap[sp])[y][lx], l);
+        // MCPY(vgap[dp]+dy*0x50+dx, vgap[sp]+y*0x50+lx, l);
+    }
 }
 
 // module: GR
@@ -116,6 +179,9 @@ void copyblock(int sp, int lx, int ty, int rx, int by, int dp, int dx, int dy)
 // addr: 0520:0277
 void clearscreen(void)
 {
+    latches(0);
+    enable_pixels(0xf);
+    setmem(vga, 16000, 0);
 }
 
 // module: GR
@@ -129,6 +195,14 @@ void clearbox(int lx, int ty, int rx, int by)
     // register: DI
     // size: 2
     // int lx;
+
+    latches(0);
+    enable_pixels(0xf);
+    for (; ty <= by; ty++)
+    {
+        setmem(&((line_t)vga)[ty][lx], (rx - lx) + 1, 0);
+        // setmem(vga + ty * 0x50 + lx, (rx - lx) + 1, 0);
+    }
 }
 
 // module: GR
@@ -139,6 +213,10 @@ int pixel_clr(int x, int y)
     // register: SI
     // size: 2
     // int x;
+
+    setreadplane(x % 4);
+    return ((line_t)vga)[y][x / 4];
+    // return *((vga + y * 0x50) + x / 4);
 }
 
 // module: GR
@@ -149,6 +227,10 @@ void pixel(int x, int y, int c)
     // register: SI
     // size: 2
     // int x;
+
+    enable_pixels(1 << ((x % 4)));
+    ((line_t)vga)[y][x >> 2] = c;
+    //*(vga + y * 0x50 + (x >> 2)) = c;
 }
 
 // module: GR
@@ -162,6 +244,14 @@ void blankpixelbox(int lx, int ty, int rx, int by)
     // register: DI
     // size: 2
     int i;
+
+    for (; ty <= by; ty++)
+    {
+        for (i = lx; i <= rx; i++)
+        {
+            pixel(i, ty, 0);
+        }
+    }
 }
 
 // module: GR
@@ -172,6 +262,14 @@ void write_pels(unsigned char *rgb, unsigned char pel_start, int pel_count)
     // register: CX
     // size: 2
     // int pel_count;
+
+    outportb(0x3c8, pel_start);
+    while (pel_count-- > 0)
+    {
+        outportb(0x3c9, *rgb++);
+        outportb(0x3c9, *rgb++);
+        outportb(0x3c9, *rgb++);
+    }
 }
 
 // module: GR
@@ -182,6 +280,14 @@ void read_pels(unsigned char *rgb, unsigned char pel_start, int pel_count)
     // register: CX
     // size: 2
     // int pel_count;
+
+    outportb(0x3c7, pel_start);
+    while (pel_count-- > 0)
+    {
+        *rgb++ = inportb(0x3c9);
+        *rgb++ = inportb(0x3c9);
+        *rgb++ = inportb(0x3c9);
+    }
 }
 
 // module: GR
@@ -195,6 +301,20 @@ void fade_out(int scans)
     // register: SI
     // size: 2
     int j;
+
+    for (i = 0; i < sizeof(tpal); i++)
+    {
+        tpal[i] = palette[i];
+    }
+    for (j = scans; j >= 0; j--)
+    {
+        for (i = 0; i < sizeof(tpal); i++)
+        {
+            tpal[i] = (palette[i] * j) / scans;
+        }
+        wait_for_retrace();
+        write_pels(tpal, 0, 0x100);
+    }
 }
 
 // module: GR
@@ -208,6 +328,16 @@ void fade_in(int scans)
     // register: SI
     // size: 2
     int j;
+
+    for (j = 0; j <= scans; j++)
+    {
+        for (i = 0; i < sizeof(tpal); i++)
+        {
+            tpal[i] = (palette[i] * j) / scans;
+        }
+        wait_for_retrace();
+        write_pels(tpal, 0, 0x100);
+    }
 }
 
 // module: GR
@@ -221,6 +351,19 @@ void fade_in_white(void)
     // register: SI
     // size: 2
     int j;
+
+    for (j = 0; j < 0x46; j++)
+    {
+        for (i = 0; i < sizeof(palette); i++)
+        {
+            if (palette[i] < 0x3f)
+            {
+                palette[i] = palette[i] + 1;
+            }
+        }
+        wait_for_retrace();
+        write_pels(palette, 0, 0x100);
+    }
 }
 
 // module: GR
@@ -231,6 +374,13 @@ void clear_palette(void)
     // register: SI
     // size: 2
     int i;
+
+    for (i = 0; i < sizeof(tpal); i++)
+    {
+        tpal[i] = 0;
+    }
+
+    write_pels(tpal, 0, 0x100);
 }
 
 // module: GR
@@ -238,6 +388,7 @@ void clear_palette(void)
 // addr: 0520:0516
 void turn_on_palette(void)
 {
+    write_pels(palette, 0, 0x100);
 }
 
 // module: GR
@@ -263,6 +414,52 @@ void unpackpcxfile(void)
     // stack: [BP-326]
     // size: 320
     unsigned char line[4][80];
+
+    for (i = 0; i < depth; i++)
+    {
+        n = nn = 0;
+        do
+        {
+            c = char_from_database() & 0xFF;
+            if ((c & 0xc0) == 0xc0)
+            {
+                j = c & 0x3f;
+                c = char_from_database();
+                while (j-- != 0)
+                {
+                    line[nn][n >> 2] = c;
+                    n++;
+                    nn++;
+                    if (nn > 3)
+                    {
+                        nn = 0;
+                    }
+                }
+            }
+            else
+            {
+                line[nn][n >> 2] = c;
+                n++;
+                nn++;
+                if (nn > 3)
+                {
+                    nn = 0;
+                }
+            }
+        } while (n < bytes);
+
+        latches(0);
+        outportb(0x3c4, 2);
+        j = i * sizeof(line[0]);
+        outportb(0x3c5, 1);
+        MCPY(&vga[j], line[0], sizeof(line[0]));
+        outportb(0x3c5, 2);
+        MCPY(&vga[j], line[1], sizeof(line[0]));
+        outportb(0x3c5, 4);
+        MCPY(&vga[j], line[2], sizeof(line[0]));
+        outportb(0x3c5, 8);
+        MCPY(&vga[j], line[3], sizeof(line[0]));
+    }
 }
 
 // module: GR
@@ -279,6 +476,25 @@ void load_pcx(int db_rec, int setpal)
     // stack: [BP-8]
     // size: 4
     long length;
+
+    get_offset_length(db_rec, &offset, &length);
+    load_to_byte_pointer(offset, sizeof(PCXHEAD), &header.manufacturer);
+    load_to_byte_pointer((offset + length) - sizeof(palette), sizeof(palette), palette);
+
+    for (i = 0; i < sizeof(palette); i++)
+    {
+        palette[i] >>= 2;
+    }
+    if (setpal != 0)
+    {
+        write_pels(palette, 0, 0x100);
+    }
+
+    point_to_data(offset + sizeof(PCXHEAD));
+    width = header.xmax - header.xmin + 1;
+    depth = header.ymax - header.ymin + 1;
+    bytes = header.bytes_per_line;
+    unpackpcxfile();
 }
 
 // module: GR
@@ -295,6 +511,18 @@ void capture_screen(void)
     // stack: [BP-6]
     // size: 4
     FILE *fp;
+
+    fp = fopen("screen1.bin", "w+b");
+    fwrite(palette, sizeof(palette), 1, fp);
+    for (p = 0; p < 4; p++)
+    {
+        setreadplane(p);
+        for (i = 0; i < 16000; i++)
+        {
+            fputc(vga[i], fp);
+        }
+    }
+    fclose(fp);
 }
 
 // module: GR
@@ -311,6 +539,18 @@ void show_bin(int db_rec)
     // stack: [BP-6]
     // size: 4
     long offset;
+
+    get_offset(db_rec, &offset);
+    load_to_byte_pointer(offset, sizeof(palette), palette);
+    point_to_data(offset + sizeof(palette));
+    for (p = 0; p < 4; p++)
+    {
+        enable_pixels(1 << p);
+        for (i = 0; i < 16000; i++)
+        {
+            vga[i] = fgetc(databasefp);
+        }
+    }
 }
 
 // module: GR
@@ -330,6 +570,21 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
     // stack: [BP-6]
     // size: 4
     long offset;
+
+    get_offset(db_rec, &offset);
+    load_to_byte_pointer(offset, 4, &grphdr);
+    latches(0);
+    for (p = 0; p < 4; p++)
+    {
+        enable_pixels(1 << p);
+        for (y = 0; y < grphdr.yw; y++)
+        {
+            for (x = 0; x < grphdr.xw; x++)
+            {
+                ((line_t)vga)[sy + y][sx + x] = char_from_database();
+            }
+        }
+    }
 }
 
 // module: GR
@@ -340,4 +595,11 @@ void restore_palette_fragment(int db_rec, int s, int setpal)
     // register: SI
     // size: 2
     // int s;
+
+    s *= 3;
+    load_file_to_byte_pointer(db_rec, palette + s);
+    if (setpal != 0)
+    {
+        write_pels(palette, 0, 0x100);
+    }
 }

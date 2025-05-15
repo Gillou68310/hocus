@@ -341,5 +341,6 @@ typedef long ptrdiff_t;
 typedef long clock_t;
 typedef long time_t;
 typedef unsigned int size_t;
+typedef unsigned char (*line_t)[80];
 
 #endif
