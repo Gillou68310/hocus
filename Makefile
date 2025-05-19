@@ -71,6 +71,10 @@ OBJDIRS = $(dir $(OBJECTS))
 $(shell $(MKDIR) $(OBJDIRS))
 
 ### Targets ###
+
+$(BUILD_DIR)/src/digisnd.obj: OPTFLAGS := -O2
+$(BUILD_DIR)/src/digisnd.obj: CFLAGS := $(filter-out -a -K,$(CFLAGS))
+
 all: $(DOS_EXE)
 
 clean:
@@ -78,7 +82,7 @@ clean:
 
 $(BUILD_DIR)/%.obj: %.c
 	@$(PRINT)$(GREEN)Compiling C file: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
-	$(V)$(DOSEMU) "$(CC) $(OPTFLAGS)$(CFLAGS) -c -o$(subst /,\,$@) $(subst /,\,$<)" | { $(GREP) "Warning|Error" || true; }
+	$(V)$(DOSEMU) "$(CC) $(OPTFLAGS) $(CFLAGS) -c -o$(subst /,\,$@) $(subst /,\,$<)" | { $(GREP) "Warning|Error" || true; }
 
 $(BUILD_DIR)/%.obj: %.asm
 	@$(PRINT)$(GREEN)Assembling asm file: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)

@@ -1073,14 +1073,6 @@ extern long alTimeCount;
 // size: 4
 extern void(interrupt *oldk_handler)(void);
 
-// addr: 192E:AA09
-// size: 1
-extern unsigned char SoundBlasterPresent;
-
-// addr: 192E:AA0B
-// size: 1
-extern unsigned char AdLibPresent;
-
 // addr: 192E:AA0E
 // size: 2
 extern int button4;

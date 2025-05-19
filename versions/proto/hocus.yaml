@@ -52,6 +52,8 @@ segments:
       - {start: 0x1CB3E, type: .data}
       #BSS
       - {start: 0x1D132, type: bss, name: bss}
+      - {start: 0x25690, type: bss, name: digisnd}
+      - {start: 0x256ED, type: bss, name: joystick}
       - {start: 0x2572E, type: .bss}
 
   - name: tdinfo

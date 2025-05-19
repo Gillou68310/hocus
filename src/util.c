@@ -9,6 +9,7 @@
 #include "soundfx.h"
 #include "util.h"
 #include "hocus.h"
+#include "digisnd.h"
 
 // module: UTIL
 // size: 0x60

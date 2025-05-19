@@ -178,7 +178,7 @@ def get_align(segment: CommonSegCodeSubsegment) -> str:
     return "word"
 
 def codesegment(segment: CommonSegAsm, disasm: str) -> str:
-    out = declare_datasegments(segment)
+    out = ""
     if jwasm:
         out += "DGROUP GROUP _DATA,_BSS\n\n"
         out += segment.name.upper() + "segment " + get_align(segment) + " public 'CODE' use16\n"
@@ -211,17 +211,6 @@ def get_subsegment(segment: CommonSegCodeSubsegment, type) -> CommonSegCodeSubse
             return subsegments
     return None
 
-def declare_datasegments(segment: CommonSegAsm) -> str:
-    out = ""
-    for type in ["data", "bss"]:
-        subsegment = get_subsegment(segment, type)
-        if subsegment != None:
-            out += datasegment(type, get_align(subsegment), "")
-        else:
-            out += datasegment(type, "word", "")
-        out += "\n"
-    return out
-
 def disassemble_data(segment: CommonSegData):   
     if jwasm or get_subsegment(segment, "asm") != None:
         return
@@ -240,12 +229,13 @@ def disassemble_code(segment: CommonSegAsm):
 
     data_syms = []
     data = ""
-    if not jwasm:
-        for type in ["data", "bss"]:
-            subsegment = get_subsegment(segment, type)
-            if subsegment != None:
-                data_syms += get_segment_symbols(subsegment)
-                data += disasm_data(path, subsegment) + "\n"
+    for type in ["data", "bss"]:
+        subsegment = get_subsegment(segment, type)
+        if subsegment != None and not jwasm:
+            data_syms += get_segment_symbols(subsegment)
+            data += disasm_data(path, subsegment) + "\n"
+        else:
+            data += datasegment(type, "word", "") + "\n"
 
     types = disasm_types(path)
     publics = resolve_public_symbols(data_syms)            
@@ -258,7 +248,7 @@ def disassemble_code(segment: CommonSegAsm):
         else:
             f.write("IDEAL\n\n")
 
-        f.write(types+publics+refs+disasm+data+"END")
+        f.write(types+publics+refs+data+disasm+"END")
 
 class Patch():
     def __init__(self, segment: CommonSegAsm, jwasm):
