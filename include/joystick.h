@@ -14,4 +14,15 @@ void JOY_PollMovement(void);
 void JOY_Initialize(void);
 int JOY_Calibrate(int joystickport);
 
+extern int joystickport;
+extern int GRAVISenabled;
+extern Jdefines JoyDefs[2];
+extern int JoyStickHere[2];
+extern int JoyX;
+extern int JoyY;
+extern int button1;
+extern int button2;
+extern int button3;
+extern int button4;
+
 #endif

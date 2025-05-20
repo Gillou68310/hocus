@@ -41,18 +41,6 @@ extern int hnjumpadd[19];
 // size: 8
 extern int hurtpower[4];
 
-// addr: 192E:1DE2
-// size: 2
-extern int joystickenabled;
-
-// addr: 192E:1DE4
-// size: 2
-extern int joystickport;
-
-// addr: 192E:1DE6
-// size: 2
-extern int GRAVISenabled;
-
 // addr: 192E:2452
 // size: 4
 extern unsigned char *buf64;
@@ -1028,37 +1016,5 @@ extern int lelevator;
 // addr: 192E:A98E
 // size: 2
 extern int uppressed;
-
-// addr: 192E:AA0E
-// size: 2
-extern int button4;
-
-// addr: 192E:AA10
-// size: 2
-extern int button3;
-
-// addr: 192E:AA12
-// size: 2
-extern int button2;
-
-// addr: 192E:AA14
-// size: 2
-extern int button1;
-
-// addr: 192E:AA16
-// size: 2
-extern int JoyY;
-
-// addr: 192E:AA18
-// size: 2
-extern int JoyX;
-
-// addr: 192E:AA1A
-// size: 4
-extern int JoyStickHere[2];
-
-// addr: 192E:AA1E
-// size: 48
-extern Jdefines JoyDefs[2];
 
 #endif

@@ -11,6 +11,7 @@
 #include "menus.h"
 #include "features.h"
 #include "play.h"
+#include "joystick.h"
 
 // addr: 192E:0094
 // size: 1888
