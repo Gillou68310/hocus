@@ -17,10 +17,4 @@ void pick_mtag(void);
 void pick_mtrig(void);
 void design(void);
 
-extern unsigned char *mode_label[3];
-extern struct struct_130 ups[23];
-extern int plat_pcx_ofs[4][10];
-extern int lvl_info_ofs[4][10];
-extern int bdrop_pcxpal_ofs[4][10];
-
 #endif

@@ -41,10 +41,6 @@ extern int hnjumpadd[19];
 // size: 8
 extern int hurtpower[4];
 
-// addr: 192E:1CE8
-// size: 2
-extern unsigned int TickBase;
-
 // addr: 192E:1DE2
 // size: 2
 extern int joystickenabled;
@@ -1032,46 +1028,6 @@ extern int lelevator;
 // addr: 192E:A98E
 // size: 2
 extern int uppressed;
-
-// addr: 192E:A990
-// size: 2
-extern unsigned int the_song_length;
-
-// addr: 192E:A992
-// size: 4
-extern void(interrupt *t0OldService)(void);
-
-// addr: 192E:A996
-// size: 4
-extern long sqHackTime;
-
-// addr: 192E:A99A
-// size: 2
-extern int sqHackSeqLen;
-
-// addr: 192E:A99C
-// size: 2
-extern int sqHackLen;
-
-// addr: 192E:A99E
-// size: 4
-extern int *sqHackPtr;
-
-// addr: 192E:A9A2
-// size: 4
-extern int *sqHack;
-
-// addr: 192E:A9A6
-// size: 1
-extern unsigned char sqActive;
-
-// addr: 192E:A9A8
-// size: 4
-extern long alTimeCount;
-
-// addr: 192E:A9AC
-// size: 4
-extern void(interrupt *oldk_handler)(void);
 
 // addr: 192E:AA0E
 // size: 2

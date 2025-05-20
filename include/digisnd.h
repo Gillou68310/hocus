@@ -26,6 +26,9 @@
 #ifndef DIGISND_H
 #define DIGISND_H
 
+#define DISABLE_INTERRUPTS() asm { pushf; cli }
+#define ENABLE_INTERRUPTS() asm { popf; }
+
 enum
 {
     false = 0,
@@ -73,7 +76,7 @@ void SB_PlaySilence(long sampleRate, dword length);
 bool SB_SamplePlaying(void);
 void SB_StopVOC(void);
 void SB_SetSampleHook(SoundFinishedCallback callback);
-void SB_PlayVoc(byte huge *data, bool includesHeader);
+void SB_PlayVOC(byte huge *data, bool includesHeader);
 bool SB_VOCPlaying(void);
 void SB_SetVOCHook(NewVocSectionCallback callback);
 

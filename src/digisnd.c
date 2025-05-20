@@ -87,11 +87,6 @@ https://github.com/id-Software/wolf3d/blob/master/WOLFSRC/ID_SD.C
 #define CMD_PAUSE_DMA 0xD0
 #define CMD_TURN_SPEAKER_ON 0xD1
 
-// These don't exist in the original code, but I've added them for improved
-// readability.
-#define DISABLE_INTERRUPTS() asm { pushf; cli }
-#define ENABLE_INTERRUPTS() asm { popf; }
-
 #define MAX_NESTED_VOC_REPEATS 8
 
 /** Replacement for C library's isspace */

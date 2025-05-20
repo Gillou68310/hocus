@@ -18,4 +18,6 @@ void load_and_play_VOC(int db_record);
 void play_imf_file(int db_rec);
 void kill_sound_drivers(void);
 
+extern unsigned int TickBase;
+
 #endif

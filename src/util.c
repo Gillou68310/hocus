@@ -11,6 +11,10 @@
 #include "hocus.h"
 #include "digisnd.h"
 
+// addr: 192E:A9AC
+// size: 4
+void(interrupt *oldk_handler)(void);
+
 // module: UTIL
 // size: 0x60
 // addr: 14B9:0009
