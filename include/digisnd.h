@@ -32,13 +32,15 @@
 typedef unsigned char byte;
 typedef unsigned int word;
 typedef unsigned long dword;
-typedef word bool;
 
+#ifdef TARGET_DOS
+typedef word bool;
 enum
 {
     false = 0,
     true = 1
 };
+#endif
 
 typedef void(far *SoundFinishedCallback)(void);
 typedef void(far *NewVocSectionCallback)(word, dword, byte huge *);

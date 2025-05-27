@@ -69,10 +69,14 @@ void setapage(int page)
 // addr: 0520:00C1
 void wait_for_retrace(void)
 {
+#ifdef TARGET_DOS
     while ((inportb(0x3da) & 8))
         ;
     while (!(inportb(0x3da) & 8))
         ;
+#else
+    swap_buffer();
+#endif
 }
 
 // module: GR
@@ -131,7 +135,11 @@ void setvga(void)
     for (i = 0; i < VGA_PAGE_COUNT; i++)
     {
         vgapofs[i] = i * VGA_PAGE_SIZE;
+#ifdef TARGET_DOS
         vgap[i] = vgabase + i * VGA_PAGE_SIZE;
+#else
+        vgap[i] = get_surface_pixel(i);
+#endif
         setmem(vgap[i], VGA_PAGE_SIZE, 0);
     }
     setapage(0);
@@ -168,8 +176,12 @@ void copyblock(int sp, int lx, int ty, int rx, int by, int dp, int dx, int dy)
     enable_pixels(0xf);
     for (y = ty; y <= by; y++)
     {
+#ifdef TARGET_DOS
         MCPY(&((line_t)vgap[dp])[dy][dx], &((line_t)vgap[sp])[y][lx], l);
         // MCPY(vgap[dp]+dy*VGA_PLANE_WIDTH+dx, vgap[sp]+y*VGA_PLANE_WIDTH+lx, l);
+#else
+        // TODO
+#endif
     }
 }
 
@@ -199,8 +211,12 @@ void clearbox(int lx, int ty, int rx, int by)
     enable_pixels(0xf);
     for (; ty <= by; ty++)
     {
+#ifdef TARGET_DOS
         setmem(&((line_t)vga)[ty][lx], (rx - lx) + 1, 0);
         // setmem(vga + ty * VGA_PLANE_WIDTH + lx, (rx - lx) + 1, 0);
+#else
+        setmem(&((line_t)vga)[ty][lx * 4], ((rx - lx) + 1) * 4, 0);
+#endif
     }
 }
 
@@ -262,6 +278,7 @@ void write_pels(unsigned char *rgb, unsigned char pel_start, int pel_count)
     // size: 2
     // int pel_count;
 
+#ifdef TARGET_DOS
     outportb(0x3c8, pel_start);
     while (pel_count-- > 0)
     {
@@ -269,6 +286,9 @@ void write_pels(unsigned char *rgb, unsigned char pel_start, int pel_count)
         outportb(0x3c9, *rgb++);
         outportb(0x3c9, *rgb++);
     }
+#else
+    update_palette(rgb, pel_start, pel_count);
+#endif
 }
 
 // module: GR
@@ -426,6 +446,7 @@ void unpackpcxfile(void)
                 c = char_from_database();
                 while (j-- != 0)
                 {
+#ifdef TARGET_DOS
                     line[nn][n >> VGA_PLANE_SHIFT] = c;
                     n++;
                     nn++;
@@ -433,10 +454,15 @@ void unpackpcxfile(void)
                     {
                         nn = 0;
                     }
+#else
+                    ((line_t)vga)[i][n] = c;
+                    n++;
+#endif
                 }
             }
             else
             {
+#ifdef TARGET_DOS
                 line[nn][n >> VGA_PLANE_SHIFT] = c;
                 n++;
                 nn++;
@@ -444,9 +470,14 @@ void unpackpcxfile(void)
                 {
                     nn = 0;
                 }
+#else
+                ((line_t)vga)[i][n] = c;
+                n++;
+#endif
             }
         } while (n < bytes);
 
+#ifdef TARGET_DOS
         latches(0);
         outportb(0x3c4, 2);
         j = i * sizeof(line[0]);
@@ -458,6 +489,7 @@ void unpackpcxfile(void)
         MCPY(&vga[j], line[2], sizeof(line[0]));
         outportb(0x3c5, 8);
         MCPY(&vga[j], line[3], sizeof(line[0]));
+#endif
     }
 }
 
@@ -516,10 +548,17 @@ void capture_screen(void)
     for (p = 0; p < 4; p++)
     {
         setreadplane(p);
+#ifdef TARGET_DOS
         for (i = 0; i < VGA_PAGE_SIZE; i++)
         {
             fputc(vga[i], fp);
         }
+#else
+        for (i = 0; i < ((SCREEN_WIDTH / 4) * SCREEN_HEIGHT); i++)
+        {
+            fputc(vga[i * 4 + p], fp);
+        }
+#endif
     }
     fclose(fp);
 }
@@ -545,10 +584,17 @@ void show_bin(int db_rec)
     for (p = 0; p < 4; p++)
     {
         enable_pixels(1 << p);
+#ifdef TARGET_DOS
         for (i = 0; i < VGA_PAGE_SIZE; i++)
         {
             vga[i] = fgetc(databasefp);
         }
+#else
+        for (i = 0; i < ((SCREEN_WIDTH / 4) * SCREEN_HEIGHT); i++)
+        {
+            vga[i * 4 + p] = fgetc(databasefp);
+        }
+#endif
     }
 }
 
@@ -580,7 +626,11 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
         {
             for (x = 0; x < grphdr.xw; x++)
             {
+#ifdef TARGET_DOS
                 ((line_t)vga)[sy + y][sx + x] = char_from_database();
+#else
+                ((line_t)vga)[sy + y][(sx + x * 4) + p] = char_from_database();
+#endif
             }
         }
     }

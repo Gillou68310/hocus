@@ -192,6 +192,7 @@ void show_marker_cursor(int x, int y, int c)
     // size: 2
     int i;
 
+#ifdef TARGET_DOS
     latches(0);
     enable_pixels(0xf);
     for (i = 0; i < 4; i++)
@@ -204,6 +205,10 @@ void show_marker_cursor(int x, int y, int c)
         //*(vga + (y * 16 + 0xf) * VGA_PLANE_WIDTH + x * 4 + i) = c;
         ((line_t)vga)[y * 16 + 0xf][x * 4 + i] = c;
     }
+#else
+    memset(&((line_t)vga)[y * 16][x * 16], c, 16);
+    memset(&((line_t)vga)[y * 16 + 0xf][x * 16], c, 16);
+#endif
 }
 
 // module: DESIGN
@@ -367,7 +372,11 @@ void show_design_screen(void)
                 blank = 0;
                 for (py = 0; py < 16; py++)
                 {
+#ifdef TARGET_DOS
                     MCPY(&((line_t)vga)[y * 16 + py][x * 4], &((line_t)vgap[1])[(v / 0x14) * 16 + py][(v % 0x14) * 4], 4);
+#else
+                    MCPY(&((line_t)vga)[y * 16 + py][x * 16], &((line_t)vgap[1])[(v / 0x14) * 16 + py][(v % 0x14) * 16], 16);
+#endif
                 }
             }
             if ((layer[LAYER_SLD] != 0) && (sld[ofs] != 0xff))
@@ -376,7 +385,11 @@ void show_design_screen(void)
                 blank = 0;
                 for (py = 0; py < 16; py++)
                 {
+#ifdef TARGET_DOS
                     MCPY(&((line_t)vga)[y * 16 + py][x * 4], &((line_t)vgap[1])[(v / 0x14) * 16 + py][(v % 0x14) * 4], 4);
+#else
+                    MCPY(&((line_t)vga)[y * 16 + py][x * 16], &((line_t)vgap[1])[(v / 0x14) * 16 + py][(v % 0x14) * 16], 16);
+#endif
                 }
             }
             if (blank != 0)

@@ -5,7 +5,10 @@
             "name": "hocus",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/src"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/port",
+                "${workspaceFolder}/port/unix/_deps/sdl3-src/include",
+                "${workspaceFolder}/port/unix/_deps/sdl3_ttf-src/include"
             ],
             "defines": [
             ],

@@ -227,10 +227,14 @@ void update_icon(int x, int y)
     enable_pixels(0xf);
     for (yc = 0; yc < 0xf; yc++)
     {
+#ifdef TARGET_DOS
         for (xx = 0; xx < 4; xx++)
         {
             ((line_t)vgap[0])[yc + y][x + xx] = ((line_t)vgap[3])[yc + 0xb4][xc + xx];
         }
+#else
+        memcpy(&((line_t)vgap[0])[yc + y][x * 4], &((line_t)vgap[3])[yc + 0xb4][xc * 4], 16);
+#endif
     }
     latches(0);
     icon_frame++;
@@ -385,6 +389,7 @@ void pstrs(int x, int y, int color, unsigned char *str)
                     }
                     c >>= 1;
                 }
+#ifdef TARGET_DOS
                 shift = x % 4;
                 word = s;
                 word <<= 8;
@@ -395,6 +400,13 @@ void pstrs(int x, int y, int color, unsigned char *str)
                 *(vga + ofs + 1) = color;
                 outportb(0x3c5, word >> 12);
                 *(vga + ofs + 2) = color;
+#else
+                for (int i = 0; s != 0; i++, s >>= 1)
+                {
+                    if (s & 1)
+                        *(vga + ofs + i) = color;
+                }
+#endif
                 ofs += VGA_PLANE_WIDTH;
             }
             x += (maxx + 2);
@@ -467,6 +479,7 @@ void pstrwiznote(int x, int y, int clr, unsigned char *str)
                     }
                     c >>= 1;
                 }
+#ifdef TARGET_DOS
                 shift = x % 4;
                 word = s;
                 word <<= 8;
@@ -477,6 +490,13 @@ void pstrwiznote(int x, int y, int clr, unsigned char *str)
                 *(vga + ofs + 1) = clr;
                 outportb(0x3c5, word >> 12);
                 *(vga + ofs + 2) = clr;
+#else
+                for (int i = 0; s != 0; i++, s >>= 1)
+                {
+                    if (s & 1)
+                        *(vga + ofs + i) = clr;
+                }
+#endif
                 ofs += VGA_PLANE_WIDTH;
             }
             x += (maxx + 2);
@@ -573,6 +593,7 @@ void pstr(int x, int y, int color, unsigned char *str)
                     }
                     c >>= 1;
                 }
+#ifdef TARGET_DOS
                 shift = x % 4;
                 word = s;
                 word <<= 8;
@@ -583,6 +604,13 @@ void pstr(int x, int y, int color, unsigned char *str)
                 *(vga + ofs + 1) = clr;
                 outportb(0x3c5, word >> 12);
                 *(vga + ofs + 2) = clr;
+#else
+                for (int i = 0; s != 0; i++, s >>= 1)
+                {
+                    if (s & 1)
+                        *(vga + ofs + i) = clr;
+                }
+#endif
                 ofs += VGA_PLANE_WIDTH;
             }
             x += (maxx + 2);

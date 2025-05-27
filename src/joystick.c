@@ -173,6 +173,7 @@ void JOY_GetPosition(unsigned int joy, unsigned int *xp, unsigned int *yp)
     ys = (joy != 0) ? 3 : 1;
     yb = 1 << ys;
 
+#ifdef TARGET_DOS
     asm pushf;
     asm push si;
     asm push di;
@@ -211,6 +212,7 @@ end:
     asm pop di;
     asm pop si;
     asm popf;
+#endif
 
     *xp = x;
     *yp = y;

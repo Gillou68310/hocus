@@ -59,7 +59,7 @@ ENDLINE := \n'
 ### Compiler Options ###
 OPTFLAGS ?=
 ASFLAGS  := /e /ml
-CFLAGS   := -ml -y -a -K -Iinclude -I%BCPP31%\include
+CFLAGS   := -ml -y -a -K -Iinclude -I%BCPP31%\include -DTARGET_DOS
 LDFLAGS  := /m /s /c /l /v /L%BCPP31%\lib
 
 ### Sources ###

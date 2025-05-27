@@ -3452,7 +3452,11 @@ start:
     setvpage(0);
     done = 0;
     turn_on_palette();
+#ifdef TARGET_DOS
     clk_times = gametimer = 0;
+#else
+    gametimer = 0;
+#endif
     while (!done)
     {
         setapage(!apg);

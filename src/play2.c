@@ -42,6 +42,7 @@ void asm_show_background(unsigned char *srcp, unsigned char *destp)
             {
                 if (bxs <= 0x4C)
                 {
+#ifdef TARGET_DOS
                     asm push ds;
                     asm lds si, [srcp];
                     asm add si, [bofs];
@@ -142,6 +143,7 @@ void asm_show_background(unsigned char *srcp, unsigned char *destp)
                     asm movsb;
                     asm movsb;
                     asm pop ds;
+#endif
                     ofs += 4;
                     bofs += 4;
                     bxs += 4;
@@ -272,6 +274,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
         {
             if (bxs <= 0x4E)
             {
+#ifdef TARGET_DOS
                 asm push ds;
                 asm lds si, [srcp];
                 asm add si, [bofs];
@@ -340,6 +343,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 asm movsb;
                 asm movsb;
                 asm pop ds;
+#endif
                 ofs += 2;
                 bofs += 2;
                 bxs += 2;
@@ -406,6 +410,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
             {
                 if (bxs <= 0x4C)
                 {
+#ifdef TARGET_DOS
                     asm push ds;
                     asm lds si, [srcp];
                     asm add si, [bofs];
@@ -506,6 +511,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                     asm movsb;
                     asm movsb;
                     asm pop ds;
+#endif
                     ofs += 4;
                     bofs += 4;
                     bxs += 4;
@@ -593,6 +599,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
         {
             if (bxs <= 0x4E)
             {
+#ifdef TARGET_DOS
                 asm push ds;
                 asm lds si, [srcp];
                 asm add si, [bofs];
@@ -661,6 +668,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 asm movsb;
                 asm movsb;
                 asm pop ds;
+#endif
                 ofs += 2;
                 bofs += 2;
                 bxs += 2;
@@ -1164,6 +1172,7 @@ void show_background_h(void)
 // addr: 134C:0F36
 void show_screen(unsigned char *vdest, unsigned char *vsrc, unsigned char *msld, unsigned char *mbkg, int mbx)
 {
+#ifdef TARGET_DOS
     asm cld;
     asm push ds;
     asm mov bx, [mbx];
@@ -1290,6 +1299,7 @@ label7:
     asm jmp label1;
 label8:
     asm pop ds;
+#endif
 }
 
 // module: PLAY2
@@ -1297,6 +1307,7 @@ label8:
 // addr: 134C:1006
 void show_screen_h(unsigned char *vdest, unsigned char *vsrc, unsigned char *msld, unsigned char *mbkg, int mbx)
 {
+#ifdef TARGET_DOS
     asm cld;
     asm push ds;
     asm mov bx, [mbx];
@@ -1603,4 +1614,5 @@ label15:
     asm jmp label1;
 label16:
     asm pop ds;
+#endif
 }

@@ -79,10 +79,12 @@ void clear_keys(void)
 void install_key_handler(void)
 {
     clear_keys();
+#ifdef TARGET_DOS
     asm cli;
     oldk_handler = getvect(9);
     setvect(9, key_handler);
     asm sti;
+#endif
 }
 
 // module: UTIL
@@ -90,9 +92,11 @@ void install_key_handler(void)
 // addr: 14B9:016B
 void disable_key_handler(void)
 {
+#ifdef TARGET_DOS
     asm cli;
     setvect(9, oldk_handler);
     asm sti;
+#endif
 }
 
 // module: UTIL

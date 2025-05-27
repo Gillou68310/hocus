@@ -60,6 +60,7 @@ void pascal OB(unsigned int porta, unsigned char abyte)
 // addr: 146F:001A
 void alOut(unsigned char n, unsigned char b)
 {
+#ifdef TARGET_DOS
     DISABLE_INTERRUPTS();
 
     // Write address register
@@ -124,6 +125,7 @@ void alOut(unsigned char n, unsigned char b)
     asm in al, dx;
     asm in al, dx;
     asm in al, dx;
+#endif
 }
 
 // module: SOUNDFX
@@ -174,6 +176,7 @@ void pascal SDL_ALSERVICE(void)
 // addr: 146F:0146
 void interrupt SDL_t0Service(void)
 {
+#ifdef TARGET_DOS
     if (AdLibPresent != 0)
     {
         SDL_ALSERVICE();
@@ -191,6 +194,7 @@ void interrupt SDL_t0Service(void)
         }
     }
     OB(0x20, 0x20);
+#endif
 }
 
 // module: SOUNDFX
