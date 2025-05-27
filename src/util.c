@@ -1,6 +1,4 @@
-#include <dos.h>
 #include <stdlib.h>
-#include <conio.h>
 #include <malloc.h>
 #include "common.h"
 #include "menus.h"
@@ -110,7 +108,7 @@ void interrupt key_handler(void)
     i = inportb(0x61);
     outportb(0x61, i | 0x80);
     outportb(0x61, i);
-    if (((hdead == 0) && (hdone == 0)) && (indemo == 0))
+    if ((hdead == 0) && (hdone == 0) && (indemo == 0))
     {
         if (gkey < 0x80)
         {
@@ -338,7 +336,7 @@ void alloc_bytes(unsigned char **buf, long bytes, unsigned char *id)
 // module: UTIL
 // size: 0x30
 // addr: 14B9:05FC
-void alloc_words(int **buf, long words, unsigned char *id)
+void alloc_words(int16_t **buf, long words, unsigned char *id)
 {
     if ((*buf = _fmalloc(words)) == NULL)
     {
@@ -349,7 +347,7 @@ void alloc_words(int **buf, long words, unsigned char *id)
 // module: UTIL
 // size: 0x30
 // addr: 14B9:062C
-void alloc_dwords(long **buf, long dwords, unsigned char *id)
+void alloc_dwords(int32_t **buf, long dwords, unsigned char *id)
 {
     if ((*buf = _fmalloc(dwords)) == NULL)
     {

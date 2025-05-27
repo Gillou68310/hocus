@@ -1,5 +1,4 @@
 #include <time.h>
-#include <conio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "common.h"
@@ -9,13 +8,14 @@
 #include "gr.h"
 #include "util.h"
 #include "menus.h"
-#include "features.h"
 #include "play.h"
 #include "joystick.h"
 
+void title(void);
+
 // addr: 192E:0094
 // size: 1888
-struct struct_70 db[236] = {
+struct_70 db[236] = {
     {0x0, 0x2d0},
     {0x2d0, 0x3bc},
     {0x68c, 0x78e5},
@@ -569,7 +569,9 @@ void main(int argc, unsigned char **argv)
             case 2:
                 game_config.joystick = !game_config.joystick;
                 if ((game_config.joystick != 0) && (!calibrate_joystick()))
+                {
                     game_config.joystick = 0;
+                }
                 goto label2;
             case 3:
                 do_key_menu();
@@ -595,7 +597,7 @@ void main(int argc, unsigned char **argv)
             break;
         case 5:
             game = 0;
-            level = (((long int)rand() * 5) / 0x8000) << 1;
+            level = (((long int)rand() * 5) / 0x8000) * 2;
             skill = 1;
             score = 0;
             hfirepower = 1;
@@ -618,9 +620,9 @@ void main(int argc, unsigned char **argv)
     show_bin((((long int)rand() * 10) / 0x8000) + 0x20);
     restore_graphics_fragment(0xD, 0, 0xA0);
     strcpy(dline, "Check out the entire 4 game series!");
-    pstrol2((0x140 - pstrlen(dline)) / 2, 0xAA, 7, dline);
+    pstrol2((SCREEN_WIDTH - pstrlen(dline)) / 2, 0xAA, 7, dline);
     strcpy(dline, "Order Hocus Pocus today!");
-    pstrol2((0x140 - pstrlen(dline)) / 2, 0xB7, 7, dline);
+    pstrol2((SCREEN_WIDTH - pstrlen(dline)) / 2, 0xB7, 7, dline);
     fade_in(0x14);
     while (kbhit() != 0)
     {

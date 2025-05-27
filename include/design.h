@@ -17,9 +17,9 @@ void pick_mtag(void);
 void pick_mtrig(void);
 void design(void);
 
-extern struct struct_130 ups[23];
-extern int plat_pcx_ofs[4][10];
-extern int lvl_info_ofs[4][10];
-extern int bdrop_pcxpal_ofs[4][10];
+extern ups_t ups[UPS_COUNT];
+extern int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT];
+extern int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT];
+extern int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT];
 
 #endif

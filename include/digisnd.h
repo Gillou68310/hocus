@@ -29,16 +29,16 @@
 #define DISABLE_INTERRUPTS() asm { pushf; cli }
 #define ENABLE_INTERRUPTS() asm { popf; }
 
+typedef unsigned char byte;
+typedef unsigned int word;
+typedef unsigned long dword;
+typedef word bool;
+
 enum
 {
     false = 0,
     true = 1
 };
-
-typedef unsigned char byte;
-typedef unsigned int word;
-typedef unsigned long dword;
-typedef word bool;
 
 typedef void(far *SoundFinishedCallback)(void);
 typedef void(far *NewVocSectionCallback)(word, dword, byte huge *);

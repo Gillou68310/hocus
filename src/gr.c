@@ -1,5 +1,3 @@
-#include <dos.h>
-#include <mem.h>
 #include "common.h"
 #include "gr.h"
 #include "fileio.h"
@@ -130,11 +128,11 @@ void setvga(void)
     int i;
 
     SET320X200();
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < VGA_PAGE_COUNT; i++)
     {
-        vgapofs[i] = i * 16000;
-        vgap[i] = vgabase + i * 16000;
-        setmem(vgap[i], 16000, 0);
+        vgapofs[i] = i * VGA_PAGE_SIZE;
+        vgap[i] = vgabase + i * VGA_PAGE_SIZE;
+        setmem(vgap[i], VGA_PAGE_SIZE, 0);
     }
     setapage(0);
     setvpage(0);
@@ -147,7 +145,7 @@ void scopy(int dest, int src)
 {
     latches(1);
     enable_pixels(0xf);
-    MCPY(vgap[dest], vgap[src], 16000);
+    MCPY(vgap[dest], vgap[src], VGA_PAGE_SIZE);
 }
 
 // module: GR
@@ -171,7 +169,7 @@ void copyblock(int sp, int lx, int ty, int rx, int by, int dp, int dx, int dy)
     for (y = ty; y <= by; y++)
     {
         MCPY(&((line_t)vgap[dp])[dy][dx], &((line_t)vgap[sp])[y][lx], l);
-        // MCPY(vgap[dp]+dy*0x50+dx, vgap[sp]+y*0x50+lx, l);
+        // MCPY(vgap[dp]+dy*VGA_PLANE_WIDTH+dx, vgap[sp]+y*VGA_PLANE_WIDTH+lx, l);
     }
 }
 
@@ -182,7 +180,7 @@ void clearscreen(void)
 {
     latches(0);
     enable_pixels(0xf);
-    setmem(vga, 16000, 0);
+    setmem(vga, VGA_PAGE_SIZE, 0);
 }
 
 // module: GR
@@ -202,7 +200,7 @@ void clearbox(int lx, int ty, int rx, int by)
     for (; ty <= by; ty++)
     {
         setmem(&((line_t)vga)[ty][lx], (rx - lx) + 1, 0);
-        // setmem(vga + ty * 0x50 + lx, (rx - lx) + 1, 0);
+        // setmem(vga + ty * VGA_PLANE_WIDTH + lx, (rx - lx) + 1, 0);
     }
 }
 
@@ -215,9 +213,9 @@ int pixel_clr(int x, int y)
     // size: 2
     // int x;
 
-    setreadplane(x % 4);
-    return ((line_t)vga)[y][x / 4];
-    // return *((vga + y * 0x50) + x / 4);
+    setreadplane(x % VGA_PLANE_COUNT);
+    return ((line_t)vga)[y][x / VGA_PLANE_COUNT];
+    // return *((vga + y * VGA_PLANE_WIDTH) + x / 4);
 }
 
 // module: GR
@@ -229,9 +227,9 @@ void pixel(int x, int y, int c)
     // size: 2
     // int x;
 
-    enable_pixels(1 << ((x % 4)));
-    ((line_t)vga)[y][x >> 2] = c;
-    //*(vga + y * 0x50 + (x >> 2)) = c;
+    enable_pixels(1 << ((x % VGA_PLANE_COUNT)));
+    ((line_t)vga)[y][x >> VGA_PLANE_SHIFT] = c;
+    //*(vga + y * VGA_PLANE_WIDTH + (x >> 2)) = c;
 }
 
 // module: GR
@@ -414,7 +412,7 @@ void unpackpcxfile(void)
     int j;
     // stack: [BP-326]
     // size: 320
-    unsigned char line[4][80];
+    unsigned char line[4][VGA_PLANE_WIDTH];
 
     for (i = 0; i < depth; i++)
     {
@@ -428,7 +426,7 @@ void unpackpcxfile(void)
                 c = char_from_database();
                 while (j-- != 0)
                 {
-                    line[nn][n >> 2] = c;
+                    line[nn][n >> VGA_PLANE_SHIFT] = c;
                     n++;
                     nn++;
                     if (nn > 3)
@@ -439,7 +437,7 @@ void unpackpcxfile(void)
             }
             else
             {
-                line[nn][n >> 2] = c;
+                line[nn][n >> VGA_PLANE_SHIFT] = c;
                 n++;
                 nn++;
                 if (nn > 3)
@@ -518,7 +516,7 @@ void capture_screen(void)
     for (p = 0; p < 4; p++)
     {
         setreadplane(p);
-        for (i = 0; i < 16000; i++)
+        for (i = 0; i < VGA_PAGE_SIZE; i++)
         {
             fputc(vga[i], fp);
         }
@@ -547,7 +545,7 @@ void show_bin(int db_rec)
     for (p = 0; p < 4; p++)
     {
         enable_pixels(1 << p);
-        for (i = 0; i < 16000; i++)
+        for (i = 0; i < VGA_PAGE_SIZE; i++)
         {
             vga[i] = fgetc(databasefp);
         }
@@ -573,7 +571,7 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
     long offset;
 
     get_offset(db_rec, &offset);
-    load_to_byte_pointer(offset, 4, &grphdr);
+    load_to_byte_pointer(offset, sizeof(grphdr_t), &grphdr);
     latches(0);
     for (p = 0; p < 4; p++)
     {

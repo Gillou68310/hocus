@@ -1,9 +1,7 @@
 #include <time.h>
 #include <string.h>
-#include <conio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <mem.h>
 #include "common.h"
 #include "joystick.h"
 #include "gr.h"
@@ -15,7 +13,7 @@
 
 // addr: 192E:0A34
 // size: 72
-unsigned int time2beat[4][9] = {
+unsigned int time2beat[GAME_COUNT][LEVEL_COUNT - 1] = {
     {0x78, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
     {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
     {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
@@ -285,7 +283,7 @@ void update_stars(void)
                 star_rad[i] = (((long int)rand() * 0xA0) / 0x8000);
                 x = ((star_rad[i] * l_sine_cosine_table[star_deg[i]][0]) / 1000000) + 0xA0;
                 y = ((star_rad[i] * l_sine_cosine_table[star_deg[i]][1]) / 1000000) + 0x70;
-            } while (x < 0 | x > 0x13f | y < 0 | y > 199);
+            } while ((x < 0) | (x > 0x13f) | (y < 0) | (y > 199));
             star_radplus[i] = (((long int)rand() * 5) / 0x8000) + 1;
             star_clrcnt[i] = 0;
             star_clrplus[i] = (((long int)rand() * 5) / 0x8000) + 1;
@@ -374,7 +372,7 @@ void pstrs(int x, int y, int color, unsigned char *str)
         {
             ch += 0xDF;
             maxx = 0;
-            ofs = y * 0x50 + (x >> 2);
+            ofs = y * VGA_PLANE_WIDTH + (x >> VGA_PLANE_SHIFT);
             for (py = 0; py < 8; py++)
             {
                 c = *(font + ch * 8 + py);
@@ -397,7 +395,7 @@ void pstrs(int x, int y, int color, unsigned char *str)
                 *(vga + ofs + 1) = color;
                 outportb(0x3c5, word >> 12);
                 *(vga + ofs + 2) = color;
-                ofs += 0x50;
+                ofs += VGA_PLANE_WIDTH;
             }
             x += (maxx + 2);
         }
@@ -456,7 +454,7 @@ void pstrwiznote(int x, int y, int clr, unsigned char *str)
         {
             ch += 0xDF;
             maxx = 0;
-            ofs = y * 0x50 + (x >> 2);
+            ofs = y * VGA_PLANE_WIDTH + (x >> VGA_PLANE_SHIFT);
             for (py = 0; py < 8; py++)
             {
                 c = *(font + ch * 8 + py);
@@ -479,7 +477,7 @@ void pstrwiznote(int x, int y, int clr, unsigned char *str)
                 *(vga + ofs + 1) = clr;
                 outportb(0x3c5, word >> 12);
                 *(vga + ofs + 2) = clr;
-                ofs += 0x50;
+                ofs += VGA_PLANE_WIDTH;
             }
             x += (maxx + 2);
         }
@@ -539,7 +537,9 @@ void pstr(int x, int y, int color, unsigned char *str)
     latches(0);
     outportb(0x3c4, 2);
     if (color == 0)
+    {
         black = 1;
+    }
     else
     {
         black = 0;
@@ -552,7 +552,7 @@ void pstr(int x, int y, int color, unsigned char *str)
         {
             ch += 0xDF;
             maxx = 0;
-            ofs = y * 0x50 + (x >> 2);
+            ofs = y * VGA_PLANE_WIDTH + (x >> VGA_PLANE_SHIFT);
             for (py = 0; py < 8; py++)
             {
                 if (black != 0)
@@ -583,7 +583,7 @@ void pstr(int x, int y, int color, unsigned char *str)
                 *(vga + ofs + 1) = clr;
                 outportb(0x3c5, word >> 12);
                 *(vga + ofs + 2) = clr;
-                ofs += 0x50;
+                ofs += VGA_PLANE_WIDTH;
             }
             x += (maxx + 2);
         }
@@ -741,9 +741,9 @@ void ptstr(int x, int y, int fc, int bc, int len, unsigned char *str)
     // size: 2
     register unsigned int tb;
 
-    i = y * 0x50 + x;
+    i = y * VGA_PLANE_WIDTH + x;
     tb = (bc << 4 | fc) << 8;
-    while ((*str != '\0' && (len-- != 0)))
+    while ((*str != '\0') && (len-- != 0))
     {
         textbase[i] = tb | *str;
         str++;
@@ -775,7 +775,7 @@ void blank(int lx, int ty, int rx, int by, int fc, int bc)
     register unsigned int x;
 
     tb = (bc << 4 | fc) << 8;
-    to = ty * 0x50;
+    to = ty * VGA_PLANE_WIDTH;
     while (ty <= by)
     {
         for (x = lx; x <= rx; x++)
@@ -783,7 +783,7 @@ void blank(int lx, int ty, int rx, int by, int fc, int bc)
             *(textbase + to + x) = tb;
         }
         ty++;
-        to += 0x50;
+        to += VGA_PLANE_WIDTH;
     }
 }
 
@@ -822,19 +822,31 @@ void load_menu(int menunum)
         menu_first_title = 0;
         strcpy(menu_item_labels[0], "Sound is now ");
         if (game_config.soundfx)
+        {
             strcat(menu_item_labels[0], "on ");
+        }
         else
+        {
             strcat(menu_item_labels[0], "off");
+        }
         strcpy(menu_item_labels[1], "Music is now ");
         if (game_config.music)
+        {
             strcat(menu_item_labels[1], "on ");
+        }
         else
+        {
             strcat(menu_item_labels[1], "off");
+        }
         strcpy(menu_item_labels[2], "Joystick is now ");
         if (game_config.joystick)
+        {
             strcat(menu_item_labels[2], "on ");
+        }
         else
+        {
             strcat(menu_item_labels[2], "off");
+        }
         siconpos = gameopmenuip;
     }
     if (menunum == 1)
@@ -903,11 +915,11 @@ void do_line_menu(unsigned char *msg, int fn)
     clearscreen();
     setvpage(0);
     x = pstrlen(msg);
-    x = (0x140 - x) / 2;
-    y = 0x6B;
+    x = (SCREEN_WIDTH - x) / 2;
+    y = 107;
     pstr(x, y, 5, msg);
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[fn])) / 2, 0xbc, 4, footers[fn]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[fn])) / 2, 0xbc, 4, footers[fn]);
     restore_graphics_fragment(10, 0, 0);
     fade_in(0x14);
 }
@@ -932,14 +944,14 @@ void do_title_line_menu(unsigned char *tit, unsigned char *msg, int fn)
     clearscreen();
     setvpage(0);
     x = pstrlen(tit);
-    x = (0x140 - x) / 2;
+    x = (SCREEN_WIDTH - x) / 2;
     y = 0x61;
     pstr(x, y, 5, tit);
     x = pstrlen(msg);
-    x = (0x140 - x) / 2;
+    x = (SCREEN_WIDTH - x) / 2;
     pstr(x, y + 0x14, 3, msg);
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[fn])) / 2, 0xbc, 4, footers[fn]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[fn])) / 2, 0xbc, 4, footers[fn]);
     restore_graphics_fragment(10, 0, 0);
     fade_in(0x14);
 }
@@ -975,7 +987,7 @@ unsigned char get_any_key(void)
             else
             {
                 key = toupper(key);
-                if (key == 0x1B)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     return 0xff;
@@ -1018,7 +1030,7 @@ unsigned char get_yesno_key(void)
                     fade_out(0x14);
                     return key;
                 }
-                if (key == 0x1B)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     return 0xff;
@@ -1059,7 +1071,7 @@ unsigned char get_number_key(void)
                     fade_out(0x14);
                     return key - '1';
                 }
-                if (key == 0x1B)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     return 0xff;
@@ -1095,10 +1107,10 @@ void do_def_menu(int kn)
     y = 0x48;
     strcpy(dline, "Select new key for: ");
     strcat(dline, keymenu[kn]);
-    pstr((0x140 - pstrlen(dline)) / 2, y, 5, dline);
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[7])) / 2, 0xbc, 4, footers[7]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[7])) / 2, 0xbc, 4, footers[7]);
     restore_graphics_fragment(10, 0, 0);
     for (i = 0; i < 6; i++)
     {
@@ -1139,7 +1151,7 @@ void do_def_menu(int kn)
             else
             {
                 key = toupper(key);
-                if (key == 0x1B)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     return;
@@ -1177,10 +1189,10 @@ start:
     clearscreen();
     setvpage(0);
     y = 0x3e;
-    pstr((0x140 - pstrlen("Select a key to define")) / 2, y, 5, "Select a key to define");
+    pstr((SCREEN_WIDTH - pstrlen("Select a key to define")) / 2, y, 5, "Select a key to define");
     y += 0x14;
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[7])) / 2, 0xbc, 4, footers[7]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[7])) / 2, 0xbc, 4, footers[7]);
     restore_graphics_fragment(10, 0, 0);
     for (i = 0; i < 8; i++)
     {
@@ -1209,7 +1221,7 @@ start:
             else
             {
                 key = toupper(key);
-                if (key == 0x1B)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     return;
@@ -1249,9 +1261,13 @@ void do_menu(void)
     clearscreen();
     setvpage(0);
     if (menu_first_title != 0)
+    {
         s = 1;
+    }
     else
+    {
         s = 0;
+    }
 
     x = 0;
     for (i = s; i < menu_item_num; i++)
@@ -1262,11 +1278,11 @@ void do_menu(void)
             x = y;
         }
     }
-    x = (0x140 - x) / 2;
+    x = (SCREEN_WIDTH - x) / 2;
     if (menu_first_title != 0)
     {
         y = ((0x90 - ((menu_item_num + 1) * 10)) / 2) + 0x28;
-        pstr((0x140 - pstrlen(menu_item_labels[0])) / 2, y, 5, menu_item_labels[0]);
+        pstr((SCREEN_WIDTH - pstrlen(menu_item_labels[0])) / 2, y, 5, menu_item_labels[0]);
         y += 0x14;
     }
     else
@@ -1274,7 +1290,7 @@ void do_menu(void)
         y = ((0x90 - (menu_item_num * 10)) / 2) + 0x28;
     }
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[menu_footer])) / 2, 0xbc, 4, footers[menu_footer]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[menu_footer])) / 2, 0xbc, 4, footers[menu_footer]);
     restore_graphics_fragment(10, 0, 0);
     iconx = (x - 0x18) / 4;
     iconpos = 0;
@@ -1353,16 +1369,18 @@ void get_hiscore(int g, int slot)
     y = 0x48;
     strcpy(dline, "High Scores For Game ");
     strcat(dline, itoa(g + 1, dumnum, 10));
-    pstr((0x140 - pstrlen(dline)) / 2, y, 5, dline);
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[6])) / 2, 0xbc, 4, footers[6]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[6])) / 2, 0xbc, 4, footers[6]);
     restore_graphics_fragment(10, 0, 0);
     for (i = 0; i < 5; i++)
     {
         s = 3;
         if (i == 0)
+        {
             s = 4;
+        }
         x = 0x1B;
         pstr(x, y, s, game_config.hname[g][i]);
         strcpy(dline, ltoa(game_config.hiscore[g][i], dumnum, 10));
@@ -1386,7 +1404,7 @@ void get_hiscore(int g, int slot)
         getch();
     }
 
-    while (key != 0xd)
+    while (key != KEY_RETURN)
     {
         pstr(0x1b, sy, sclr, game_config.hname[g][slot]);
         i = strlen(game_config.hname[g][slot]);
@@ -1404,7 +1422,7 @@ void get_hiscore(int g, int slot)
                 }
                 else
                 {
-                    if ((key >= ' ') && (key <= 'z') && (i < 0x19))
+                    if ((key >= KEY_SPACE) && (key <= 'z') && (i < 0x19))
                     {
                         blankpixelbox(x, sy, x + 10, sy + 9);
                         game_config.hname[g][slot][i] = key;
@@ -1422,8 +1440,10 @@ void get_hiscore(int g, int slot)
                         blankpixelbox(x, sy, y, sy + 9);
                         break;
                     }
-                    if (key == 0xd)
+                    if (key == KEY_RETURN)
+                    {
                         break;
+                    }
                 }
             }
             update_stars();
@@ -1467,16 +1487,18 @@ void do_show_hiscores(int demomode)
     y = 0x48;
     strcpy(dline, "High Scores For Game ");
     strcat(dline, itoa(g + 1, dumnum, 10));
-    pstr((0x140 - pstrlen(dline)) / 2, y, 5, dline);
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
     restore_graphics_fragment(9, 0, 0xb8);
-    pstrsh((0x140 - pstrlen(footers[2])) / 2, 0xbc, 4, footers[2]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[2])) / 2, 0xbc, 4, footers[2]);
     restore_graphics_fragment(10, 0, 0);
     for (i = 0; i < 5; i++)
     {
         s = 3;
         if (i == 0)
+        {
             s = 4;
+        }
         x = 0x1B;
         pstr(x, y, s, game_config.hname[g][i]);
         strcpy(dline, ltoa(game_config.hiscore[g][i], dumnum, 10));
@@ -1492,13 +1514,17 @@ void do_show_hiscores(int demomode)
     {
         k = get_any_key();
         if (k == -1)
+        {
             return;
+        }
     }
     else
     {
         counter = clk_times;
         while ((clk_times - counter < 0x9c4) && kbhit() == 0)
+        {
             update_stars();
+        }
 
         if (kbhit() != 0)
         {
@@ -1578,19 +1604,19 @@ unsigned char get_menu_key(int ismain)
         key = get_menu_joystick();
         if (key == 1)
         {
-            key = 'H';
+            key = KEY_UP;
             goto label1;
         }
 
         if (key == 2)
         {
-            key = 'P';
+            key = KEY_DOWN;
             goto label1;
         }
 
         if (key == 3)
         {
-            key = 0xd;
+            key = KEY_RETURN;
             goto label2;
         }
 
@@ -1601,9 +1627,9 @@ unsigned char get_menu_key(int ismain)
             {
                 key = getch();
             label1:
-                if (key == 'H')
+                if (key == KEY_UP)
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos--;
                     if (iconpos < 0)
                     {
@@ -1611,9 +1637,9 @@ unsigned char get_menu_key(int ismain)
                     }
                     record_iconpos();
                 }
-                if (key == 'P')
+                if (key == KEY_DOWN)
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos++;
                     if (iconpos >= iconmax)
                     {
@@ -1630,18 +1656,18 @@ unsigned char get_menu_key(int ismain)
                 {
                     if (menu_item_labels[i][0] == key)
                     {
-                        blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                        blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                         iconpos = i - s;
                         record_iconpos();
                     }
                 }
             label2:
-                if (key == 0xd)
+                if (key == KEY_RETURN)
                 {
                     fade_out(0x14);
                     return iconpos;
                 }
-                if (((key == 0x1b) && (menu_footer != 0)) && (menu_footer != 3))
+                if ((key == KEY_ESCAPE) && (menu_footer != 0) && (menu_footer != 3))
                 {
                     fade_out(0x14);
                     return 0xff;
@@ -1799,10 +1825,10 @@ void save_game(void)
     setvpage(0);
     y = 0x3B;
     strcpy(dline, "Select SAVE slot");
-    pstr((0x140 - pstrlen(dline)) / 2, y, 5, dline);
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
     restore_graphics_fragment(9, 0, 0xB8);
-    pstrsh((0x140 - pstrlen(footers[4])) / 2, 0xbc, 4, footers[4]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[4])) / 2, 0xbc, 4, footers[4]);
     restore_graphics_fragment(10, 0, 0);
     iconpos = 0;
     iconx = 4;
@@ -1822,24 +1848,24 @@ void save_game(void)
     iconpos = siconpos;
     fade_in(0x14);
     key = 0;
-    while (key != 0xd)
+    while (key != KEY_RETURN)
     {
         key = get_menu_joystick();
         if (key == 1)
         {
-            key = 'H';
+            key = KEY_UP;
             goto label1;
         }
 
         if (key == 2)
         {
-            key = 'P';
+            key = KEY_DOWN;
             goto label1;
         }
 
         if (key == 3)
         {
-            key = 0xd;
+            key = KEY_RETURN;
             goto label2;
         }
 
@@ -1850,9 +1876,9 @@ void save_game(void)
             {
                 key = getch();
             label1:
-                if (key == 'H')
+                if (key == KEY_UP)
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos--;
                     if (iconpos < 0)
                     {
@@ -1860,9 +1886,9 @@ void save_game(void)
                     }
                     siconpos = iconpos;
                 }
-                if (key == 'P')
+                if (key == KEY_DOWN)
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos++;
                     if (iconpos >= iconmax)
                     {
@@ -1875,17 +1901,17 @@ void save_game(void)
             {
                 if ((key >= '1') && (key <= '9'))
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos = key - 49;
                     siconpos = iconpos;
                 }
-                if (key == 0x1b)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     goto exit;
                 }
             label2:
-                if (key == 0xd)
+                if (key == KEY_RETURN)
                 {
                     gs = iconpos;
                     sy = icony[iconpos] + 4;
@@ -1901,7 +1927,7 @@ void save_game(void)
                     {
                         getch();
                     }
-                    while ((lkey != 0xd) && (lkey != 0x1b))
+                    while ((lkey != KEY_RETURN) && (lkey != KEY_ESCAPE))
                     {
                         pstr(0x2d, sy, 3, game_config.gname[gs]);
                         i = strlen(game_config.gname[gs]);
@@ -1919,7 +1945,7 @@ void save_game(void)
                                 }
                                 else
                                 {
-                                    if ((lkey >= ' ') && (lkey <= 'z') && (i < 0x19))
+                                    if ((lkey >= KEY_SPACE) && (lkey <= 'z') && (i < 0x19))
                                     {
                                         blankpixelbox(x, sy, x + 10, sy + 9);
                                         game_config.gname[gs][i] = lkey;
@@ -1937,9 +1963,11 @@ void save_game(void)
                                         blankpixelbox(x, sy, y, sy + 9);
                                         break;
                                     }
-                                    if ((lkey == 0xd))
+                                    if ((lkey == KEY_RETURN))
+                                    {
                                         break;
-                                    if ((lkey == 0x1b))
+                                    }
+                                    if ((lkey == KEY_ESCAPE))
                                     {
                                         strcpy(game_config.gname[gs], savename);
                                         blankpixelbox(0x2d, sy, 0x13f, sy + 9);
@@ -1959,7 +1987,7 @@ void save_game(void)
         update_icon(iconx, icony[iconpos]);
         update_stars();
     }
-    if (key == 0xd)
+    if (key == KEY_RETURN)
     {
         game_config.game[gs] = game;
         game_config.level[gs] = level;
@@ -2004,10 +2032,10 @@ int restore_game(void)
     setvpage(0);
     y = 0x3B;
     strcpy(dline, "Select RESTORE slot");
-    pstr((0x140 - pstrlen(dline)) / 2, y, 5, dline);
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
     restore_graphics_fragment(9, 0, 0xB8);
-    pstrsh((0x140 - pstrlen(footers[4])) / 2, 0xbc, 4, footers[4]);
+    pstrsh((SCREEN_WIDTH - pstrlen(footers[4])) / 2, 0xbc, 4, footers[4]);
     restore_graphics_fragment(10, 0, 0);
     iconpos = 0;
     iconx = 4;
@@ -2027,24 +2055,24 @@ int restore_game(void)
     iconpos = riconpos;
     fade_in(0x14);
     key = 0;
-    while (key != 0xd)
+    while (key != KEY_RETURN)
     {
         key = get_menu_joystick();
         if (key == 1)
         {
-            key = 'H';
+            key = KEY_UP;
             goto label1;
         }
 
         if (key == 2)
         {
-            key = 'P';
+            key = KEY_DOWN;
             goto label1;
         }
 
         if (key == 3)
         {
-            key = 0xd;
+            key = KEY_RETURN;
             goto label2;
         }
 
@@ -2055,9 +2083,9 @@ int restore_game(void)
             {
                 key = getch();
             label1:
-                if (key == 'H')
+                if (key == KEY_UP)
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos--;
                     if (iconpos < 0)
                     {
@@ -2065,9 +2093,9 @@ int restore_game(void)
                     }
                     riconpos = iconpos;
                 }
-                if (key == 'P')
+                if (key == KEY_DOWN)
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos++;
                     if (iconpos >= iconmax)
                     {
@@ -2080,17 +2108,17 @@ int restore_game(void)
             {
                 if ((key >= '1') && (key <= '9'))
                 {
-                    blankpixelbox(iconx << 2, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
+                    blankpixelbox(iconx * 4, icony[iconpos], iconx * 4 + 0xf, icony[iconpos] + 0xe);
                     iconpos = key - 49;
                     riconpos = iconpos;
                 }
-                if (key == 0x1b)
+                if (key == KEY_ESCAPE)
                 {
                     fade_out(0x14);
                     goto exit;
                 }
             label2:
-                if (key == 0xd)
+                if (key == KEY_RETURN)
                 {
                     gs = iconpos;
                     if (game_config.game[gs] == -1)
@@ -2103,7 +2131,7 @@ int restore_game(void)
         update_icon(iconx, icony[iconpos]);
         update_stars();
     }
-    if (key == 0xd)
+    if (key == KEY_RETURN)
     {
         load_file_to_byte_pointer(1, &game_config);
         game = game_config.game[gs];
@@ -2174,7 +2202,7 @@ int calibrate_joystick(void)
     {
         jb = JOY_Buttons();
         update_stars();
-        if (kbhit() && getch() == 0x1B)
+        if (kbhit() && getch() == KEY_ESCAPE)
         {
             return 0;
         }
@@ -2190,7 +2218,7 @@ int calibrate_joystick(void)
     {
         jb = JOY_Buttons();
         update_stars();
-        if (kbhit() && getch() == 0x1B)
+        if (kbhit() && getch() == KEY_ESCAPE)
         {
             return 0;
         }
@@ -2401,7 +2429,7 @@ void do_info_screen(int page, int limit)
             }
         }
     }
-    pstrsh((0x140 - pstrlen(dline)) / 2, 0xbc, 4, dline);
+    pstrsh((SCREEN_WIDTH - pstrlen(dline)) / 2, 0xbc, 4, dline);
     restore_graphics_fragment(10, 0, 0);
 
     for (i = 0, y = 0; i < inf.num; i++)
@@ -2418,7 +2446,7 @@ void do_info_screen(int page, int limit)
     y = ((0x90 - y) / 2) + 0x28;
     for (i = 0; i < inf.num; i++)
     {
-        pstr((0x140 - pstrlen(inf.lines[i])) / 2, y, inf.attrb[i * 2 + 1], inf.lines[i]);
+        pstr((SCREEN_WIDTH - pstrlen(inf.lines[i])) / 2, y, inf.attrb[i * 2 + 1], inf.lines[i]);
         if (strlen(inf.lines[i]) == 0)
         {
             y += inf.bspacing;
@@ -2456,12 +2484,12 @@ int get_page_key(int page, int limit)
         key = get_menu_joystick();
         if ((key == 1) || (key == 5))
         {
-            key = 'I';
+            key = KEY_PGUP;
             goto label;
         }
         if ((key == 2) || (key == 4))
         {
-            key = 'Q';
+            key = KEY_PGDN;
             goto label;
         }
         if (kbhit())
@@ -2476,7 +2504,7 @@ int get_page_key(int page, int limit)
                     break;
                 }
             label:
-                if ((key == 'I') || (key == 'K'))
+                if ((key == KEY_PGUP) || (key == KEY_LEFT))
                 {
                     if ((page != 0))
                     {
@@ -2484,7 +2512,7 @@ int get_page_key(int page, int limit)
                         break;
                     }
                 }
-                if ((key == 'Q') || (key == 'M'))
+                if ((key == KEY_PGDN) || (key == KEY_RIGHT))
                 {
                     if (limit - 1 > page)
                     {
@@ -2492,7 +2520,7 @@ int get_page_key(int page, int limit)
                         break;
                     }
                 }
-                if ((key == 'G'))
+                if ((key == KEY_HOME))
                 {
                     if (page != 0)
                     {
@@ -2500,7 +2528,7 @@ int get_page_key(int page, int limit)
                         break;
                     }
                 }
-                if ((key == 'O'))
+                if ((key == KEY_END))
                 {
                     if (limit - 1 > page)
                     {
@@ -2509,7 +2537,7 @@ int get_page_key(int page, int limit)
                     }
                 }
             }
-            else if ((key == 0x1B) || (limit == 1))
+            else if ((key == KEY_ESCAPE) || (limit == 1))
             {
                 page = -1;
                 break;
@@ -2642,8 +2670,10 @@ void do_previews(void)
         {
             getch();
         }
-        if (key == 0x1b)
+        if (key == KEY_ESCAPE)
+        {
             break;
+        }
     }
     clear_palette();
     restore_palette_fragment(7, 0, 0);
@@ -2694,9 +2724,13 @@ void do_help(int insidegame)
     }
 
     if (game_config.joystick != 0)
+    {
         page = 1;
+    }
     else
+    {
         page = 0;
+    }
     quit = 0;
     (void)quit;
     while (page < 4)
@@ -2719,7 +2753,9 @@ void do_help(int insidegame)
                 button1 = button2 = 0;
                 JOY_PollButtons();
                 if ((button1 != 0) || (button2 != 0))
+                {
                     break;
+                }
             }
         }
 
@@ -2728,8 +2764,10 @@ void do_help(int insidegame)
         {
             getch();
         }
-        if (key == 0x1b)
+        if (key == KEY_ESCAPE)
+        {
             break;
+        }
         page++;
         if (page == 1)
         {
@@ -2799,9 +2837,13 @@ int play_menu(void)
             break;
         case 3:
             if (restore_game())
+            {
                 exitcode = 3;
+            }
             else
+            {
                 exitcode = 0;
+            }
             goto exit;
         case 2:
             save_game();
@@ -2814,7 +2856,9 @@ int play_menu(void)
         case 4:
         label:
             if ((adlib == 0) && (blaster == 0))
+            {
                 game_config.music = 0;
+            }
             select = do_game_options();
             switch (select)
             {
@@ -2854,7 +2898,9 @@ int play_menu(void)
             case 2:
                 game_config.joystick = !game_config.joystick;
                 if ((game_config.joystick != 0) && (!calibrate_joystick()))
+                {
                     game_config.joystick = 0;
+                }
                 goto label;
             case 3:
                 do_key_menu();
@@ -2934,22 +2980,26 @@ int do_eval(int didit, int tra, int trf, int mnstrs, int mnstrhts)
     clearscreen();
     setvpage(0);
     if (didit)
+    {
         strcpy(dline, "Castle complete - congratulations!");
+    }
     else
+    {
         strcpy(dline, "Tough break - you'll get it next time!");
+    }
 
-    pstr((0x140 - pstrlen(dline)) / 2, y, 4, dline);
-    y += 0x10;
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 4, dline);
+    y += 16;
     strcpy(dline, "Results for Level ");
     strcat(dline, itoa(level + 1, dumnum, 10));
-    pstr((0x140 - pstrlen(dline)) / 2, y, 2, dline);
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 2, dline);
     y += 0x18;
     strcpy(dline, "Treasures found: ");
     strcat(dline, itoa(trf, dumnum, 10));
     strcat(dline, "  Treasures available: ");
     strcat(dline, itoa(tra, dumnum, 10));
-    pstr((0x140 - pstrlen(dline)) / 2, y, 3, dline);
-    y += 0x10;
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 3, dline);
+    y += 16;
     if (trf == 0)
     {
         pcnt = 0.0;
@@ -2991,8 +3041,8 @@ int do_eval(int didit, int tra, int trf, int mnstrs, int mnstrhts)
         strcat(dline, "Castle not complete");
     }
 
-    pstr((0x140 - pstrlen(dline)) / 2, y, 2, dline);
-    y += 0x18;
+    pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 2, dline);
+    y += 24;
     score += bonus;
 
     if (didit)
@@ -3001,8 +3051,8 @@ int do_eval(int didit, int tra, int trf, int mnstrs, int mnstrhts)
         strcat(dline, itoa(time2beat[game][level], dumnum, 10));
         strcat(dline, "  Your time: ");
         strcat(dline, itoa(yt, dumnum, 10));
-        pstr((0x140 - pstrlen(dline)) / 2, y, 3, dline);
-        y += 0x10;
+        pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 3, dline);
+        y += 16;
         gottime = 0;
         if (time2beat[game][level] > yt)
         {
@@ -3027,11 +3077,11 @@ int do_eval(int didit, int tra, int trf, int mnstrs, int mnstrhts)
         {
             strcpy(dline, "Not fast enough - NO BONUS");
         }
-        pstr((0x140 - pstrlen(dline)) / 2, y, 2, dline);
-        y += 0x18;
+        pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 2, dline);
+        y += 24;
     }
     restore_graphics_fragment(9, 0, 0xB8);
-    pstrsh((0x140 - pstrlen("Press any key")) / 2, 0xbc, 4, "Press any key");
+    pstrsh((SCREEN_WIDTH - pstrlen("Press any key")) / 2, 0xbc, 4, "Press any key");
     restore_graphics_fragment(10, 0, 0);
     fade_in(0x14);
     y = 0;

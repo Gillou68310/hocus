@@ -1,4 +1,3 @@
-#include <dos.h>
 #include "common.h"
 #include "joystick.h"
 
@@ -68,7 +67,7 @@ int JOY_Start(unsigned int joy)
     }
     else
     {
-        JOY_SetUp(joy, 0, (x << 1), 0, (y << 1));
+        JOY_SetUp(joy, 0, (x * 2), 0, (y * 2));
         return 1;
     }
 }
@@ -246,7 +245,7 @@ void JOY_GetDelta(unsigned int joy, int *dx, int *dy)
         x = -(x - def->threshMinX);
         x *= def->joyMultXL;
         x >>= 8;
-        *dx = (x > 0x7F) ? -0x7F : -x;
+        *dx = (x > 127) ? -127 : -x;
     }
     else if (x > def->threshMaxX)
     {
@@ -257,7 +256,7 @@ void JOY_GetDelta(unsigned int joy, int *dx, int *dy)
         x = (x - def->threshMaxX);
         x *= def->joyMultXH;
         x >>= 8;
-        *dx = (x > 0x7F) ? 0x7F : x;
+        *dx = (x > 127) ? 127 : x;
     }
     else
     {
@@ -366,21 +365,21 @@ void JOY_PollMovement(void)
     int joyy;
 
     JOY_GetDelta(joystickport, &joyx, &joyy);
-    if (joyx > 0x40)
+    if (joyx > 64)
     {
-        JoyX += 0x32;
+        JoyX += 50;
     }
-    else if (joyx < -0x40)
+    else if (joyx < -64)
     {
-        JoyX -= 0x32;
+        JoyX -= 50;
     }
     if (joyy > 0x40)
     {
-        JoyY += 0x32;
+        JoyY += 50;
     }
-    else if (joyy < -0x40)
+    else if (joyy < -64)
     {
-        JoyY -= 0x32;
+        JoyY -= 50;
     }
 }
 

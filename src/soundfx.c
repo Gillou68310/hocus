@@ -1,10 +1,11 @@
-#include <dos.h>
 #include <stdlib.h>
 #include "common.h"
 #include "util.h"
 #include "fileio.h"
 #include "digisnd.h"
 #include "hocus.h"
+
+#define TIMER_INTERRUPT 8
 
 // addr: 192E:1CE8
 // size: 2
@@ -145,7 +146,9 @@ void pascal SDL_ALSERVICE(void)
     int i;
 
     if (!sqActive)
+    {
         return;
+    }
 
     while ((sqHackLen != 0) && (sqHackTime <= alTimeCount))
     {
@@ -220,8 +223,8 @@ void SD_MusicOff(void)
 // addr: 146F:022A
 void SD_Startup(void)
 {
-    t0OldService = getvect(8);
-    setvect(8, SDL_t0Service);
+    t0OldService = getvect(TIMER_INTERRUPT);
+    setvect(TIMER_INTERRUPT, SDL_t0Service);
     alTimeCount = 0;
     SDL_SetTimerSpeed();
 }
@@ -233,7 +236,7 @@ void SD_Shutdown(void)
 {
     SD_MusicOff();
     SDL_SETTIMER0(0);
-    setvect(8, t0OldService);
+    setvect(TIMER_INTERRUPT, t0OldService);
 }
 
 // module: SOUNDFX

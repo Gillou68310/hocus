@@ -3,9 +3,8 @@
 
 void make_pc_sounds(void);
 void new_program(void);
-void main(int argc, unsigned char **argv);
 
-extern struct struct_70 db[236];
+extern struct_70 db[236];
 extern unsigned char keys[18];
 extern unsigned char *key_label[18];
 extern unsigned char pc_key[8];

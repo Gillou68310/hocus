@@ -148,7 +148,7 @@ void asm_show_background(unsigned char *srcp, unsigned char *destp)
                     if (bxs >= 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
                 else
@@ -156,61 +156,61 @@ void asm_show_background(unsigned char *srcp, unsigned char *destp)
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
             }
@@ -222,14 +222,14 @@ void asm_show_background(unsigned char *srcp, unsigned char *destp)
                 if (bxs >= 0x50)
                 {
                     bxs -= 0x50;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             mpos++;
         }
-        ofs += 0x4B0;
-        bofs += 0x500;
-        mpos += 0xDC;
+        ofs += VGA_PLANE_WIDTH * 15;
+        bofs += VGA_PLANE_WIDTH * 16;
+        mpos += 0xdc;
     }
 }
 
@@ -346,7 +346,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 if (bxs >= 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             else
@@ -354,31 +354,31 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
 
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
         }
@@ -390,13 +390,13 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
             if (bxs == 0x50)
             {
                 bxs = 0;
-                bofs -= 0x50;
+                bofs -= VGA_PLANE_WIDTH;
             }
             bxs++;
             if (bxs == 0x50)
             {
                 bxs = 0;
-                bofs -= 0x50;
+                bofs -= VGA_PLANE_WIDTH;
             }
         }
         mpos++;
@@ -512,7 +512,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                     if (bxs >= 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
                 else
@@ -520,59 +520,59 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
             }
@@ -584,7 +584,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 if (bxs >= 0x50)
                 {
                     bxs -= 0x50;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             mpos++;
@@ -667,7 +667,7 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 if (bxs >= 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             else
@@ -675,31 +675,31 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
 
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
         }
@@ -711,12 +711,12 @@ void asm_show_background_h(unsigned char *srcp, unsigned char *destp)
             if (bxs > 0x50)
             {
                 bxs -= 0x50;
-                bofs -= 0x50;
+                bofs -= VGA_PLANE_WIDTH;
             }
         }
-        ofs += 0x4B0;
-        bofs += 0x500;
-        mpos += 0xDC;
+        ofs += VGA_PLANE_WIDTH * 15;
+        bofs += VGA_PLANE_WIDTH * 16;
+        mpos += 0xdc;
     }
 }
 
@@ -775,16 +775,16 @@ void show_background(void)
                         vga[ofs] = vgap[3][bofs];
                         ofs++;
                         bofs++;
-                        ofs += 0x4C;
-                        bofs += 0x4C;
+                        ofs += VGA_PLANE_WIDTH - 4;
+                        bofs += VGA_PLANE_WIDTH - 4;
                     }
-                    ofs -= 0x4FC;
-                    bofs -= 0x4FC;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 4;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 4;
                     bxs += 4;
                     if (bxs >= 0x50)
                     {
                         bxs -= 0x50;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
                 else
@@ -792,61 +792,61 @@ void show_background(void)
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
             }
@@ -858,14 +858,14 @@ void show_background(void)
                 if (bxs >= 0x50)
                 {
                     bxs -= 0x50;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             mpos++;
         }
-        ofs += 0x4B0;
-        bofs += 0x500;
-        mpos += 0xDC;
+        ofs += VGA_PLANE_WIDTH * 15;
+        bofs += VGA_PLANE_WIDTH * 16;
+        mpos += 0xdc;
     }
 }
 
@@ -916,16 +916,16 @@ void show_background_h(void)
                     vga[ofs] = vgap[3][bofs];
                     ofs++;
                     bofs++;
-                    ofs += 0x4E;
-                    bofs += 0x4E;
+                    ofs += VGA_PLANE_WIDTH - 2;
+                    bofs += VGA_PLANE_WIDTH - 2;
                 }
-                ofs -= 0x4FE;
-                bofs -= 0x4FE;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 2;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 2;
                 bxs += 2;
                 if (bxs >= 0x50)
                 {
                     bxs -= 0x50;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             else
@@ -933,31 +933,31 @@ void show_background_h(void)
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
 
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
         }
@@ -969,13 +969,13 @@ void show_background_h(void)
             if (bxs == 0x50)
             {
                 bxs = 0;
-                bofs -= 0x50;
+                bofs -= VGA_PLANE_WIDTH;
             }
             bxs++;
             if (bxs == 0x50)
             {
                 bxs = 0;
-                bofs -= 0x50;
+                bofs -= VGA_PLANE_WIDTH;
             }
         }
         mpos++;
@@ -999,16 +999,16 @@ void show_background_h(void)
                         vga[ofs] = vgap[3][bofs];
                         ofs++;
                         bofs++;
-                        ofs += 0x4C;
-                        bofs += 0x4C;
+                        ofs += VGA_PLANE_WIDTH - 4;
+                        bofs += VGA_PLANE_WIDTH - 4;
                     }
-                    ofs -= 0x4fc;
-                    bofs -= 0x4fc;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 4;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 4;
                     bxs += 4;
                     if (bxs >= 0x50)
                     {
                         bxs -= 0x50;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
                 else
@@ -1016,59 +1016,59 @@ void show_background_h(void)
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
 
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
                         ofs += 0x50;
-                        bofs += 0x50;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                     for (i = 0; i < 16; i++)
                     {
                         vga[ofs] = vgap[3][bofs];
-                        ofs += 0x50;
-                        bofs += 0x50;
+                        ofs += VGA_PLANE_WIDTH;
+                        bofs += VGA_PLANE_WIDTH;
                     }
-                    ofs -= 0x4FF;
-                    bofs -= 0x4FF;
+                    ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                    bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                     bxs++;
                     if (bxs == 0x50)
                     {
                         bxs = 0;
-                        bofs -= 0x50;
+                        bofs -= VGA_PLANE_WIDTH;
                     }
                 }
             }
@@ -1080,7 +1080,7 @@ void show_background_h(void)
                 if (bxs >= 0x50)
                 {
                     bxs -= 0x50;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             mpos++;
@@ -1097,16 +1097,16 @@ void show_background_h(void)
                     vga[ofs] = vgap[3][bofs];
                     ofs++;
                     bofs++;
-                    ofs += 0x4E;
-                    bofs += 0x4E;
+                    ofs += VGA_PLANE_WIDTH - 2;
+                    bofs += VGA_PLANE_WIDTH - 2;
                 }
-                ofs -= 0x4fe;
-                bofs -= 0x4fe;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 2;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 2;
                 bxs += 2;
                 if (bxs >= 0x50)
                 {
                     bxs -= 0x50;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
             else
@@ -1114,31 +1114,31 @@ void show_background_h(void)
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
 
                 for (i = 0; i < 16; i++)
                 {
                     vga[ofs] = vgap[3][bofs];
-                    ofs += 0x50;
-                    bofs += 0x50;
+                    ofs += VGA_PLANE_WIDTH;
+                    bofs += VGA_PLANE_WIDTH;
                 }
-                ofs -= 0x4FF;
-                bofs -= 0x4FF;
+                ofs -= (VGA_PLANE_WIDTH * 16) - 1;
+                bofs -= (VGA_PLANE_WIDTH * 16) - 1;
                 bxs++;
                 if (bxs == 0x50)
                 {
                     bxs = 0;
-                    bofs -= 0x50;
+                    bofs -= VGA_PLANE_WIDTH;
                 }
             }
         }
@@ -1150,12 +1150,12 @@ void show_background_h(void)
             if (bxs > 0x50)
             {
                 bxs -= 0x50;
-                bofs -= 0x50;
+                bofs -= VGA_PLANE_WIDTH;
             }
         }
-        ofs += 0x4B0;
-        bofs += 0x500;
-        mpos += 0xDC;
+        ofs += VGA_PLANE_WIDTH * 15;
+        bofs += VGA_PLANE_WIDTH * 16;
+        mpos += 0xdc;
     }
 }
 

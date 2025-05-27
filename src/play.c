@@ -1,7 +1,5 @@
 #include <string.h>
 #include <stdlib.h>
-#include <dos.h>
-#include <mem.h>
 #include "common.h"
 #include "play.h"
 #include "play2.h"
@@ -13,13 +11,13 @@
 #include "joystick.h"
 #include "menus.h"
 
-int song2play[4][9] = {
+int song2play[GAME_COUNT][LEVEL_COUNT - 1] = {
     {3, 3, 4, 4, 0, 0, 2, 2, 2},
     {9, 9, 7, 7, 8, 8, 1, 1, 1},
     {4, 4, 0, 0, 7, 7, 6, 6, 6},
     {2, 2, 8, 8, 9, 9, 5, 5, 5}};
 
-int lrelev[4][10][2] = {
+int lrelev[GAME_COUNT][LEVEL_COUNT][2] = {
     {{-1, -1},
      {-1, -1},
      {-1, -1},
@@ -257,13 +255,13 @@ void scan_for_monster_hits(void)
             {
                 sx = hfirex[j];
                 sy = hfirey[j] + 2;
-                if ((sx != -0x63) && (sx >= mx1) && (sx <= mx2) &&
+                if ((sx != -99) && (sx >= mx1) && (sx <= mx2) &&
                     (sy >= my1) && (sy <= my2))
                 {
                     new_explosion(expx, expy);
                     if (hfirelaser[j] == 0)
                     {
-                        hfirex[j] = -0x63;
+                        hfirex[j] = -99;
                         hfireaway--;
                     }
                     if (mc_hits[i] == -2)
@@ -285,7 +283,7 @@ void scan_for_monster_hits(void)
                             new_explosion(expx, expy);
                             new_explosion(expx, expy);
                             mc_type[i] = -1;
-                            fnc[mc_org[i]] = 30000;
+                            fnc[mc_org[i]] = FNC_NONE;
                             monstershit++;
                         }
                     }
@@ -313,16 +311,24 @@ void clip_monsters(void)
         {
             kill = 0;
             if (mc_x[i] < (scrx * 2 - 0x32))
+            {
             label:
                 kill = 1;
+            }
             else
             {
                 if (mc_x[i] > (scrx * 2 + 0x78))
+                {
                     goto label;
-                if (mc_y[i] < (scry * 0x10 - 0x78))
+                }
+                if (mc_y[i] < (scry * 16 - 0x78))
+                {
                     goto label;
-                if (mc_y[i] > (scry * 0x10 + 0x1fe))
+                }
+                if (mc_y[i] > (scry * 16 + 0x1fe))
+                {
                     kill = 1;
+                }
             }
             if ((kill) && (mc_ohits[i] < 500))
             {
@@ -351,10 +357,14 @@ int new_monster(int spr_num, int x, int y, int offset)
     for (i = 0; i < 8; i++)
     {
         if (mc_type[i] == -1)
+        {
             break;
+        }
     }
     if (i == 8)
+    {
         return 0;
+    }
 
     sn = spr_num + 4;
     mc_begin[i] = 0x14;
@@ -392,7 +402,7 @@ int new_monster(int spr_num, int x, int y, int offset)
     mc_speed[i] = 1;
     mc_cnt[i] = 1;
     mc_charge[i] = 0;
-    mc_jump[i] = -0x63;
+    mc_jump[i] = -99;
     switch (mc_type[i])
     {
     case 8:
@@ -493,10 +503,14 @@ int new_shot(int x, int y, int d, int wait, int tag, int sn)
     for (i = 0; i < 8; i++)
     {
         if (sc_life[i] == -1)
+        {
             break;
+        }
     }
     if (i == 8)
+    {
         return 0;
+    }
 
     sc_pause[i] = wait;
     sc_dir[i] = 0;
@@ -519,7 +533,7 @@ int new_shot(int x, int y, int d, int wait, int tag, int sn)
     sc_yl[i] = sprite[sn].syl + 3;
     sc_frm[i] = sprite[sn].sfrs;
     sc_fend[i] = sprite[sn].sfre;
-    sc_life[i] = 0x7530;
+    sc_life[i] = 30000;
     sc_x[i] = x + xp;
     sc_y[i] = y + sprite[sn].sys;
     sc_spr[i] = sn;
@@ -555,13 +569,13 @@ void update_shots(void)
             if (sc_pause[i] == 0)
             {
                 mx = sc_x[i] - scrx * 2;
-                my = sc_y[i] - scry * 0x10;
+                my = sc_y[i] - scry * 16;
                 kill = 0;
-                if ((((mx < -10) || (0x50 < mx)) || (my < -0x14)) || (0xa0 < my))
+                if ((mx < -10) || (mx > 80) || (my < -20) || (my > 160))
                 {
                     kill = 1;
                 }
-                if (*(sld + (sc_y[i] / 0x10) * 0xf0 + sc_x[i] / 4) != 0xff)
+                if (*(sld + (sc_y[i] / 16) * 0xf0 + sc_x[i] / 4) != 0xff)
                 {
                     kill = 2;
                 }
@@ -678,7 +692,7 @@ void update_boss3(int i)
     else
     {
         mx = mc_x[i] - scrx * 2;
-        my = mc_y[i] - scry * 0x10;
+        my = mc_y[i] - scry * 16;
         if (mc_flash[i] % 2 != 0)
         {
             if (mc_frm[i] < 2)
@@ -763,7 +777,7 @@ void update_boss3(int i)
                 }
             }
         }
-        if (3 < mc_frm[i])
+        if (mc_frm[i] > 3)
         {
             mc_frm[i] = 0;
         }
@@ -813,7 +827,7 @@ void update_boss4(void)
             mc_dir[0] = 0;
         }
         mx = mc_x[0] - scrx * 2;
-        my = mc_y[0] - scry * 0x10;
+        my = mc_y[0] - scry * 16;
         if (mc_flash[0] % 2 != 0)
         {
             draw_rsprite(sn, sprite[sn].xw, mx, my, mc_dir[0], mc_frm[0]);
@@ -864,7 +878,7 @@ void update_boss4(void)
             {
                 b4p++;
                 mc_type[0] = -1;
-                new_monster(0, (b4x[b4p] << 2), (b4y[b4p] << 4), b4m[b4p]);
+                new_monster(0, (b4x[b4p] * 4), (b4y[b4p] * 16), b4m[b4p]);
                 mc_hits[0] = b4d[b4p + 3];
                 mc_dir[0] = b4d[b4p];
                 mc_xp[0] = 0;
@@ -929,7 +943,7 @@ void update_monsters(void)
                 update_boss3(i);
                 continue;
             }
-            if (mc_type[i] == 0x63)
+            if (mc_type[i] == 99)
             {
                 update_boss4();
                 continue;
@@ -945,13 +959,13 @@ void update_monsters(void)
                 {
                     ox = mc_x[i];
                     oy = mc_y[i];
-                    if (mc_jump[i] != -0x63)
+                    if (mc_jump[i] != -99)
                     {
                         mc_y[i] += mc_jump[i];
                         mc_jump[i]++;
                         if (mc_jump[i] == 7)
                         {
-                            mc_jump[i] = -0x63;
+                            mc_jump[i] = -99;
                             mc_frm[i] = 0;
                         }
                     }
@@ -959,18 +973,24 @@ void update_monsters(void)
                     {
                         mc_x[i] += mc_xp[i];
                         mc_y[i] += mc_yp[i];
-                        if (mc_jump[i] == -0x63)
+                        if (mc_jump[i] == -99)
                         {
                             mpos = mc_y[i] / 16 * 0xF0 + mc_x[i] / 4;
                             if (mc_dir[i] == 0)
+                            {
                                 mpos++;
+                            }
                             wmpos = mpos;
                             mxw = mc_xw[i] / 4;
                             if ((mc_x[i] % 4))
+                            {
                                 mxw++;
+                            }
                             myl = mc_yl[i] / 16;
                             if ((mc_y[i] % 16))
+                            {
                                 myl++;
+                            }
                             reset = 0;
                             for (y = 0; y < myl; y++)
                             {
@@ -978,7 +998,9 @@ void update_monsters(void)
                                 for (x = 0; x < mxw; x++)
                                 {
                                     if (sld[wmpos] != 0xff)
+                                    {
                                         reset = 1;
+                                    }
                                     wmpos++;
                                 }
                             }
@@ -988,7 +1010,9 @@ void update_monsters(void)
                     {
                     case 2:
                         if (mc_mdly[i] <= 0)
+                        {
                             reset = 1;
+                        }
                         if (reset != 0)
                         {
                             mc_x[i] = ox;
@@ -1011,14 +1035,16 @@ void update_monsters(void)
                                         mc_xp[i] = myrnd(2);
                                     }
                                 }
-                                mc_yp[i] = (myrnd(2) - myrnd(2)) << 2;
+                                mc_yp[i] = (myrnd(2) - myrnd(2)) * 4;
                             } while ((mc_xp[i] == 0) && (mc_yp[i] == 0));
                         }
                         mc_mdly[i]--;
                         break;
                     case 3:
                         if (mc_mdly[i] <= 0)
+                        {
                             reset = 1;
+                        }
                         if (reset != 0)
                         {
                             mc_x[i] = ox;
@@ -1027,8 +1053,9 @@ void update_monsters(void)
                             do
                             {
                                 mc_xp[i] = myrnd(2) - myrnd(2);
-                                mc_yp[i] = (myrnd(2) - myrnd(2)) << 2;
+                                mc_yp[i] = (myrnd(2) - myrnd(2)) * 4;
                             } while ((mc_xp[i] == 0) && (mc_yp[i] == 0));
+
                             if (mc_x[i] > hxbpos)
                             {
                                 mc_dir[i] = 1;
@@ -1042,7 +1069,10 @@ void update_monsters(void)
                         break;
                     case 6:
                         if (mc_mdly[i] <= 0)
+                        {
                             reset = 1;
+                        }
+
                         if (mc_x[i] > hxbpos)
                         {
                             mc_dir[i] = 1;
@@ -1051,6 +1081,7 @@ void update_monsters(void)
                         {
                             mc_dir[i] = 0;
                         }
+
                         if (reset != 0)
                         {
                             mc_x[i] = ox;
@@ -1059,7 +1090,7 @@ void update_monsters(void)
                             do
                             {
                                 mc_xp[i] = myrnd(2) - myrnd(2);
-                                mc_yp[i] = (myrnd(2) - myrnd(2)) << 2;
+                                mc_yp[i] = (myrnd(2) - myrnd(2)) * 4;
                                 mc_xp[i] *= 2;
                             } while ((mc_xp[i] == 0));
                         }
@@ -1072,13 +1103,16 @@ void update_monsters(void)
                             wmpos += mxw - 2;
                         }
                         if (sld[wmpos] == 0xff)
+                        {
                             reset = 1;
+                        }
 
                         if (reset != 0)
                         {
                             mc_x[i] = ox;
                             mc_y[i] = oy;
                             mc_dir[i] = !mc_dir[i];
+
                             if (mc_dir[i] == 0)
                             {
                                 mc_xp[i] = 1;
@@ -1098,6 +1132,7 @@ void update_monsters(void)
                             {
                                 mc_dir[i] = 0;
                             }
+
                             if (mc_dir[i] == 0)
                             {
                                 mc_xp[i] = 1;
@@ -1109,15 +1144,18 @@ void update_monsters(void)
                         }
                         break;
                     case 7:
-                        if (mc_jump[i] != -0x63)
+                        if (mc_jump[i] != -99)
                         {
                             wmpos = mpos + myl * 0xf0;
                             if (mc_dir[i] == 0)
                             {
                                 wmpos += mxw - 2;
                             }
+
                             if (sld[wmpos] == 0xff)
+                            {
                                 reset = 1;
+                            }
 
                             if (reset != 0)
                             {
@@ -1143,6 +1181,7 @@ void update_monsters(void)
                                 {
                                     mc_dir[i] = 0;
                                 }
+
                                 if (mc_dir[i] == 0)
                                 {
                                     mc_xp[i] = 1;
@@ -1157,8 +1196,9 @@ void update_monsters(void)
                         {
                             for (i = 0; i < 5; i++)
                             {
-                                if (hfirex[i] != -0x63)
+                                if (hfirex[i] != -99)
                                 {
+                                    // TODO: Is this correct?
                                     if (abs(((hfirex[i] - mc_x[i]) < 10)))
                                     {
                                         mc_jump[i] = -6;
@@ -1174,7 +1214,9 @@ void update_monsters(void)
                             wmpos += mxw - 2;
                         }
                         if (sld[wmpos] == 0xff)
+                        {
                             reset = 1;
+                        }
 
                         if (reset != 0)
                         {
@@ -1328,12 +1370,12 @@ void update_monsters(void)
                         mc_frm[i] = sprite[sn].afrs;
                     }
                 }
-                if (mc_jump[i] != -0x63)
+                if (mc_jump[i] != -99)
                 {
                     mc_frm[i] = sprite[sn].jfrs;
                 }
-                mx = mc_x[i] - (scrx << 1);
-                my = mc_y[i] - (scry << 4);
+                mx = mc_x[i] - (scrx * 2);
+                my = mc_y[i] - (scry * 16);
 
                 if ((mc_flash[i] % 2))
                 {
@@ -1350,11 +1392,11 @@ void update_monsters(void)
             }
             if (mc_begin[i] != 0)
             {
-                mx = (mc_x[i] - (scrx << 1)) + (mc_xw[i] / 2);
-                my = (mc_y[i] - (scry << 4)) + (mc_yl[i] / 2);
+                mx = (mc_x[i] - (scrx * 2)) + (mc_xw[i] / 2);
+                my = (mc_y[i] - (scry * 16)) + (mc_yl[i] / 2);
                 if (myrnd(5) == 0)
                 {
-                    new_twink(mx + myrnd(0x3) - myrnd(0x3), my + myrnd(0xC) - myrnd(0xC));
+                    new_twink(mx + myrnd(0x3) - myrnd(0x3), my + myrnd(0xc) - myrnd(0xc));
                 }
                 mc_begin[i]--;
             }
@@ -1462,14 +1504,14 @@ void load_sprites(void)
     // size: 2
     unsigned int pe;
 
-    for (s = 0; s < 10; s++)
+    for (s = 0; s < SPRITES_COUNT; s++)
     {
         if (sload[s] != -1)
         {
             pos = sload[s];
             point_to_data_record(0x4e);
-            fseek(databasefp, (pos * 0xDCu), 1);
-            fread(&sprite[s], 0xdc, 1, databasefp);
+            fseek(databasefp, (pos * sizeof(sprite_t)), 1);
+            fread(&sprite[s], sizeof(sprite_t), 1, databasefp);
             point_to_data_record(0x4e);
             fseek(databasefp, sprite[s].fpos, 1);
             fread(spr_code[s], sprite[s].codesize, 1, databasefp);
@@ -1480,7 +1522,7 @@ void load_sprites(void)
             pe = sprbase + sprite[s].datasize;
             for (i = sprbase; i < pe; i++)
             {
-                pixel(i % 0x140, i / 0x140, *(&buf64[i] - sprbase));
+                pixel(i % SCREEN_WIDTH, i / SCREEN_WIDTH, *(&buf64[i] - sprbase));
             }
             sprbase += sprite[s].datasize;
         }
@@ -1507,20 +1549,20 @@ void draw_sprite_nocheck(int snum, int x, int y, int dir, int frm)
 
     i = sprite[snum].codeofs[dir][frm];
     spnt = sdatabase[snum] + sprite[snum].dataofs[dir][frm];
-    dpnt = y * 0x50 + x;
+    dpnt = y * VGA_PLANE_WIDTH + x;
     latches(1);
 start:
     code = spr_code[snum][i++];
     if (code == 0)
     {
         enable_pixels(spr_code[snum][i]);
-        dpnt = y * 0x50 + x;
+        dpnt = y * VGA_PLANE_WIDTH + x;
         i++;
         goto start;
     }
     else if (code == 1)
     {
-        dpnt += *(signed short *)&spr_code[snum][i];
+        dpnt += *(int16_t *)&spr_code[snum][i];
         i += 2;
         goto start;
     }
@@ -1563,21 +1605,21 @@ void draw_sprite(int snum, int xw, int x, int y, int dir, int frm)
     px = py = 0;
     i = sprite[snum].codeofs[dir][frm];
     spnt = sdatabase[snum] + sprite[snum].dataofs[dir][frm];
-    dpnt = y * 0x50 + x;
+    dpnt = y * VGA_PLANE_WIDTH + x;
     latches(1);
 start:
     code = spr_code[snum][i++];
     if (code == 0)
     {
         enable_pixels(spr_code[snum][i]);
-        dpnt = y * 0x50 + x;
+        dpnt = y * VGA_PLANE_WIDTH + x;
         i++;
         px = py = 0;
         goto start;
     }
     else if (code == 1)
     {
-        j = *(signed short *)&spr_code[snum][i];
+        j = *(int16_t *)&spr_code[snum][i];
         i += 2;
         dpnt += j;
         px += j;
@@ -1591,7 +1633,9 @@ start:
     else if (code == 2)
     {
         if (px + x >= 0 && px + x < 0x50 && py + y >= 0 && py + y < 0xA0)
+        {
             vga[dpnt] = vgap[2][spnt];
+        }
         spnt++;
         dpnt++;
         px++;
@@ -1624,20 +1668,20 @@ void draw_wsprite_nocheck(int snum, int x, int y, int dir, int frm)
 
     i = sprite[snum].codeofs[dir][frm];
     spnt = whitedata;
-    dpnt = y * 0x50 + x;
+    dpnt = y * VGA_PLANE_WIDTH + x;
     latches(1);
 start:
     code = spr_code[snum][i++];
     if (code == 0)
     {
         enable_pixels(spr_code[snum][i]);
-        dpnt = y * 0x50 + x;
+        dpnt = y * VGA_PLANE_WIDTH + x;
         i++;
         goto start;
     }
     else if (code == 1)
     {
-        dpnt += *(signed short *)&spr_code[snum][i];
+        dpnt += *(int16_t *)&spr_code[snum][i];
         i += 2;
         goto start;
     }
@@ -1679,21 +1723,21 @@ void draw_wsprite(int snum, int xw, int x, int y, int dir, int frm)
     px = py = 0;
     i = sprite[snum].codeofs[dir][frm];
     spnt = whitedata;
-    dpnt = y * 0x50 + x;
+    dpnt = y * VGA_PLANE_WIDTH + x;
     latches(1);
 start:
     code = spr_code[snum][i++];
     if (code == 0)
     {
         enable_pixels(spr_code[snum][i]);
-        dpnt = y * 0x50 + x;
+        dpnt = y * VGA_PLANE_WIDTH + x;
         i++;
         px = py = 0;
         goto start;
     }
     else if (code == 1)
     {
-        j = *(signed short *)&spr_code[snum][i];
+        j = *(int16_t *)&spr_code[snum][i];
         i += 2;
         dpnt += j;
         px += j;
@@ -1707,7 +1751,9 @@ start:
     else if (code == 2)
     {
         if (px + x >= 0 && px + x < 0x50 && py + y >= 0 && py + y < 0xA0)
+        {
             vga[dpnt] = vgap[2][spnt];
+        }
         dpnt++;
         px++;
         if (px > xw)
@@ -1739,20 +1785,20 @@ void draw_rsprite_nocheck(int snum, int x, int y, int dir, int frm)
 
     i = sprite[snum].codeofs[dir][frm];
     spnt = reddata;
-    dpnt = y * 0x50 + x;
+    dpnt = y * VGA_PLANE_WIDTH + x;
     latches(1);
 start:
     code = spr_code[snum][i++];
     if (code == 0)
     {
         enable_pixels(spr_code[snum][i]);
-        dpnt = y * 0x50 + x;
+        dpnt = y * VGA_PLANE_WIDTH + x;
         i++;
         goto start;
     }
     else if (code == 1)
     {
-        dpnt += *(signed short *)&spr_code[snum][i];
+        dpnt += *(int16_t *)&spr_code[snum][i];
         i += 2;
         goto start;
     }
@@ -1794,21 +1840,21 @@ void draw_rsprite(int snum, int xw, int x, int y, int dir, int frm)
     px = py = 0;
     i = sprite[snum].codeofs[dir][frm];
     spnt = reddata;
-    dpnt = y * 0x50 + x;
+    dpnt = y * VGA_PLANE_WIDTH + x;
     latches(1);
 start:
     code = spr_code[snum][i++];
     if (code == 0)
     {
         enable_pixels(spr_code[snum][i]);
-        dpnt = y * 0x50 + x;
+        dpnt = y * VGA_PLANE_WIDTH + x;
         i++;
         px = py = 0;
         goto start;
     }
     else if (code == 1)
     {
-        j = *(signed short *)&spr_code[snum][i];
+        j = *(int16_t *)&spr_code[snum][i];
         i += 2;
         dpnt += j;
         px += j;
@@ -1822,7 +1868,9 @@ start:
     else if (code == 2)
     {
         if (px + x >= 0 && px + x < 0x50 && py + y >= 0 && py + y < 0xA0)
+        {
             vga[dpnt] = vgap[2][spnt];
+        }
         dpnt++;
         px++;
         if (px > xw)
@@ -1860,8 +1908,8 @@ void get_coords(void)
 
     oldscry = scry;
     oldscrx = scrx;
-    hxbpos = hxpos << 1;
-    hypos = hylpos / 0x10;
+    hxbpos = hxpos * 2;
+    hypos = hylpos / 16;
     scrxh = 0;
     if (snapcoords != 0)
     {
@@ -1908,14 +1956,16 @@ void get_coords(void)
                     scrx--;
                 }
                 if (hxpos % 2 != 0)
+                {
                     scrxh = 1;
+                }
 
                 scrxdif = (oldscrx - scrx) * 8;
                 for (i = 0; i < 8; i++)
                 {
                     if (expcnt[i] > 0)
                     {
-                        for (j = 0; j < 0x10; j++)
+                        for (j = 0; j < 16; j++)
                         {
                             exppos[i][j][0] += scrxdif;
                         }
@@ -1962,7 +2012,7 @@ void get_coords(void)
                     hstopjump = 1;
                 }
             }
-            scrydif = (oldscry - scry) * 0x10;
+            scrydif = (oldscry - scry) * 16;
             for (i = 0; i < 5; i++)
             {
                 hfirey[i] += scrydif;
@@ -1971,7 +2021,7 @@ void get_coords(void)
             {
                 if (expcnt[i] > 0)
                 {
-                    for (j = 0; j < 0x10; j++)
+                    for (j = 0; j < 16; j++)
                     {
                         exppos[i][j][1] += scrydif;
                     }
@@ -2003,7 +2053,7 @@ void get_coords(void)
         }
     }
     hxbspos = (hxpos - scrx) * 2;
-    hylspos = hylpos - scry * 0x10;
+    hylspos = hylpos - scry * 16;
 }
 
 // module: PLAY
@@ -2053,7 +2103,9 @@ void do_element_animation(void)
                 {
                     rndnum++;
                     if (rndnum > 999)
+                    {
                         rndnum = 0;
+                    }
 
                     ne = rnd[rndnum] % 3;
                     if (ne == 0)
@@ -2063,14 +2115,18 @@ void do_element_animation(void)
                             sld[mpos] = 0xff;
                             swe[mpos] = 0;
                             if (x < 0x14)
-                                new_twink(x * 4 - scrxh * 2, y << 4);
+                            {
+                                new_twink(x * 4 - scrxh * 2, y * 16);
+                            }
                         }
                         else if (e == 2)
                         {
                             sld[mpos] = sldsav[mpos];
                             swe[mpos] = 0;
                             if (x < 0x14)
-                                new_twink(x * 4 - scrxh * 2, y << 4);
+                            {
+                                new_twink(x * 4 - scrxh * 2, y * 16);
+                            }
                         }
                     }
                 }
@@ -2101,7 +2157,9 @@ void do_element_animation(void)
                     {
                         rndnum++;
                         if (rndnum > 999)
+                        {
                             rndnum = 0;
+                        }
                         if ((rnd[rndnum] % 0x14) == 0)
                         {
                             ne++;
@@ -2145,9 +2203,9 @@ void process_monster_reserve(void)
             e = fnc[mpos];
             y = mpos / 0xf0;
             x = mpos % 0xf0;
-            if (e != 30000)
+            if (e != FNC_NONE)
             {
-                if (new_monster(e - 0x6a, x * 4, y * 16, mpos) != 0)
+                if (new_monster(e - FNC_SPRITES_START, x * 4, y * 16, mpos) != 0)
                 {
                     mr_offset[i] = -1;
                 }
@@ -2187,7 +2245,9 @@ void new_explosion(int x, int y)
     }
     expnum++;
     if (expnum >= 8)
+    {
         expnum = 0;
+    }
 }
 
 // module: PLAY
@@ -2229,7 +2289,7 @@ void update_explosions(void)
                 {
                     outportb(0x3c5, 1 << (x % 4));
                     ((line_t)vga)[y][x >> 2] = expmisc[i][j][2];
-                    //*(vga+y*80+(x>>2)) = expmisc[i][j][2];
+                    //*(vga+y*VGA_PLANE_WIDTH+(x>>2)) = expmisc[i][j][2];
                 }
             }
             expcnt[i]--;
@@ -2432,8 +2492,8 @@ void show_panel_stats(void)
     do_fast_digit(0x3907, dumnum[0] - '0');
     itoa(crystals, dumnum, 10);
     do_fast_digit(0x390b, dumnum[0] - '0');
-    do_fast_key(0x38C5, 2);
-    do_fast_key(0x38C7, 2);
+    do_fast_key(0x38c5, 2);
+    do_fast_key(0x38c7, 2);
     if ((hskey + hgkey) > 1)
     {
         do_fast_key(0x38c5, 0);
@@ -2442,9 +2502,13 @@ void show_panel_stats(void)
     if ((hskey + hgkey) == 1)
     {
         if (hskey != 0)
+        {
             do_fast_key(0x38c6, 0);
+        }
         else
+        {
             do_fast_key(0x38c6, 1);
+        }
     }
 }
 
@@ -2460,7 +2524,7 @@ void count_crystals(void)
     crystals = 0;
     for (i = 0; i < 0x3840; i++)
     {
-        if ((fnc[i] < 0x17) && (ups[fnc[i]].powermode == 1))
+        if ((fnc[i] < (FNC_UPS_END + 1)) && (ups[fnc[i]].powermode == 1))
         {
             crystals++;
         }
@@ -2545,7 +2609,7 @@ void do_pause(void)
     if (game_config.joystick != 0)
     {
         gkey = 0x80;
-        while (((button1 == 0 && (button2 == 0)) && (gkey >= 0x80)))
+        while ((button1 == 0) && (button2 == 0) && (gkey >= 0x80))
         {
             JOY_PollButtons();
         }
@@ -2593,20 +2657,24 @@ void do_wiznote(int num)
         if (l != 0)
         {
             if (l > xl)
+            {
                 xl = l;
+            }
             nl++;
         }
         else
+        {
             break;
+        }
     }
     setapage(vpg);
-    sy = 0x50 - nl * 0xc;
+    sy = 0x50 - nl * 12;
     sx = 0xA0 - xl / 2;
 
     for (i = 0; i < nl; i++)
     {
-        pstrwiznote(sx + 1, sy + i * 0xc + 1, 1, wiznotes[num].text[i]);
-        pstrwiznote(sx, sy + i * 0xc, 0x68, wiznotes[num].text[i]);
+        pstrwiznote(sx + 1, sy + i * 12 + 1, 1, wiznotes[num].text[i]);
+        pstrwiznote(sx, sy + i * 12, 0x68, wiznotes[num].text[i]);
     }
 
     if (indemo == 0)
@@ -2614,7 +2682,7 @@ void do_wiznote(int num)
         if (game_config.joystick != 0)
         {
             gkey = 0x80;
-            while (((button1 == 0 && (button2 == 0)) && (gkey >= 0x80)))
+            while ((button1 == 0) && (button2 == 0) && (gkey >= 0x80))
             {
                 JOY_PollButtons();
             }
@@ -2690,7 +2758,7 @@ void do_function_check(void)
 
     mpos = hypos * 0xf0 + (hxpos + 1) / 2;
     x = hxbspos - 1;
-    y = hylspos - 0x10;
+    y = hylspos - 16;
     if (ouchcnt != 0)
     {
         ouchcnt--;
@@ -2701,9 +2769,9 @@ void do_function_check(void)
     {
         v = fnc[mpos];
         keep = 0;
-        if (v != 0x7530)
+        if (v != FNC_NONE)
         {
-            if (v < 0x17)
+            if (v < (FNC_UPS_END + 1))
             {
                 pm = ups[v].powermode;
                 if ((ups[v].add2health != 0) && (health < 100))
@@ -2722,23 +2790,23 @@ void do_function_check(void)
                         {
                             treasuresfound++;
                             vv = ups[v].add2score;
-                            if (vv == 0x64)
+                            if (vv == 100)
                             {
                                 new_stag(x, y, 0);
                             }
-                            else if (vv == 0xFA)
+                            else if (vv == 250)
                             {
                                 new_stag(x, y, 1);
                             }
-                            else if (vv == 0x1F4)
+                            else if (vv == 500)
                             {
                                 new_stag(x, y, 2);
                             }
-                            else if (vv == 0x3E8)
+                            else if (vv == 1000)
                             {
                                 new_stag(x, y, 3);
                             }
-                            else if (vv == 0x1388)
+                            else if (vv == 5000)
                             {
                                 new_stag(x, y, 4);
                             }
@@ -2763,7 +2831,9 @@ void do_function_check(void)
                         else if (pm == 9)
                         {
                             if ((hinvis == 0) && (skill != 3))
+                            {
                                 health = 0;
+                            }
                             keep = 1;
                         }
                         else if (pm == 3)
@@ -2787,7 +2857,9 @@ void do_function_check(void)
                                 new_stag(x, y, 7);
                             }
                             else
+                            {
                                 keep = 1;
+                            }
                         }
                         else if (pm == 5)
                         {
@@ -2843,29 +2915,35 @@ void do_function_check(void)
                     }
                 }
                 if (ups[v].add2shots != 0)
+                {
                     play_game_sound(9);
+                }
 
                 hfirepower += ups[v].add2shots;
                 if (hfirepower > 5)
+                {
                     hfirepower = 5;
+                }
 
                 if (hsupershot != 0)
                 {
                     holdshots += ups[v].add2shots;
                     if (holdshots > 5)
+                    {
                         holdshots = 5;
+                    }
                 }
                 score += ups[v].add2score;
                 health += ups[v].add2health;
                 if (keep == 0)
                 {
-                    fnc[mpos] = 0x7530;
+                    fnc[mpos] = FNC_NONE;
                     bkg[mpos] = anminfo.defaultbkg;
                 }
             }
-            else if (v < 0x21)
+            else if (v < (FNC_WARPS_END + 1))
             {
-                if (warps[v - 23].src == mpos)
+                if (warps[v - FNC_WARPS_START].src == mpos)
                 {
                     hinwarp = 1;
                     vv = v - 23;
@@ -2874,32 +2952,36 @@ void do_function_check(void)
                     hfrm = sprite[0].frs;
                     hjump = 0;
                     hylpos = (hylpos / 16) * 16;
-                    fnc[mpos] = 0x7530;
+                    fnc[mpos] = FNC_NONE;
                     bkg[mpos] = anminfo.defaultbkg;
                     play_game_sound(4);
                     new_stag(x, y, 6);
                 }
             }
-            else if (v < 0x38)
+            else if (v < (FNC_SWITCHES_END + 1))
             {
                 if (ukey != 0)
                 {
                     ukey = 0;
                     if (bkg[mpos] == anminfo.switchoff)
+                    {
                         bkg[mpos] = anminfo.switchon;
+                    }
                     else
+                    {
                         bkg[mpos] = anminfo.switchoff;
-                    vv = v - 0x21;
+                    }
+                    vv = v - FNC_SWITCHES_START;
                     for (j = 0; j < 4; j++)
                     {
                         if (switches[vv].condnum[j] != -1)
                         {
-                            j = 'c';
+                            j = 99;
                             break;
                         }
                     }
                     ok = 0;
-                    if (j == 'c')
+                    if (j == 99)
                     {
                         ok = 1;
                         for (j = 0; j < 4; j++)
@@ -2957,16 +3039,22 @@ void do_function_check(void)
                     }
                 }
             }
-            else if (v < 0x51)
+            else if (v < (FNC_RTRIPS_END + 1))
             {
-                vv = v - 0x38;
+                vv = v - FNC_RTRIPS_START;
                 j = 0;
                 if (rtrips[vv].keytype == 0)
+                {
                     j = 1;
+                }
                 if ((rtrips[vv].keytype == 1) && (hskey != 0))
+                {
                     j = 2;
+                }
                 if ((rtrips[vv].keytype == 2) && (hgkey != 0))
+                {
                     j = 3;
+                }
 
                 if (j != 0)
                 {
@@ -2982,11 +3070,15 @@ void do_function_check(void)
                             }
                         }
                     }
-                    fnc[mpos] = 0x7530;
+                    fnc[mpos] = FNC_NONE;
                     if (rtrips[vv].keytype == 0)
+                    {
                         bkg[mpos] = rtrips[vv].restore;
+                    }
                     else
+                    {
                         bkg[mpos] = anminfo.defaultbkg;
+                    }
 
                     if (j > 1)
                     {
@@ -3002,16 +3094,22 @@ void do_function_check(void)
                     hgkey = 0;
                 }
             }
-            else if (v < 0x6A)
+            else if (v < (FNC_ETRIPS_END + 1))
             {
-                vv = v - 0x51;
+                vv = v - FNC_ETRIPS_START;
                 j = 0;
                 if (etrips[vv].keytype == 0)
+                {
                     j = 1;
+                }
                 if ((etrips[vv].keytype == 1) && (hskey != 0))
+                {
                     j = 2;
+                }
                 if ((etrips[vv].keytype == 2) && (hgkey != 0))
+                {
                     j = 3;
+                }
 
                 if (j != 0)
                 {
@@ -3027,11 +3125,15 @@ void do_function_check(void)
                             }
                         }
                     }
-                    fnc[mpos] = 0x7530;
+                    fnc[mpos] = FNC_NONE;
                     if (etrips[vv].keytype == 0)
+                    {
                         bkg[mpos] = etrips[vv].restore;
+                    }
                     else
+                    {
                         bkg[mpos] = anminfo.defaultbkg;
+                    }
 
                     if (j > 1)
                     {
@@ -3047,16 +3149,16 @@ void do_function_check(void)
                     hgkey = 0;
                 }
             }
-            else if (v < 0x74)
+            else if (v < (FNC_SPRITES_END + 1))
             {
             }
-            else if (v <= 0x16D)
+            else if (v <= FNC_MTRIGGERS_END)
             {
-                vv = v - 0x74;
+                vv = v - FNC_MTRIGGERS_START;
                 for (j = 0; j < 8; j++)
                 {
                     ok = mtriggers[vv].rpos[j];
-                    if (fnc[ok] != 0x7530)
+                    if (fnc[ok] != FNC_NONE)
                     {
                         for (k = 0; k < 0x20; k++)
                         {
@@ -3137,9 +3239,13 @@ start:
     conshoot = conup = 0;
     demonum = 0;
     if (demomode == 2)
+    {
         indemo = 1;
+    }
     else
+    {
         indemo = 0;
+    }
     setapage(0);
     clearscreen();
     setapage(1);
@@ -3166,54 +3272,72 @@ start:
     hfirenum = 0;
 
     for (i = 0; i < 5; i++)
+    {
         hfirex[i] = -99;
+    }
 
     expnum = 0;
 
     for (i = 0; i < 8; i++)
+    {
         expcnt[i] = -1;
+    }
 
     for (i = 0; i < 8; i++)
+    {
         twinkpos[i][2] = 0;
+    }
 
     for (i = 0; i < 10; i++)
+    {
         stag[i][3] = 0;
+    }
 
     for (i = 0; i < 0x20; i++)
+    {
         mr_offset[i] = -1;
+    }
 
     for (i = 0; i < 8; i++)
+    {
         mc_type[i] = -1;
+    }
 
     for (i = 0; i < 8; i++)
+    {
         mc_org[i] = -1;
+    }
 
     for (i = 0; i < 8; i++)
+    {
         sc_life[i] = -1;
+    }
 
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x4f, &lvlinfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_LVLINFO, &lvlinfo);
     hxpos = lvlinfo.startx * 2;
     hylpos = lvlinfo.starty * 16;
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x58, &anminfo);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x61, wiznotes);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x6a, warps);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x73, switches);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x7c, rtrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x85, etrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x8e, mtags);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x97, mtriggers);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xa0, bkg);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xa9, sld);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xb2, sldsav);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xbb, fnc);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ANMINFO, &anminfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WIZNOTES, wiznotes);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WARPS, warps);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SWITCHES, switches);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_RTRIPS, rtrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ETRIPS, etrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTAGS, mtags);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTRIGGERS, mtriggers);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_BKG, bkg);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLD, sld);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLDSAV, sldsav);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
     setmem(swe, 0x3840, 0);
     treasures = treasuresfound = 0;
 
     for (i = 0; i < 0x3840; i++)
     {
         x = fnc[i];
-        if ((x >= 0) && (x <= 0x16) && (ups[x].add2score != 0))
+        if ((x >= FNC_UPS_START) && (x <= FNC_UPS_END) && (ups[x].add2score != 0))
+        {
             treasures++;
+        }
     }
 
     monsters = monstershit = 0;
@@ -3221,8 +3345,10 @@ start:
     for (i = 0; i < 0x3840; i++)
     {
         x = fnc[i];
-        if ((x >= 0x6a) && (x <= 0x73) && (mtags[x - 0x6a].tokill != -1))
+        if ((x >= FNC_SPRITES_START) && (x <= FNC_SPRITES_END) && (mtags[x - FNC_SPRITES_START].tokill != -1))
+        {
             monsters++;
+        }
     }
     setapage(3);
     load_pcx(plat_pcx_ofs[game][level] + 0x49, 1);
@@ -3232,18 +3358,19 @@ start:
     for (i = 0; i < 0x118; i++)
     {
         latches(0);
-        if (pixel_clr(i % 0x14 << 4, i / 0x14 << 4) == 0xff)
+        if (pixel_clr((i % 0x14) * 16, (i / 0x14) * 16) == 0xff)
         {
-            sprbase = s << 2;
+            sprbase = s * 4;
             break;
         }
         latches(1);
         enable_pixels(0xf);
-        for (y = 0; y < 0x10; y++)
+        for (y = 0; y < 16; y++)
         {
             for (x = 0; x < 4; x++)
             {
-                vgap[2][s] = *(vga + (y + (i / 0x14) * 0x10) * 0x50 + (i % 0x14) * 4 + x);
+                vgap[2][s] = ((line_t)vga)[(y + (i / 0x14) * 16)][(i % 0x14) * 4 + x];
+                // vgap[2][s] = *(vga + (y + (i / 0x14) * 16) * VGA_PLANE_WIDTH + (i % 0x14) * 4 + x);
                 s++;
             }
         }
@@ -3257,7 +3384,9 @@ start:
     sprbase += 4;
 
     for (i = 0; i < 10; i++)
+    {
         sload[i] = -1;
+    }
 
     sload[0] = 0;
     sload[1] = 1;
@@ -3305,7 +3434,7 @@ start:
     if (demomode == 2)
     {
         load_file_to_byte_pointer(level / 2 + 0xf, buf64);
-        demolimit = *(int *)buf64;
+        demolimit = *(int16_t *)buf64;
     }
     if ((game == 3) && (level == 8))
     {
@@ -3368,10 +3497,10 @@ start:
             hdead--;
             if ((myrnd(4) == 0) && (hdead > 0x19))
             {
-                new_explosion((hxbspos * 4 + myrnd(10) + 0xc) - myrnd(10), (hylspos + myrnd(10) + 0x10) - myrnd(10));
-                new_twink((hxbspos + myrnd(3)) - myrnd(3), (hylspos + myrnd(0xc)) - myrnd(0xc));
-                new_explosion((hxbspos * 4 + myrnd(10) + 0xc) - myrnd(10), (hylspos + myrnd(10) + 0x10) - myrnd(10));
-                new_twink((hxbspos + myrnd(3)) - myrnd(3), (hylspos + myrnd(0xc)) - myrnd(0xc));
+                new_explosion((hxbspos * 4 + myrnd(10) + 12) - myrnd(10), (hylspos + myrnd(10) + 16) - myrnd(10));
+                new_twink((hxbspos + myrnd(3)) - myrnd(3), (hylspos + myrnd(12)) - myrnd(12));
+                new_explosion((hxbspos * 4 + myrnd(10) + 12) - myrnd(10), (hylspos + myrnd(10) + 16) - myrnd(10));
+                new_twink((hxbspos + myrnd(3)) - myrnd(3), (hylspos + myrnd(12)) - myrnd(12));
                 play_game_sound(10);
             }
         }
@@ -3420,27 +3549,41 @@ start:
                     hfrm = sprite[0].jfre;
                 }
                 if (hylspos < 0)
+                {
                     draw_sprite(0, sprite[0].xw, hxbspos, hylspos, hdir, hfrm);
+                }
                 if (ouchcnt % 2 != 0)
                 {
                     if (hylspos < 0)
+                    {
                         draw_rsprite(0, sprite[0].xw, hxbspos, hylspos, hdir, hfrm);
+                    }
                     else
+                    {
                         draw_rsprite_nocheck(0, hxbspos, hylspos, hdir, hfrm);
+                    }
                 }
                 else if (hsupershot % 2 != 0)
                 {
                     if (hylspos < 0)
+                    {
                         draw_wsprite(0, sprite[0].xw, hxbspos, hylspos, hdir, hfrm);
+                    }
                     else
+                    {
                         draw_wsprite_nocheck(0, hxbspos, hylspos, hdir, hfrm);
+                    }
                 }
                 else
                 {
                     if (hylspos < 0)
+                    {
                         draw_sprite(0, sprite[0].xw, hxbspos, hylspos, hdir, hfrm);
+                    }
                     else
+                    {
                         draw_sprite_nocheck(0, hxbspos, hylspos, hdir, hfrm);
+                    }
                 }
             }
             else if (hinwarp < 5)
@@ -3455,23 +3598,23 @@ start:
             {
                 draw_sprite_nocheck(2, hxbspos, hylspos, hdir, 2);
             }
-            else if (hinwarp < 0x14)
+            else if (hinwarp < 20)
             {
                 draw_sprite_nocheck(2, hxbspos, hylspos, hdir, 3);
             }
-            else if (hinwarp <= 0x19)
+            else if (hinwarp <= 25)
             {
                 draw_sprite_nocheck(2, hxbspos, hylspos + myrnd(2) - myrnd(2), hdir, 4);
             }
-            else if (hinwarp < 0x1e)
+            else if (hinwarp < 30)
             {
                 draw_sprite_nocheck(2, hxbspos, hylspos, hdir, 3);
             }
-            else if (hinwarp < 0x23)
+            else if (hinwarp < 35)
             {
                 draw_sprite_nocheck(2, hxbspos, hylspos, hdir, 2);
             }
-            else if (hinwarp < 0x28)
+            else if (hinwarp < 40)
             {
                 draw_sprite_nocheck(2, hxbspos, hylspos, hdir, 1);
             }
@@ -3533,65 +3676,85 @@ start:
         }
         if (demomode == 2)
         {
-            memcpy(&demo, &((struct struct_172 *)(buf64 + sizeof(int)))[demonum], sizeof(struct struct_172));
+            memcpy(&demo, &((struct_172 *)(buf64 + sizeof(int)))[demonum], sizeof(struct_172));
             fkey = demo.fkey;
             jkey = demo.jkey;
             lkey = demo.lkey;
             rkey = demo.rkey;
             ukey = demo.ukey;
             if (fkey)
+            {
                 fkeyclr = 0;
+            }
             else
+            {
                 fkeyclr = 1;
+            }
             if (ukey)
+            {
                 ukeyclr = 0;
+            }
             else
+            {
                 ukeyclr = 1;
+            }
             demonum++;
         }
         if (!fkeyclr)
+        {
             conshoot = 1;
+        }
         else
+        {
             conshoot = 0;
+        }
         if (!ukeyclr)
+        {
             conup = 1;
+        }
         else
+        {
             conup = 0;
+        }
 
-        if ((((hinwarp == 0) && (hdead == 0)) && (hdone == 0)) &&
-            ((game_config.joystick != 0 && (indemo == 0))))
+        if ((hinwarp == 0) && (hdead == 0) && (hdone == 0) &&
+            (game_config.joystick != 0) && (indemo == 0))
         {
             lkey = rkey = ukey = dkey = 0;
             JoyX = JoyY = button1 = button2 = 0;
             JOY_PollButtons();
             JOY_PollMovement();
-            if (JoyX == -0x32)
+            if (JoyX == -50)
             {
                 lkey = 1;
             }
-            if (JoyX == 0x32)
+            if (JoyX == 50)
             {
                 rkey = 1;
             }
-            if ((JoyY == -0x32) && (ukeyclr != 0))
+            if ((JoyY == -50) && (ukeyclr != 0))
             {
                 ukey = 1;
                 ukeyclr = 0;
                 conup = 1;
             }
-            if (JoyY != -0x32)
+            if (JoyY != -50)
             {
                 ukeyclr = 1;
                 conup = 0;
             }
-            if (JoyY == 0x32)
+            if (JoyY == 50)
             {
                 dkey = 1;
             }
             if (button1 != 0)
+            {
                 conshoot = 1;
+            }
             else
+            {
                 conshoot = 0;
+            }
 
             if (button1 == 0)
             {
@@ -3683,7 +3846,7 @@ start:
                 {
                     if (hfired[i] == 0)
                     {
-                        mpos = ((hfirey[i] / 0x10 + scry) * 0xf0) +
+                        mpos = ((hfirey[i] / 16 + scry) * 0xf0) +
                                (hfirex[i] / 4) + scrmx + 1;
                         if (sld[mpos] == anminfo.bustblock)
                         {
@@ -3706,9 +3869,9 @@ start:
                             hfirex[i] = -99;
                             hfireaway--;
                         }
-                        else if (*(sld + mpos + 0xf1) == anminfo.bustblock)
+                        else if (*(sld + mpos + (0xf0 + 1)) == anminfo.bustblock)
                         {
-                            *(sld + mpos + 0xf1) = -1;
+                            *(sld + mpos + (0xf0 + 1)) = -1;
                             new_twink((hfirex[i] + 6 - scrxh * 2), hfirey[i] + 8);
                             hfirex[i] = -99;
                             hfireaway--;
@@ -3723,7 +3886,7 @@ start:
                         {
                             if (hfireup[i] != 0)
                             {
-                                hfirey[i] -= 0x10;
+                                hfirey[i] -= 16;
                             }
                             else
                             {
@@ -3737,15 +3900,19 @@ start:
                             else
                             {
                                 if (hfireup[i])
+                                {
                                     draw_sprite(0, sprite[0].sxw, hfirex[i], hfirey[i], hfired[i], sprite[0].sfrs + 1);
+                                }
                                 else
+                                {
                                     draw_sprite(0, sprite[0].sxw, hfirex[i], hfirey[i], hfired[i], sprite[0].sfrs);
+                                }
                             }
                         }
                     }
                     else
                     {
-                        mpos = ((hfirey[i] / 0x10 + scry) * 0xf0) +
+                        mpos = ((hfirey[i] / 16 + scry) * 0xf0) +
                                (hfirex[i] / 4) + scrmx;
                         if (sld[mpos] == anminfo.bustblock)
                         {
@@ -3768,9 +3935,9 @@ start:
                             hfirex[i] = -99;
                             hfireaway--;
                         }
-                        else if (*(sld + mpos + 0xef) == anminfo.bustblock)
+                        else if (*(sld + mpos + (0xf0 - 1)) == anminfo.bustblock)
                         {
-                            *(sld + mpos + 0xef) = -1;
+                            *(sld + mpos + (0xf0 - 1)) = -1;
                             new_twink((hfirex[i] - 4 - scrxh * 2), hfirey[i] + 8);
                             hfirex[i] = -99;
                             hfireaway--;
@@ -3785,7 +3952,7 @@ start:
                         {
                             if (hfireup[i] != 0)
                             {
-                                hfirey[i] -= 0x10;
+                                hfirey[i] -= 16;
                             }
                             else
                             {
@@ -3799,9 +3966,13 @@ start:
                             else
                             {
                                 if (hfireup[i])
+                                {
                                     draw_sprite(0, sprite[0].sxw, hfirex[i], hfirey[i], hfired[i], sprite[0].sfrs + 1);
+                                }
                                 else
+                                {
                                     draw_sprite(0, sprite[0].sxw, hfirex[i], hfirey[i], hfired[i], sprite[0].sfrs);
+                                }
                             }
                         }
                     }
@@ -3810,12 +3981,12 @@ start:
                 {
                     if (hfired[i] == 0)
                     {
-                        mpos = ((hfirey[i] / 0x10 + scry) * 0xf0) +
+                        mpos = ((hfirey[i] / 16 + scry) * 0xf0) +
                                (hfirex[i] / 4) + scrmx;
                     }
                     else
                     {
-                        mpos = ((hfirey[i] / 0x10 + scry) * 0xf0) +
+                        mpos = ((hfirey[i] / 16 + scry) * 0xf0) +
                                (hfirex[i] / 4) + scrmx + 1;
                     }
                     if (sld[mpos] != 0xff)
@@ -3828,7 +3999,7 @@ start:
                     {
                         if (hfireup[i] != 0)
                         {
-                            hfirey[i] -= 0x10;
+                            hfirey[i] -= 16;
                         }
                         else
                         {
@@ -3842,9 +4013,13 @@ start:
                         else
                         {
                             if (hfireup[i])
+                            {
                                 draw_sprite(0, sprite[0].sxw, hfirex[i], hfirey[i], hfired[i], sprite[0].sfrs + 1);
+                            }
                             else
+                            {
                                 draw_sprite(0, sprite[0].sxw, hfirex[i], hfirey[i], hfired[i], sprite[0].sfrs);
+                            }
                         }
                     }
                 }
@@ -3852,7 +4027,7 @@ start:
         }
         if (hinwarp == 0)
         {
-            if ((((jkey != 0) && (hjump == 0)) && (hstopjump == 0)) && (hfall == 0))
+            if ((jkey != 0) && (hjump == 0) && (hstopjump == 0) && (hfall == 0))
             {
                 if (demomode == 1)
                 {
@@ -3877,18 +4052,18 @@ start:
                     play_game_sound(4);
                 }
             }
-            if (((hjump != 0) && (hdead == 0)) && (hdone == 0))
+            if ((hjump != 0) && (hdead == 0) && (hdone == 0))
             {
                 if (hjumppos < hjumpposlimit)
                 {
                     hylpos += hjumpadd[hjumppos];
-                    hypos = hylpos / 0x10;
+                    hypos = hylpos / 16;
                     mpos = (hypos * 0xf0 + (hxpos + 1) / 2);
                     if (sld[mpos] != 0xff)
                     {
                         hjumppos = (hjumpposlimit - 1) - hjumppos;
                         hylpos += hjumpadd[hjumppos];
-                        hypos = hylpos / 0x10;
+                        hypos = hylpos / 16;
                     }
                     hjumppos++;
                     if (hjumppos >= hjumpposlimit)
@@ -3901,13 +4076,13 @@ start:
                     hjump = 0;
                 }
             }
-            mpos = (hypos * 0xf0 + (hxpos + 1) / 2) + 0x1e0;
+            mpos = (hypos * 0xf0 + (hxpos + 1) / 2) + 0xf0 * 2;
             if (sld[mpos] != 0xff)
             {
                 if ((hjump != 0) && (hjumppos >= hjumpposmid))
                 {
                     hjump = 0;
-                    hylpos = hypos << 4;
+                    hylpos = hypos * 16;
                 }
                 hfall = 0;
             }
@@ -3915,21 +4090,23 @@ start:
             {
                 if ((hjump == 0) && (hdead == 0) && (hdone == 0))
                 {
-                    hylpos += 0x10;
+                    hylpos += 16;
                     if (*(sld + mpos + 0xf0) == 0xff)
+                    {
                         hfall = 1;
+                    }
                 }
             }
             hmleft = hmright = hwuleft = hwuright = 0;
             mpos = (hypos * 0xf0 + hxpos / 2);
-            i = hylpos % 0x10;
+            i = hylpos % 16;
             if (i == 0)
             {
                 if ((*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) == 0xff))
                 {
                     hmleft = 1;
                 }
-                if (((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff)) && (*(sld + mpos + 0xf0) != 0xff))
+                if ((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) != 0xff))
                 {
                     hwuleft = 1;
                 }
@@ -3938,27 +4115,27 @@ start:
                 {
                     hmright = 1;
                 }
-                if (((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff)) && (*(sld + mpos + 0xf0) != 0xff))
+                if ((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) != 0xff))
                 {
                     hwuright = 1;
                 }
             }
             else
             {
-                if ((*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) == 0xff) && (*(sld + mpos + 0x1e0) == 0xff))
+                if ((*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) == 0xff) && (*(sld + mpos + 0xf0 * 2) == 0xff))
                 {
                     hmleft = 1;
                 }
-                if (((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff)) && (*(sld + mpos + 0xf0) != 0xff))
+                if ((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) != 0xff))
                 {
                     hwuleft = 1;
                 }
                 mpos = (hypos * 0xf0 + (hxpos + 2) / 2);
-                if ((*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) == 0xff) && (*(sld + mpos + 0x1e0) == 0xff))
+                if ((*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) == 0xff) && (*(sld + mpos + 0xf0 * 2) == 0xff))
                 {
                     hmright = 1;
                 }
-                if (((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff)) && (*(sld + mpos + 0xf0) != 0xff))
+                if ((*(sld + mpos - 0xf0) == 0xff) && (*(sld + mpos) == 0xff) && (*(sld + mpos + 0xf0) != 0xff))
                 {
                     hwuright = 1;
                 }
@@ -3991,7 +4168,7 @@ start:
                 else if (hwuleft != 0)
                 {
                     hxpos--;
-                    hylpos -= 0x10;
+                    hylpos -= 16;
                     hwalking = 1;
                     hfrm++;
                     if (hfrm > sprite[0].mfre)
@@ -4023,7 +4200,7 @@ start:
                 else if (hwuright != 0)
                 {
                     hxpos++;
-                    hylpos -= 0x10;
+                    hylpos -= 16;
                     hwalking = 1;
                     hfrm++;
                     if (hfrm > sprite[0].mfre)
@@ -4035,25 +4212,27 @@ start:
             if ((uppressed == 0) && (lelevator != -1))
             {
                 i = 0;
-                mpos = (hypos * 0xf0 + (hxpos + 1) / 2) + 0x1E0;
+                mpos = (hypos * 0xf0 + (hxpos + 1) / 2) + 0xf0 * 2;
                 if ((sld[mpos] == lelevator) || (sld[mpos] == relevator))
                 {
                     if (sld[mpos] == relevator)
+                    {
                         mpos--;
+                    }
                     if ((cukey != 0) || (ukey != 0))
                     {
                         if (demomode == 1)
                         {
                             demo.ukey = 1;
                         }
-                        mpos -= 0x2d0;
+                        mpos -= 0xf0 * 3;
                         ukey = 0;
                         ukeyclr = 1;
                         if ((*(sld + mpos) == 0xff) && (*(sld + mpos + 1) == 0xff))
                         {
-                            hylpos -= 0x10;
-                            mpos += 0x2d0;
-                            mpos2 = mpos - 240;
+                            hylpos -= 16;
+                            mpos += 0xf0 * 3;
+                            mpos2 = mpos - 0xf0;
                             *(sld + mpos2) = sld[mpos];
                             sld[mpos] = 0xff;
                             *(sld + mpos2 + 1) = *(sld + mpos + 1);
@@ -4067,8 +4246,8 @@ start:
                             mpos += 0xf0;
                             if ((sld[mpos] == 0xff) && (*(sld + mpos + 1) == 0xff))
                             {
-                                hylpos += 0x10;
-                                mpos2 = mpos - 240;
+                                hylpos += 16;
+                                mpos2 = mpos - 0xf0;
                                 *(sld + mpos) = sld[mpos2];
                                 sld[mpos2] = 0xff;
                                 *(sld + mpos + 1) = *(sld + mpos2 + 1);
@@ -4108,11 +4287,11 @@ start:
             {
                 if (hylpos < hwarpdy)
                 {
-                    hylpos += 0x10;
+                    hylpos += 16;
                 }
                 if (hylpos > hwarpdy)
                 {
-                    hylpos -= 0x10;
+                    hylpos -= 16;
                 }
                 if (hxpos < hwarpdx)
                 {
@@ -4124,12 +4303,12 @@ start:
                 }
             }
         }
-        if (((pgdnkey != 0) && (ylevel > 0)) && (scrolldelay == 0))
+        if ((pgdnkey != 0) && (ylevel > 0) && (scrolldelay == 0))
         {
             ylevel--;
             scrolldelay = 0;
         }
-        if (((pgupkey != 0) && (ylevel < 8)) && (scrolldelay == 0))
+        if ((pgupkey != 0) && (ylevel < 8) && (scrolldelay == 0))
         {
             ylevel++;
             scrolldelay = 0;
@@ -4250,7 +4429,7 @@ start:
             {
                 demo.ukey = 1;
             }
-            memcpy(&((struct struct_172 *)(buf64 + sizeof(int)))[demonum], &demo, sizeof(struct struct_172));
+            memcpy(&((struct_172 *)(buf64 + sizeof(int16_t)))[demonum], &demo, sizeof(struct_172));
             demonum++;
         }
     }
@@ -4258,8 +4437,8 @@ start:
     total_ticks = clk_times;
     if (demomode == 1)
     {
-        *((int *)buf64) = demonum;
-        save_disk_file("demo13.lvl", buf64, demonum * sizeof(struct struct_172) + sizeof(int));
+        *((int16_t *)buf64) = demonum;
+        save_disk_file("demo13.lvl", buf64, demonum * sizeof(struct_172) + sizeof(int16_t));
     }
     fade_out(0x14);
     if (done != 2)

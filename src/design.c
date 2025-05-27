@@ -1,23 +1,26 @@
 #include <string.h>
-#include <conio.h>
 #include <stdlib.h>
-#include <mem.h>
 #include "common.h"
 #include "gr.h"
 #include "menus.h"
 #include "fileio.h"
 #include "soundfx.h"
 
+#define LAYER_BKG 0
+#define LAYER_SLD 1
+#define LAYER_FNC 2
+#define LAYER_COUNT 3
+
 // addr: 192E:13B6
 // size: 12
-unsigned char *mode_label[3] = {
+unsigned char *mode_label[LAYER_COUNT] = {
     "[BKG]",
     "[SLD]",
     "[FNC]"};
 
 // addr: 192E:13C2
 // size: 966
-struct struct_130 ups[23] = {
+ups_t ups[UPS_COUNT] = {
     {"Ruby", 100, 0, 0, 0},
     {"Diamond", 250, 0, 0, 0},
     {"Goblet", 500, 0, 0, 0},
@@ -44,7 +47,7 @@ struct struct_130 ups[23] = {
 
 // addr: 192E:1788
 // size: 80
-int plat_pcx_ofs[4][10] = {
+int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT] = {
     {0, 0, 1, 1, 2, 2, 3, 3, 3, 0},
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
@@ -52,7 +55,7 @@ int plat_pcx_ofs[4][10] = {
 
 // addr: 192E:17D8
 // size: 80
-int lvl_info_ofs[4][10] = {
+int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT] = {
     {0, 1, 2, 3, 4, 5, 6, 7, 8, 0},
     {9, 10, 11, 12, 13, 14, 15, 16, 17, 0},
     {18, 19, 20, 21, 22, 23, 24, 25, 26, 0},
@@ -60,7 +63,7 @@ int lvl_info_ofs[4][10] = {
 
 // addr: 192E:1828
 // size: 80
-int bdrop_pcxpal_ofs[4][10] = {
+int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT] = {
     {0, 0, 1, 1, 2, 2, 3, 3, 3, 0},
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
@@ -74,7 +77,7 @@ void set_all_layers(int on)
     // register: DX
     // size: 2
     int i;
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < LAYER_COUNT; i++)
     {
         layer[i] = on;
     }
@@ -100,18 +103,18 @@ void make_status_line(void)
     strcat(dline, ":");
     strcat(dline, itoa(dy, dummy, 10));
     strcat(dline, "/");
-    strcat(dline, itoa(dy * 0xF0 + dx, dummy, 10));
+    strcat(dline, itoa(dy * 0xf0 + dx, dummy, 10));
     strcat(dline, "/");
     strcat(dline, mode_label[mode]);
-    if (layer[0] != 0)
+    if (layer[LAYER_BKG] != 0)
     {
         strcat(dline, "/BKG");
     }
-    if (layer[1] != 0)
+    if (layer[LAYER_SLD] != 0)
     {
         strcat(dline, "/SLD");
     }
-    if (layer[2] != 0)
+    if (layer[LAYER_FNC] != 0)
     {
         strcat(dline, "/FNC");
     }
@@ -119,22 +122,24 @@ void make_status_line(void)
     {
         strcat(dline, "-BLK-");
     }
-    clearbox(0, 0xa0, 0x4f, 199);
+    clearbox(0, 0xa0, 0x4f, 0xc7);
     pstrs(0, 0xa0, 3, dline);
-    i = *(fnc + dy * 240 + dx);
+    i = *(fnc + dy * 0xf0 + dx);
 
-    if (i == 0x7530)
-        return;
-
-    if ((i >= 0) && (i <= 0x16))
+    if (i == FNC_NONE)
     {
-        pstr(0, 0xA8, 2, &ups[i]);
+        return;
     }
-    else if ((i >= 0x17) && (i <= 0x20))
+
+    if ((i >= FNC_UPS_START) && (i <= FNC_UPS_END))
+    {
+        pstr(0, 0xa8, 2, ups[i].tag);
+    }
+    else if ((i >= FNC_WARPS_START) && (i <= FNC_WARPS_END))
     {
         strcpy(dline, "Warp ");
-        strcat(dline, itoa(i - 22, dumnum, 10));
-        if ((dy * 240 + dx) == warps[i - 23].src)
+        strcat(dline, itoa(i - (FNC_WARPS_START - 1), dumnum, 10));
+        if ((dy * 0xf0 + dx) == warps[i - FNC_WARPS_START].src)
         {
             strcat(dline, " SRC");
         }
@@ -144,33 +149,33 @@ void make_status_line(void)
         }
         pstr(0, 0xA8, 3, dline);
     }
-    else if ((i >= 0x21) && (i <= 0x37))
+    else if ((i >= FNC_SWITCHES_START) && (i <= FNC_SWITCHES_END))
     {
         strcpy(dline, "Switch ");
-        strcat(dline, itoa(i - 0x20, dumnum, 10));
+        strcat(dline, itoa(i - (FNC_SWITCHES_START - 1), dumnum, 10));
         pstr(0, 0xA8, 3, dline);
     }
-    else if ((i >= 0x38) && (i <= 0x50))
+    else if ((i >= FNC_RTRIPS_START) && (i <= FNC_RTRIPS_END))
     {
         strcpy(dline, "Restore Trip ");
-        strcat(dline, itoa(i - 0x37, dumnum, 10));
+        strcat(dline, itoa(i - (FNC_RTRIPS_START - 1), dumnum, 10));
         pstr(0, 0xA8, 3, dline);
     }
-    else if ((i >= 0x51) && (i <= 0x69))
+    else if ((i >= FNC_ETRIPS_START) && (i <= FNC_ETRIPS_END))
     {
         strcpy(dline, "Blank (erase) Trip ");
-        strcat(dline, itoa(i - 0x50, dumnum, 10));
+        strcat(dline, itoa(i - (FNC_ETRIPS_START - 1), dumnum, 10));
         pstr(0, 0xA8, 3, dline);
     }
-    else if ((i >= 0x6a) && (i <= 0x73))
+    else if ((i >= FNC_SPRITES_START) && (i <= FNC_SPRITES_END))
     {
-        strcpy(dline, sprite[i - 0x6a].name);
+        strcpy(dline, sprite[i - FNC_SPRITES_START].name);
         pstr(0, 0xA8, 3, dline);
     }
-    else if ((i >= 0x74) && (i <= 0x16d))
+    else if ((i >= FNC_MTRIGGERS_START) && (i <= FNC_MTRIGGERS_END))
     {
         strcpy(dline, "Monster trigger ");
-        strcat(dline, itoa(i - 0x73, dumnum, 10));
+        strcat(dline, itoa(i - (FNC_MTRIGGERS_START - 1), dumnum, 10));
         pstr(0, 0xA8, 3, dline);
     }
 }
@@ -191,12 +196,12 @@ void show_marker_cursor(int x, int y, int c)
     enable_pixels(0xf);
     for (i = 0; i < 4; i++)
     {
-        //*(vga + (y * 16) * 0x50 + x * 4 + i) = c;
+        //*(vga + (y * 16) * VGA_PLANE_WIDTH + x * 4 + i) = c;
         ((line_t)vga)[y * 16][x * 4 + i] = c;
     }
     for (i = 0; i < 4; i++)
     {
-        //*(vga + (y * 0x10 + 0xf) * 0x50 + x * 4 + i) = c;
+        //*(vga + (y * 16 + 0xf) * VGA_PLANE_WIDTH + x * 4 + i) = c;
         ((line_t)vga)[y * 16 + 0xf][x * 4 + i] = c;
     }
 }
@@ -307,41 +312,41 @@ void show_design_screen(void)
     trim_coords();
     showswitchrange = 0;
     v = *(fnc + dy * 0xf0 + dx);
-    if ((v >= '!') && (v <= '7'))
+    if ((v >= FNC_SWITCHES_START) && (v <= FNC_SWITCHES_END))
     {
         showswitchrange = 1;
-        v -= '!';
+        v -= FNC_SWITCHES_START;
         slx = switches[v].dlx;
         sty = switches[v].dty;
         srx = switches[v].drx;
         sby = switches[v].dby;
     }
-    else if ((v >= '8') && (v <= 'P'))
+    else if ((v >= FNC_RTRIPS_START) && (v <= FNC_RTRIPS_END))
     {
-        vv = v - '8';
+        vv = v - FNC_RTRIPS_START;
         if ((rtrips[vv].dlx != -1) &&
             (rtrips[vv].drx != -1) &&
             (rtrips[vv].dty != -1) &&
             (rtrips[vv].dby != -1))
         {
             showswitchrange = 1;
-            v -= '8';
+            v -= FNC_RTRIPS_START;
             slx = rtrips[v].dlx;
             sty = rtrips[v].dty;
             srx = rtrips[v].drx;
             sby = rtrips[v].dby;
         }
     }
-    else if ((v >= 'Q') && (v <= 'i'))
+    else if ((v >= FNC_ETRIPS_START) && (v <= FNC_ETRIPS_END))
     {
-        vv = v - 'Q';
+        vv = v - FNC_ETRIPS_START;
         if ((etrips[vv].dlx != -1) &&
             (etrips[vv].drx != -1) &&
             (etrips[vv].dty != -1) &&
             (etrips[vv].dby != -1))
         {
             showswitchrange = 1;
-            v -= 'Q';
+            v -= FNC_ETRIPS_START;
             slx = etrips[v].dlx;
             sty = etrips[v].dty;
             srx = etrips[v].drx;
@@ -356,7 +361,7 @@ void show_design_screen(void)
             ofs = ((sdy + y) * 0xf0) + sdx + x;
             latches(1);
             enable_pixels(0xf);
-            if ((layer[0] != 0) && (bkg[ofs] != 0xff))
+            if ((layer[LAYER_BKG] != 0) && (bkg[ofs] != 0xff))
             {
                 v = bkg[ofs];
                 blank = 0;
@@ -365,7 +370,7 @@ void show_design_screen(void)
                     MCPY(&((line_t)vga)[y * 16 + py][x * 4], &((line_t)vgap[1])[(v / 0x14) * 16 + py][(v % 0x14) * 4], 4);
                 }
             }
-            if ((layer[1] != 0) && (sld[ofs] != 0xff))
+            if ((layer[LAYER_SLD] != 0) && (sld[ofs] != 0xff))
             {
                 v = sld[ofs];
                 blank = 0;
@@ -376,46 +381,46 @@ void show_design_screen(void)
             }
             if (blank != 0)
             {
-                clearbox(x << 2, y << 4, x * 4 + 3, y * 0x10 + 0xf);
+                clearbox(x * 4, y * 16, x * 4 + 3, y * 16 + 0xf);
             }
-            if ((((block != 0) && (blx <= (sdx + x))) && ((sdx + x) <= brx)) &&
-                ((bty <= (sdy + y) && ((sdy + y) <= bby))))
+            if ((block != 0) && (blx <= (sdx + x)) && ((sdx + x) <= brx) &&
+                (bty <= (sdy + y)) && ((sdy + y) <= bby))
             {
                 show_marker_cursor(x, y, 2);
             }
-            if (((showswitchrange) && (slx <= (sdx + x))) && (((sdx + x) <= srx &&
-                                                               ((sty <= (sdy + y) && ((sdy + y) <= sby))))))
+            if ((showswitchrange) && (slx <= (sdx + x)) && ((sdx + x) <= srx) &&
+                                                               (sty <= (sdy + y)) && ((sdy + y) <= sby))
             {
                 show_marker_cursor(x, y, 0x58);
             }
-            if (layer[2] != 0)
+            if (layer[LAYER_FNC] != 0)
             {
                 v = fnc[ofs];
-                if ((v >= 0) && (v <= 0x16))
+                if ((v >= FNC_UPS_START) && (v <= FNC_UPS_END))
                 {
                     show_marker_cursor(x, y, 8);
                 }
-                if ((v >= 0x17) && (v <= 0x20))
+                if ((v >= FNC_WARPS_START) && (v <= FNC_WARPS_END))
                 {
-                    show_marker_cursor(x, y, 0x10);
+                    show_marker_cursor(x, y, 16);
                 }
-                if ((v >= 0x21) && (v <= 0x37))
-                {
-                    show_marker_cursor(x, y, 8);
-                }
-                if ((v >= 0x38) && (v <= 0x50))
+                if ((v >= FNC_SWITCHES_START) && (v <= FNC_SWITCHES_END))
                 {
                     show_marker_cursor(x, y, 8);
                 }
-                if ((v >= 0x51) && (v <= 0x69))
+                if ((v >= FNC_RTRIPS_START) && (v <= FNC_RTRIPS_END))
                 {
                     show_marker_cursor(x, y, 8);
                 }
-                if ((v >= 0x6a) && (v <= 0x73))
+                if ((v >= FNC_ETRIPS_START) && (v <= FNC_ETRIPS_END))
+                {
+                    show_marker_cursor(x, y, 8);
+                }
+                if ((v >= FNC_SPRITES_START) && (v <= FNC_SPRITES_END))
                 {
                     show_marker_cursor(x, y, 0x58);
                 }
-                if ((v >= 0x74) && (v <= 0x16d))
+                if ((v >= FNC_MTRIGGERS_START) && (v <= FNC_MTRIGGERS_END))
                 {
                     show_marker_cursor(x, y, 0x70);
                 }
@@ -448,19 +453,19 @@ void pick_from_palette(void)
         if (!key)
         {
             key = getch();
-            if (key == 'M')
+            if (key == KEY_RIGHT)
             {
                 palette_pnt++;
             }
-            if (key == 'K')
+            if (key == KEY_LEFT)
             {
                 palette_pnt--;
             }
-            if (key == 'H')
+            if (key == KEY_UP)
             {
                 palette_pnt -= 0x14;
             }
-            if (key == 'P')
+            if (key == KEY_DOWN)
             {
                 palette_pnt += 0x14;
             }
@@ -494,12 +499,12 @@ int pick_power_up(void)
     // size: 1
     unsigned char key;
 
-    for (i = 0; i < 0x17; i++)
+    for (i = 0; i < UPS_COUNT; i++)
     {
         strcpy(dline, " ) ");
         dline[0] = i + 'A';
         strcat(dline, ups[i].tag);
-        pstr(0, i << 3, 3, dline);
+        pstr(0, i * 8, 3, dline);
     }
     while (1)
     {
@@ -511,8 +516,10 @@ int pick_power_up(void)
             goto loop;
         }
 
-        if (key == 0x1b)
+        if (key == KEY_ESCAPE)
+        {
             return -1;
+        }
         if ((key >= 'a') && (key < 'x'))
         {
             return key - 'a';
@@ -532,7 +539,7 @@ int pick_warp(void)
     // size: 1
     unsigned char key;
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < WARPS_COUNT; i++)
     {
         strcpy(dline, " ) ");
         dline[0] = i + 'A';
@@ -543,7 +550,7 @@ int pick_warp(void)
         strcat(dline, itoa(warps[i].src, dumnum, 10));
         strcat(dline, " ");
         strcat(dline, itoa(warps[i].dest, dumnum, 10));
-        pstr(0, i << 3, 3, dline);
+        pstr(0, i * 8, 3, dline);
     }
     while (1)
     {
@@ -555,11 +562,13 @@ int pick_warp(void)
             goto loop;
         }
 
-        if (key == 0x1b)
+        if (key == KEY_ESCAPE)
+        {
             return -1;
+        }
         if ((key >= 'a') && (key < 'k'))
         {
-            return key - 'J';
+            return key - 'a' + FNC_WARPS_START;
         }
     }
 }
@@ -585,7 +594,7 @@ void pick_switch(void)
     // size: 1
     unsigned char key;
 
-    for (i = 0; i < 0x17; i++)
+    for (i = 0; i < SWITCHES_COUNT; i++)
     {
         strcpy(dline, " ) ");
         dline[0] = i + 'A';
@@ -603,7 +612,7 @@ void pick_switch(void)
         {
             strcat(dline, " used");
         }
-        pstr(0, i << 3, 3, dline);
+        pstr(0, i * 8, 3, dline);
     }
     while (1)
     {
@@ -614,13 +623,15 @@ void pick_switch(void)
             getch();
             goto loop;
         }
-        if (key == 0x1b)
+        if (key == KEY_ESCAPE)
+        {
             break;
+        }
 
         if ((key >= 'a') && (key < 'x'))
         {
             l = key - 'a';
-            *(fnc + dy * 0xf0 + dx) = l + '!';
+            *(fnc + dy * 0xf0 + dx) = l + FNC_SWITCHES_START;
             switches[l].dlx = blx;
             switches[l].dty = bty;
             switches[l].drx = brx;
@@ -706,7 +717,7 @@ void pick_switch(void)
                     }
                     switches[l].condnum[m] = dy * 0xf0 + dx;
                 }
-                if (key == 0x1b)
+                if (key == KEY_ESCAPE)
                 {
                     return;
                 }
@@ -730,7 +741,7 @@ void pick_rtrip(void)
     // size: 1
     unsigned char key;
 
-    for (i = 0; i < 0x19; i++)
+    for (i = 0; i < RTRIPS_COUNT; i++)
     {
         strcpy(dline, " ) ");
         dline[0] = i + 'A';
@@ -738,13 +749,21 @@ void pick_rtrip(void)
         strcat(dline, itoa(i + 1, dumnum, 10));
         l = 0;
         if (rtrips[i].dlx != -1)
+        {
             l = 1;
+        }
         if (rtrips[i].drx != -1)
+        {
             l = 1;
+        }
         if (rtrips[i].dty != -1)
+        {
             l = 1;
+        }
         if (rtrips[i].dby != -1)
+        {
             l = 1;
+        }
 
         if (l)
         {
@@ -765,7 +784,7 @@ void pick_rtrip(void)
                 strcat(dline, " Gold key");
             }
         }
-        pstr(0, i << 3, 3, dline);
+        pstr(0, i * 8, 3, dline);
     }
 loop:
     key = getch();
@@ -774,12 +793,12 @@ loop:
         getch();
         goto loop;
     }
-    if (key != 0x1b)
+    if (key != KEY_ESCAPE)
     {
         if ((key >= 'a') && (key < 'z'))
         {
             l = key - 'a';
-            *(fnc + dy * 0xf0 + dx) = l + '8';
+            *(fnc + dy * 0xf0 + dx) = l + FNC_RTRIPS_START;
             rtrips[l].restore = *(bkg + dy * 0xf0 + dx);
             rtrips[l].dlx = blx;
             rtrips[l].dty = bty;
@@ -829,7 +848,7 @@ void pick_etrip(void)
     // size: 1
     unsigned char key;
 
-    for (i = 0; i < 0x19; i++)
+    for (i = 0; i < ETRIPS_COUNT; i++)
     {
         strcpy(dline, " ) ");
         dline[0] = i + 'A';
@@ -837,13 +856,21 @@ void pick_etrip(void)
         strcat(dline, itoa(i + 1, dumnum, 10));
         l = 0;
         if (etrips[i].dlx != -1)
+        {
             l = 1;
+        }
         if (etrips[i].drx != -1)
+        {
             l = 1;
+        }
         if (etrips[i].dty != -1)
+        {
             l = 1;
+        }
         if (etrips[i].dby != -1)
+        {
             l = 1;
+        }
 
         if (l)
         {
@@ -864,7 +891,7 @@ void pick_etrip(void)
                 strcat(dline, " Gold key");
             }
         }
-        pstr(0, i << 3, 3, dline);
+        pstr(0, i * 8, 3, dline);
     }
 loop:
     key = getch();
@@ -873,12 +900,12 @@ loop:
         getch();
         goto loop;
     }
-    if (key != 0x1b)
+    if (key != KEY_ESCAPE)
     {
         if ((key >= 'a') && (key < 'z'))
         {
             l = key - 'a';
-            *(fnc + dy * 0xf0 + dx) = l + 'Q';
+            *(fnc + dy * 0xf0 + dx) = l + FNC_ETRIPS_START;
             etrips[l].restore = *(bkg + dy * 0xf0 + dx);
             etrips[l].dlx = blx;
             etrips[l].dty = bty;
@@ -935,8 +962,8 @@ void load_tag_sprites(void)
         {
             pos = mtags[i].mnum;
             point_to_data_record(0x4e);
-            fseek(databasefp, (pos * sizeof(struct struct_159)), 1);
-            fread(&sprite[s], sizeof(struct struct_159), 1, databasefp);
+            fseek(databasefp, (pos * sizeof(sprite_t)), 1);
+            fread(&sprite[s], sizeof(sprite_t), 1, databasefp);
             s++;
         }
     }
@@ -957,7 +984,7 @@ void pick_mtag(void)
     // size: 1
     unsigned char key;
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < MTAGS_COUNT; i++)
     {
         if (mtags[i].mnum != -1)
         {
@@ -966,7 +993,7 @@ void pick_mtag(void)
             strcat(dline, sprite[i].name);
             strcat(dline, " ");
             strcat(dline, itoa(mtags[i].type, dumnum, 10));
-            pstr(0, i << 3, 3, dline);
+            pstr(0, i * 8, 3, dline);
         }
         else
         {
@@ -980,14 +1007,14 @@ loop:
         getch();
         goto loop;
     }
-    if (key == 0x1b)
+    if (key == KEY_ESCAPE)
     {
         return;
     }
     if ((key >= 'a') && (key < 'a' + i))
     {
         l = key - 'a';
-        *(fnc + dy * 0xf0 + dx) = l + 'j';
+        *(fnc + dy * 0xf0 + dx) = l + FNC_SPRITES_START;
     }
 }
 
@@ -1022,7 +1049,7 @@ void pick_mtrig(void)
     unsigned char key;
 
     start = 0;
-    for (i = 0; i < 0x19; i++)
+    for (i = 0; i < 25; i++)
     {
         strcpy(dline, " ) ");
         dline[0] = i + 'A';
@@ -1040,7 +1067,7 @@ void pick_mtrig(void)
         {
             strcat(dline, " used");
         }
-        pstr(0, i << 3, 3, dline);
+        pstr(0, i * 8, 3, dline);
     }
 loop:
     key = getch();
@@ -1049,24 +1076,24 @@ loop:
         getch();
         goto loop;
     }
-    if (key == 0x1b)
+    if (key == KEY_ESCAPE)
     {
         return;
     }
     if ((key >= 'a') && (key < 'z'))
     {
         l = start + key - 'a';
-        *(fnc + dy * 0xf0 + dx) = l + 't';
+        *(fnc + dy * 0xf0 + dx) = l + FNC_MTRIGGERS_START;
         j = 0;
         for (y = bty; y <= bby; y++)
         {
             for (x = blx; x <= brx; x++)
             {
                 mpos = y * 0xf0 + x;
-                if ((fnc[mpos] >= 'j') && (fnc[mpos] <= 's'))
+                if ((fnc[mpos] >= FNC_SPRITES_START) && (fnc[mpos] <= FNC_SPRITES_END))
                 {
                     mtriggers[l].rpos[j] = mpos;
-                    mtriggers[l].mnum[j] = fnc[mpos] - 'j';
+                    mtriggers[l].mnum[j] = fnc[mpos] - FNC_SPRITES_START;
                     j++;
                     if (j > 7)
                     {
@@ -1085,11 +1112,11 @@ loop:
                 strcat(dline, sprite[mtriggers[l].mnum[j]].name);
                 strcat(dline, " ");
                 strcat(dline, itoa(mtriggers[l].rpos[j], dumnum, 10));
-                pstr(0, j << 3, 3, dline);
+                pstr(0, j * 8, 3, dline);
             }
             else
             {
-                pstr(0, j << 3, 3, "Dip");
+                pstr(0, j * 8, 3, "Dip");
             }
         }
         getch();
@@ -1137,22 +1164,22 @@ void design(void)
     palette_pnt = 0;
     blx = brx = bty = bby = 0;
     block = 0;
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x4f, &lvlinfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_LVLINFO, &lvlinfo);
     dx = lvlinfo.startx;
     dy = lvlinfo.starty;
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x58, &anminfo.defaultbkg);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x6a, warps);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x73, &switches[0].effect);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x7c, rtrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x85, etrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x8e, mtags);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ANMINFO, &anminfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WARPS, warps);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SWITCHES, switches);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_RTRIPS, rtrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ETRIPS, etrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTAGS, mtags);
     load_tag_sprites();
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0x97, mtriggers);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xa0, bkg);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xa9, sld);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xb2, sldsav);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTRIGGERS, mtriggers);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_BKG, bkg);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLD, sld);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLDSAV, sldsav);
     memcpy(sld, sldsav, 0x3840);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + 0xbb, fnc);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
     setmem(swe, 0x3840, 0);
     setapage(1);
     load_pcx(plat_pcx_ofs[game][level] + 0x49, 0);
@@ -1168,7 +1195,7 @@ void design(void)
         if (!key)
         {
             key = getch();
-            if (key == 0x16)
+            if (key == KEY_ALT_U)
             {
                 x = pick_power_up();
                 if (x != -1)
@@ -1176,125 +1203,127 @@ void design(void)
                     *(fnc + dy * 0xf0 + dx) = x;
                 }
             }
-            if (key == 0x11)
+            if (key == KEY_ALT_W)
             {
                 x = pick_warp();
                 if (x != -1)
                 {
                     *(fnc + dy * 0xf0 + dx) = x;
-                    warps[x - 23].src = dy * 0xf0 + dx;
+                    warps[x - FNC_WARPS_START].src = dy * 0xf0 + dx;
                 }
             }
-            if (key == 0x12)
+            if (key == KEY_ALT_E)
             {
                 x = pick_warp();
                 if (x != -1)
                 {
                     *(fnc + dy * 0xf0 + dx) = x;
-                    warps[x - 23].dest = dy * 0xf0 + dx;
+                    warps[x - FNC_WARPS_START].dest = dy * 0xf0 + dx;
                 }
             }
-            if (key == ',')
+            if (key == KEY_ALT_Z)
             {
                 x = dy * 0xf0 + dx;
                 y = fnc[x];
-                if ((y >= 0x17) && (y <= 0x20))
+                if ((y >= FNC_WARPS_START) && (y <= FNC_WARPS_END))
                 {
-                    if (warps[y - 23].src == x)
+                    if (warps[y - FNC_WARPS_START].src == x)
                     {
-                        dy = warps[y - 23].dest / 0xf0;
-                        dx = warps[y - 23].dest % 0xf0;
+                        dy = warps[y - FNC_WARPS_START].dest / 0xf0;
+                        dx = warps[y - FNC_WARPS_START].dest % 0xf0;
                     }
-                    else if (warps[y - 23].dest == x)
+                    else if (warps[y - FNC_WARPS_START].dest == x)
                     {
-                        dy = warps[y - 23].src / 0xf0;
-                        dx = warps[y - 23].src % 0xf0;
+                        dy = warps[y - FNC_WARPS_START].src / 0xf0;
+                        dx = warps[y - FNC_WARPS_START].src % 0xf0;
                     }
                 }
             }
-            if (key == '\x1f')
+            if (key == KEY_ALT_S)
             {
                 pick_switch();
             }
-            if (key == '\x13')
+            if (key == KEY_ALT_R)
             {
                 pick_rtrip();
             }
-            if (key == '0')
+            if (key == KEY_ALT_B)
             {
                 pick_etrip();
             }
-            if (key == '2')
+            if (key == KEY_ALT_M)
             {
                 pick_mtag();
             }
-            if (key == '\x14')
+            if (key == KEY_ALT_T)
             {
                 pick_mtrig();
             }
-            if (key == 'K')
+            if (key == KEY_LEFT)
             {
                 dx--;
             }
-            if (key == 'M')
+            if (key == KEY_RIGHT)
             {
                 dx++;
             }
-            if (key == 'H')
+            if (key == KEY_UP)
             {
                 dy--;
             }
-            if (key == 'P')
+            if (key == KEY_DOWN)
             {
                 dy++;
             }
-            if (key == 'G')
+            if (key == KEY_HOME)
             {
                 dx--;
                 dy--;
             }
-            if (key == 'I')
+            if (key == KEY_PGUP)
             {
                 dx++;
                 dy--;
             }
-            if (key == 'Q')
+            if (key == KEY_PGDN)
             {
                 dx++;
                 dy++;
             }
-            if (key == 'O')
+            if (key == KEY_END)
             {
                 dx--;
                 dy++;
             }
-            if (key == ';')
+            if (key == KEY_F1)
             {
                 mode++;
                 if (mode >= 3)
+                {
                     mode = 0;
+                }
             }
-            if (key == '<')
+            if (key == KEY_F2)
             {
-                layer[0] = !layer[0];
+                layer[LAYER_BKG] = !layer[LAYER_BKG];
             }
-            if (key == '=')
+            if (key == KEY_F3)
             {
-                layer[1] = !layer[1];
+                layer[LAYER_SLD] = !layer[LAYER_SLD];
             }
-            if (key == '>')
+            if (key == KEY_F4)
             {
-                layer[2] = !layer[2];
+                layer[LAYER_FNC] = !layer[LAYER_FNC];
             }
-            if (key == '@')
+            if (key == KEY_F6)
             {
-                *(fnc + dy * 0xf0 + dx) = 6;
+                *(fnc + dy * 0xf0 + dx) = FNC_UPS_HURT;
             }
-            if (key == 'A')
+            if (key == KEY_F7)
             {
-                *(fnc + dy * 0xf0 + dx) = 0xe;
+                *(fnc + dy * 0xf0 + dx) = FNC_UPS_KILL;
             }
-            if (key == 'D')
+            if (key == KEY_F10)
             {
                 done = 1;
             }
@@ -1341,7 +1370,7 @@ void design(void)
             {
                 pick_from_palette();
             }
-            if (key == ' ')
+            if (key == KEY_SPACE)
             {
                 if (mode == 0)
                 {
@@ -1364,69 +1393,69 @@ void design(void)
                 }
                 if (mode == 2)
                 {
-                    *(fnc + dy * 0xf0 + dx) = 30000;
+                    *(fnc + dy * 0xf0 + dx) = FNC_NONE;
                 }
             }
             if (key == 's')
             {
                 lvlinfo.startx = dx;
                 lvlinfo.starty = dy;
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x4f, &lvlinfo);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_LVLINFO, &lvlinfo);
                 strcpy(dline, "LVLINF");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, &lvlinfo, 8);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x6a, warps);
+                save_disk_file(dline, &lvlinfo, sizeof(lvlinfo));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WARPS, warps);
                 strcpy(dline, "WARPS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, warps, 0x28);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x73, &switches[0].effect);
+                save_disk_file(dline, warps, sizeof(warps));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SWITCHES, switches);
                 strcpy(dline, "SWITCH");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, &switches[0].effect, 0x1fa);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x7c, rtrips);
+                save_disk_file(dline, switches, sizeof(switches));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_RTRIPS, rtrips);
                 strcpy(dline, "RTRIPS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, rtrips, 300);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x85, etrips);
+                save_disk_file(dline, rtrips, sizeof(rtrips));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ETRIPS, etrips);
                 strcpy(dline, "ETRIPS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, etrips, 300);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x8e, mtags);
+                save_disk_file(dline, etrips, sizeof(etrips));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTAGS, mtags);
                 strcpy(dline, "MTAGS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, mtags, 0xf0);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0x97, mtriggers);
+                save_disk_file(dline, mtags, sizeof(mtags));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTRIGGERS, mtriggers);
                 strcpy(dline, "MTRIGS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
-                save_disk_file(dline, mtriggers, 8000);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0xa0, bkg);
+                save_disk_file(dline, mtriggers, sizeof(mtriggers));
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_BKG, bkg);
                 strcpy(dline, "BKG");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, bkg, 0x3840);
                 memcpy(sldsav, sld, 0x3840);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0xb2, sldsav);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLDSAV, sldsav);
                 strcpy(dline, "SLDSAV");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, sldsav, 0x3840);
-                for (i = 0; i < 0x17; i++)
+                for (i = 0; i < SWITCHES_COUNT; i++)
                 {
                     x = 0;
                     for (y = 0; y < 4; y++)
@@ -1447,7 +1476,7 @@ void design(void)
                         }
                     }
                 }
-                for (i = 0; i < 0x19; i++)
+                for (i = 0; i < RTRIPS_COUNT; i++)
                 {
                     x = 0;
                     if (rtrips[i].dlx != -1)
@@ -1477,14 +1506,14 @@ void design(void)
                         }
                     }
                 }
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0xa9, sld);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLD, sld);
                 strcpy(dline, "SLD");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, sld, 0x3840);
                 memcpy(sld, sldsav, 0x3840);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + 0xbb, fnc);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
                 strcpy(dline, "FNC");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
@@ -1525,15 +1554,15 @@ void design(void)
                 {
                     for (x = blx; x <= brx; x++)
                     {
-                        if (layer[0] != 0)
+                        if (layer[LAYER_BKG] != 0)
                         {
                             *(bkg + ((dy + y) - bty) * 0xf0 + dx + x - blx) = *(bkg + y * 0xf0 + x);
                         }
-                        if (layer[1] != 0)
+                        if (layer[LAYER_SLD] != 0)
                         {
                             *(sld + ((dy + y) - bty) * 0xf0 + dx + x - blx) = *(sld + y * 0xf0 + x);
                         }
-                        if (layer[2] != 0)
+                        if (layer[LAYER_FNC] != 0)
                         {
                             *(fnc + ((dy + y) - bty) * 0xf0 + dx + x - blx) = *(fnc + y * 0xf0 + x);
                         }

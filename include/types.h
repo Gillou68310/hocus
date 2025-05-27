@@ -2,53 +2,53 @@
 #define __TYPES_H__
 
 // size: 956
-struct struct_31
+typedef struct config_t
 {
     // offset: 0 (2 bytes)
-    int soundfx;
+    int16_t soundfx;
     // offset: 2 (2 bytes)
-    int music;
+    int16_t music;
     // offset: 4 (2 bytes)
-    int joystick;
+    int16_t joystick;
     // offset: 6 (2 bytes)
-    unsigned int jxmin;
+    uint16_t jxmin;
     // offset: 8 (2 bytes)
-    unsigned int jxmax;
+    uint16_t jxmax;
     // offset: 10 (2 bytes)
-    unsigned int jymin;
+    uint16_t jymin;
     // offset: 12 (2 bytes)
-    unsigned int jymax;
+    uint16_t jymax;
     // offset: 14 (8 bytes)
     unsigned char pckey[8];
     // offset: 22 (18 bytes)
-    int game[9];
+    int16_t game[9];
     // offset: 40 (18 bytes)
-    int level[9];
+    int16_t level[9];
     // offset: 58 (18 bytes)
-    int skill[9];
+    int16_t skill[9];
     // offset: 76 (234 bytes)
     unsigned char gname[9][26];
     // offset: 310 (9 bytes)
     unsigned char firepower[9];
     // offset: 320 (36 bytes)
-    long score[9];
+    int32_t score[9];
     // offset: 356 (520 bytes)
-    unsigned char hname[4][5][26];
+    unsigned char hname[GAME_COUNT][5][26];
     // offset: 876 (80 bytes)
-    long hiscore[4][5];
-};
+    int32_t hiscore[GAME_COUNT][5];
+} config_t;
 
 // size: 4
-struct struct_46
+typedef struct grphdr_t
 {
     // offset: 0 (2 bytes)
-    int xw;
+    int16_t xw;
     // offset: 2 (2 bytes)
-    int yw;
-};
+    int16_t yw;
+} grphdr_t;
 
 // size: 724
-struct struct_59
+typedef struct anminfo_t
 {
     // offset: 0 (1 bytes)
     unsigned char defaultbkg;
@@ -60,29 +60,29 @@ struct struct_59
     unsigned char bustblock;
     // offset: 4 (720 bytes)
     unsigned char v[240][3];
-};
+} anminfo_t;
 
 // size: 8
-struct struct_62
+typedef struct lvlinfo_t
 {
     // offset: 0 (2 bytes)
-    int bdrop_num;
+    int16_t bdrop_num;
     // offset: 2 (2 bytes)
-    int startx;
+    int16_t startx;
     // offset: 4 (2 bytes)
-    int starty;
+    int16_t starty;
     // offset: 6 (2 bytes)
-    int shot_freq;
-};
+    int16_t shot_freq;
+} lvlinfo_t;
 
 // size: 8
-struct struct_70
+typedef struct struct_70
 {
     // offset: 0 (4 bytes)
     long ofs;
     // offset: 4 (4 bytes)
     long len;
-};
+} struct_70;
 
 // size: 128
 typedef struct PCXHEAD
@@ -96,17 +96,17 @@ typedef struct PCXHEAD
     // offset: 3 (1 bytes)
     unsigned char bytes_per_pixel;
     // offset: 4 (2 bytes)
-    int xmin;
+    int16_t xmin;
     // offset: 6 (2 bytes)
-    int ymin;
+    int16_t ymin;
     // offset: 8 (2 bytes)
-    int xmax;
+    int16_t xmax;
     // offset: 10 (2 bytes)
-    int ymax;
+    int16_t ymax;
     // offset: 12 (2 bytes)
-    int hres;
+    int16_t hres;
     // offset: 14 (2 bytes)
-    int vres;
+    int16_t vres;
     // offset: 16 (48 bytes)
     unsigned char palette[48];
     // offset: 64 (1 bytes)
@@ -114,113 +114,113 @@ typedef struct PCXHEAD
     // offset: 65 (1 bytes)
     unsigned char colour_planes;
     // offset: 66 (2 bytes)
-    int bytes_per_line;
+    int16_t bytes_per_line;
     // offset: 68 (2 bytes)
-    int palette_type;
+    int16_t palette_type;
     // offset: 70 (58 bytes)
     unsigned char filler[58];
 } PCXHEAD;
 
 // size: 1686
-struct struct_98
+typedef struct inf_t
 {
     // offset: 0 (2 bytes)
-    int num;
+    int16_t num;
     // offset: 2 (2 bytes)
-    int lspacing;
+    int16_t lspacing;
     // offset: 4 (2 bytes)
-    int bspacing;
+    int16_t bspacing;
     // offset: 6 (80 bytes)
-    int attrb[40];
+    int16_t attrb[40];
     // offset: 86 (1600 bytes)
     unsigned char lines[20][80];
-};
+} inf_t;
 
 // size: 32
-struct struct_115
+typedef struct trigger_t
 {
     // offset: 0 (16 bytes)
-    int mnum[8];
+    int16_t mnum[8];
     // offset: 16 (16 bytes)
-    int rpos[8];
-};
+    int16_t rpos[8];
+} trigger_t;
 
 // size: 24
-struct struct_118
+typedef struct tag_t
 {
     // offset: 0 (2 bytes)
-    int mnum;
+    int16_t mnum;
     // offset: 2 (2 bytes)
-    int tokill;
+    int16_t tokill;
     // offset: 4 (2 bytes)
-    int hshotplus;
+    int16_t hshotplus;
     // offset: 6 (2 bytes)
-    int vshotplus;
+    int16_t vshotplus;
     // offset: 8 (2 bytes)
-    int vo;
+    int16_t vo;
     // offset: 10 (2 bytes)
-    int shotfollow;
+    int16_t shotfollow;
     // offset: 12 (2 bytes)
-    int mustface;
+    int16_t mustface;
     // offset: 14 (2 bytes)
-    int canshoot;
+    int16_t canshoot;
     // offset: 16 (2 bytes)
-    int stopshoot;
+    int16_t stopshoot;
     // offset: 18 (2 bytes)
-    int wobble;
+    int16_t wobble;
     // offset: 20 (2 bytes)
-    int sink;
+    int16_t sink;
     // offset: 22 (2 bytes)
-    int type;
-};
+    int16_t type;
+} tag_t;
 
 // size: 12
-struct struct_120
+typedef struct trip_t
 {
     // offset: 0 (2 bytes)
-    int keytype;
+    int16_t keytype;
     // offset: 2 (2 bytes)
-    int restore;
+    int16_t restore;
     // offset: 4 (2 bytes)
-    int dlx;
+    int16_t dlx;
     // offset: 6 (2 bytes)
-    int dty;
+    int16_t dty;
     // offset: 8 (2 bytes)
-    int drx;
+    int16_t drx;
     // offset: 10 (2 bytes)
-    int dby;
-};
+    int16_t dby;
+} trip_t;
 
 // size: 22
-struct struct_124
+typedef struct switch_t
 {
     // offset: 0 (1 bytes)
     unsigned char effect;
     // offset: 2 (8 bytes)
-    int condnum[4];
+    int16_t condnum[4];
     // offset: 10 (4 bytes)
     unsigned char condstate[4];
     // offset: 14 (2 bytes)
-    int dlx;
+    int16_t dlx;
     // offset: 16 (2 bytes)
-    int dty;
+    int16_t dty;
     // offset: 18 (2 bytes)
-    int drx;
+    int16_t drx;
     // offset: 20 (2 bytes)
-    int dby;
-};
+    int16_t dby;
+} switch_t;
 
 // size: 4
-struct struct_128
+typedef struct warp_t
 {
     // offset: 0 (2 bytes)
-    int src;
+    int16_t src;
     // offset: 2 (2 bytes)
-    int dest;
-};
+    int16_t dest;
+} warp_t;
 
 // size: 42
-struct struct_130
+typedef struct ups_t
 {
     // offset: 0 (36 bytes)
     unsigned char tag[36];
@@ -232,68 +232,68 @@ struct struct_130
     unsigned char add2shots;
     // offset: 40 (1 bytes)
     unsigned char powermode;
-};
+} ups_t;
 
 // size: 504
-struct struct_153
+typedef struct wiznote_t
 {
     // offset: 0 (2 bytes)
-    int lx;
+    int16_t lx;
     // offset: 2 (2 bytes)
-    int rx;
+    int16_t rx;
     // offset: 4 (500 bytes)
     unsigned char text[10][50];
-};
+} wiznote_t;
 
 // size: 220
-struct struct_159
+typedef struct sprite_t
 {
     // offset: 0 (4 bytes)
-    long fpos;
+    int32_t fpos;
     // offset: 4 (21 bytes)
     unsigned char name[21];
     // offset: 26 (2 bytes)
-    int xw;
+    int16_t xw;
     // offset: 28 (2 bytes)
-    int yl;
+    int16_t yl;
     // offset: 30 (2 bytes)
-    int frs;
+    int16_t frs;
     // offset: 32 (2 bytes)
-    int fre;
+    int16_t fre;
     // offset: 34 (2 bytes)
-    int mfrs;
+    int16_t mfrs;
     // offset: 36 (2 bytes)
-    int mfre;
+    int16_t mfre;
     // offset: 38 (2 bytes)
-    int jfrs;
+    int16_t jfrs;
     // offset: 40 (2 bytes)
-    int jfre;
+    int16_t jfre;
     // offset: 42 (2 bytes)
-    int afrs;
+    int16_t afrs;
     // offset: 44 (2 bytes)
-    int afre;
+    int16_t afre;
     // offset: 46 (2 bytes)
-    int sxw;
+    int16_t sxw;
     // offset: 48 (2 bytes)
-    int syl;
+    int16_t syl;
     // offset: 50 (2 bytes)
-    int sys;
+    int16_t sys;
     // offset: 52 (2 bytes)
-    int sfrs;
+    int16_t sfrs;
     // offset: 54 (2 bytes)
-    int sfre;
+    int16_t sfre;
     // offset: 56 (2 bytes)
-    unsigned int codesize;
+    uint16_t codesize;
     // offset: 58 (2 bytes)
-    unsigned int datasize;
+    uint16_t datasize;
     // offset: 60 (80 bytes)
-    unsigned int codeofs[2][20];
+    uint16_t codeofs[2][20];
     // offset: 140 (80 bytes)
-    unsigned int dataofs[2][20];
-};
+    uint16_t dataofs[2][20];
+} sprite_t;
 
 // size: 6
-struct struct_172
+typedef struct struct_172
 {
     // offset: 0 (1 bytes)
     unsigned char ukey;
@@ -305,7 +305,7 @@ struct struct_172
     unsigned char fkey;
     // offset: 4 (1 bytes)
     unsigned char jkey;
-};
+} struct_172;
 
 // size: 24
 typedef struct Jdefines
@@ -336,11 +336,6 @@ typedef struct Jdefines
     unsigned int joyMultYH;
 } Jdefines;
 
-typedef long fpos_t;
-typedef long ptrdiff_t;
-typedef long clock_t;
-typedef long time_t;
-typedef unsigned int size_t;
-typedef unsigned char (*line_t)[80];
+typedef unsigned char (*line_t)[VGA_PLANE_WIDTH];
 
 #endif
