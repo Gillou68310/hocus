@@ -4,7 +4,7 @@
         {
             "label": "Run Docker image",
             "type": "shell",
-            "command": "docker --context=desktop-linux-mutagen run --rm -ti --mount src=$(pwd),target=/hocus,type=bind hocus",
+            "command": "docker run --rm -ti --mount src=$(pwd),target=/hocus,type=bind hocus",
             "runOptions": {
                 "runOn": "folderOpen"
             },

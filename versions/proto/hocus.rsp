@@ -6,7 +6,7 @@ BUILD_PATH\src\fileio.obj +
 BUILD_PATH\src\menus.obj +
 BUILD_PATH\src\features.obj +
 BUILD_PATH\src\design.obj +
-BUILD_PATH\asm\proto\play.obj +
+BUILD_PATH\src\play.obj +
 BUILD_PATH\src\play2.obj +
 BUILD_PATH\src\soundfx.obj +
 BUILD_PATH\src\util.obj +
