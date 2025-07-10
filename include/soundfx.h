@@ -10,7 +10,7 @@ void SDL_SetTimerSpeed(void);
 void SD_MusicOff(void);
 void SD_Startup(void);
 void SD_Shutdown(void);
-void pascal SD_STARTMUSIC(int *musicp);
+void pascal SD_STARTMUSIC(int16_t *musicp);
 void play_game_sound(int snd_num);
 void play_VOC(unsigned char *vocptr);
 void kick_on_adlib_and_blaster(void);

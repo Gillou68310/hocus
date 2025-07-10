@@ -21,11 +21,11 @@ unsigned char sqActive;
 
 // addr: 192E:A9A2
 // size: 4
-int *sqHack;
+int16_t *sqHack;
 
 // addr: 192E:A99E
 // size: 4
-int *sqHackPtr;
+int16_t *sqHackPtr;
 
 // addr: 192E:A99C
 // size: 2
@@ -242,7 +242,7 @@ void SD_Shutdown(void)
 // module: SOUNDFX
 // size: 0x58
 // addr: 146F:0288
-void pascal SD_STARTMUSIC(int *musicp)
+void pascal SD_STARTMUSIC(int16_t *musicp)
 {
     SD_MusicOff();
     if (game_config.music != 0)
