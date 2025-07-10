@@ -12,7 +12,7 @@ typedef unsigned long uint32_t;
 
 #include "defs.h"
 #include "types.h"
-#include "decls.h"
+#include "globals.h"
 
 void MCPY(unsigned char *dst, unsigned char *src, int size);
 void SET320X200(void);
