@@ -4,10 +4,10 @@ A matching decompilation of Hocus Pocus DOS game (prototype).
 
 ## Building
 
-Clone the repository:
+Clone the repository; note the --recursive flag to fetch submodules at the same time:
 
 ```sh
-git clone https://github.com/Gillou68310/hocus.git
+git clone https://github.com/Gillou68310/hocus.git --recursive
 ```
 
 Navigate into the freshly cloned repo
