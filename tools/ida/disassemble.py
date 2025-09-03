@@ -8,11 +8,11 @@ import debugpy
 debugpy.listen(("localhost", 5678),in_process_debug_adapter=True)
 debugpy.wait_for_client()
 
-VERSION = "proto"
+VERSION = "v10"
 path =  Path("versions") / VERSION / "hocus.yaml"
 config = split.conf.load([path])
 
-if "jwasm" in split.options.opts.asm_path.name:
+if "jwasm" in split.options.opts.asm_path.as_posix():
     idc.set_target_assembler(0)
 else:
     idc.set_target_assembler(1)

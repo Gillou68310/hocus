@@ -28,10 +28,16 @@ RUN wget "https://github.com/OmniBlade/binutils-gdb/releases/download/omf-build/
     && rm omftools-linux-x86_64.tar.gz
 
 RUN wget "https://github.com/decompme/compilers/releases/download/compilers/bcc3.1.tar.gz" \
-    && mkdir /opt/bcpp31 \
-    && tar xvzf bcc3.1.tar.gz -C /opt/bcpp31 \
-    && chmod -R 755 /opt/bcpp31 \
+    && mkdir /opt/bcc31 \
+    && tar xvzf bcc3.1.tar.gz -C /opt/bcc31 \
+    && chmod -R 755 /opt/bcc31 \
     && rm bcc3.1.tar.gz
+
+RUN wget "https://github.com/decompme/compilers/releases/download/compilers/bcc2.0.tar.gz" \
+    && mkdir /opt/bcc20 \
+    && tar xvzf bcc2.0.tar.gz -C /opt/bcc20 \
+    && chmod -R 755 /opt/bcc20 \
+    && rm bcc2.0.tar.gz
 
 COPY requirements.txt /pip3/
 COPY tools/tdinfo-parser/requirements.txt /pip3/tools/tdinfo-parser/

@@ -5,7 +5,8 @@
             "name": "hocus",
             "includePath": [
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/src"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/audiolib"
             ],
             "defines": [
             ],

@@ -1,3 +1,6 @@
 [submodule "tools/tdinfo-parser"]
 	path = tools/tdinfo-parser
 	url = https://github.com/Gillou68310/tdinfo-parser.git
+[submodule "audiolib"]
+	path = audiolib
+	url = https://github.com/Gillou68310/audiolib

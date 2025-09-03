@@ -1,0 +1,95 @@
+name: Hocus Pocus (v1.0)
+sha1: 7bd30e0d4f82382e6c3aa1de5a78fecfe04b5a0d
+options:
+  basename: hocus
+  base_path: ../..
+  asm_path: asm/v10
+  asset_path: assets/v10
+  target_path: hocus.v10.exe
+  platform: dos
+  is_unsupported_platform: true
+  allow_segment_overrides: true
+  extensions_path: tools/splat_ext/dos
+segments:
+  - name: mz_header
+    start: 0x0
+    type: bin
+
+  - name: code
+    start: 0x01C00
+    type: code
+    vram: 0x10000
+    subsegments:
+      #TEXT
+      - {start: 0x01C00, type: bin}
+      - {start: 0x0708F, type: asm, align: 1, name: src/hocus}
+      - {start: 0x0794B, type: asm, align: 1, name: src/gr}
+      - {start: 0x08258, type: asm, align: 1, name: src/fileio}
+      - {start: 0x08520, type: asm, align: 1, name: src/menus}
+      - {start: 0x0D305, type: asm, align: 1, name: src/features}
+      - {start: 0x0D3DE, type: asm, align: 1, name: src/play}
+      - {start: 0x13E0C, type: asm, align: 1, name: src/play2}
+      - {start: 0x15021, type: asm, align: 1, name: src/soundfx}
+      - {start: 0x15290, type: asm, align: 1, name: src/util}
+      - {start: 0x15C86, type: asm, align: 1, name: src/seg010}
+      - {start: 0x15CA0, type: asm, align: 2, name: src/seg011}
+      - {start: 0x15D02, type: asm, align: 1, name: audiolib/ll_man}
+      - {start: 0x15DFD, type: asm, align: 1, name: audiolib/midi}
+      - {start: 0x16966, type: asm, align: 1, name: audiolib/task_man}
+      - {start: 0x16FEF, type: asm, align: 1, name: audiolib/fx_man}
+      - {start: 0x1765F, type: asm, align: 1, name: audiolib/music}
+      - {start: 0x17AC1, type: asm, align: 1, name: audiolib/al_midi}
+      - {start: 0x18A21, type: asm, align: 1, name: audiolib/mpu401}
+      - {start: 0x18C2C, type: asm, align: 1, name: audiolib/blaster}
+      - {start: 0x19C12, type: asm, align: 1, name: audiolib/pas16}
+      - {start: 0x1AA17, type: asm, align: 1, name: audiolib/sndsrc}
+      - {start: 0x1AE43, type: asm, align: 1, name: audiolib/dma}
+      - {start: 0x1B0FC, type: asm, align: 1, name: audiolib/multivoc}
+      - {start: 0x1BCE2, type: asm, align: 1, name: audiolib/user}
+      - {start: 0x1BDC8, type: asm, align: 1, name: audiolib/seg025}
+      - {start: 0x1C0CC, type: bin}
+      #DATA
+      - {start: 0x1EE20, type: .data}
+      - {start: 0x1EEB4, type: data, name: src/hocus}
+      - {start: 0x206F4, type: data, name: src/gr}
+      - {start: 0x20704, type: data, name: src/fileio}
+      - {start: 0x2071B, type: data, name: src/menus}
+      - {start: 0x21402, type: data, name: src/design}
+      - {start: 0x218D6, type: data, name: src/play}
+      - {start: 0x21ACF, type: data, name: src/soundfx}
+      - {start: 0x21AFC, type: data, name: src/util}
+      - {start: 0x21CB8, type: data, name: audiolib/midi}
+      - {start: 0x21CEC, type: data, name: audiolib/task_man}
+      - {start: 0x21CFA, type: data, name: audiolib/fx_man}
+      - {start: 0x21D4B, type: data, name: audiolib/music}
+      - {start: 0x21E00, type: data, name: audiolib/al_midi}
+      - {start: 0x2216D, type: data, name: audiolib/mpu401}
+      - {start: 0x2217C, type: data, name: audiolib/blaster}
+      - {start: 0x22415, type: data, name: audiolib/pas16}
+      - {start: 0x2251F, type: data, name: audiolib/sndsrc}
+      - {start: 0x225A6, type: data, name: audiolib/dma}
+      - {start: 0x22689, type: data, name: audiolib/multivoc}
+      - {start: 0x22782, type: data, name: audiolib/oldtimbr}
+      - {start: 0x22FFC, type: .data}
+      #BSS
+      - {start: 0x236D6, type: bss, name: src/globals}
+      - {start: 0x2BDEC, type: bss, name: audiolib/midi}
+      - {start: 0x2BE18, type: bss, name: audiolib/task_man}
+      - {start: 0x2BE24, type: bss, name: audiolib/music}
+      - {start: 0x2BE50, type: bss, name: audiolib/al_midi}
+      - {start: 0x2C2BA, type: bss, name: audiolib/blaster}
+      - {start: 0x2C2D8, type: bss, name: audiolib/pas16}
+      - {start: 0x2C2F4, type: bss, name: audiolib/sndsrc}
+      - {start: 0x2C30E, type: bss, name: audiolib/multivoc}
+      - {start: 0x2C332, type: bss, name: audiolib/pad}
+      - {start: 0x2C4BE, type: .bss}
+  - [0x2C670]
+
+
+
+
+
+
+
+
+

@@ -38,9 +38,9 @@ MKDIR      := mkdir -p
 GREP       := grep -E
 SED        := sed
 DOSEMU	   := HOME="." dosemu -quiet -dumb -K . -E
-AS         := tasm
-LD         := tlink
-CC         := bcc
+AS         := %BCC31%\bin\tasm
+LD         := %BCC31%\bin\tlink
+CC         := %BCC31%\bin\bcc
 
 PRINT := printf '
  ENDCOLOR := \033[0m
@@ -59,8 +59,14 @@ ENDLINE := \n'
 ### Compiler Options ###
 OPTFLAGS ?=
 ASFLAGS  := /e /ml
-CFLAGS   := -ml -y -a -K -Iinclude -I%BCPP31%\include
-LDFLAGS  := /m /s /c /l /v /L%BCPP31%\lib
+CFLAGS   := -ml -y -a -K -Iinclude -I%BCC31%\include
+LDFLAGS  := /m /s /c /l /v /L%BCC31%\lib
+
+ifeq ($(VERSION),proto)
+    CFLAGS += -DPROTO
+else
+    CFLAGS += -2
+endif
 
 ### Sources ###
 
@@ -74,6 +80,10 @@ $(shell $(MKDIR) $(OBJDIRS))
 
 $(BUILD_DIR)/src/digisnd.obj: OPTFLAGS := -O2
 $(BUILD_DIR)/src/digisnd.obj: CFLAGS := $(filter-out -a -K,$(CFLAGS))
+
+$(BUILD_DIR)/audiolib/%.obj: OPTFLAGS := -O -G
+$(BUILD_DIR)/audiolib/%.obj: CFLAGS := -ml -y -2 -Iaudiolib -I%BCC20%\include
+$(BUILD_DIR)/audiolib/%.obj: CC := %BCC20%\bin\bcc
 
 all: $(DOS_EXE)
 
