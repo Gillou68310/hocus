@@ -72,6 +72,7 @@ void load_file_to_byte_pointer(int db_rec, void *ptr)
     fread(ptr, length, 1, databasefp);
 }
 
+#if VERSION_PROTO
 // module: FILEIO
 // size: 0xa9
 // addr: 05B3:015D
@@ -115,6 +116,49 @@ void save_disk_file(unsigned char *fln, void *ptr, unsigned int length)
     fwrite(ptr, length, 1, fp);
     fclose(fp);
 }
+#else
+int load_disk_file(unsigned char *fln, void *ptr)
+{
+    FILE *fp;
+    long length;
+
+    fp = fopen(fln, "rb");
+    if (fp == NULL)
+    {
+        return 0;
+    }
+    fseek(fp, 0, 2);
+    length = ftell(fp);
+    fseek(fp, 0, 0);
+    if (fread(ptr, length, 1, fp) < 1)
+    {
+        fclose(fp);
+        return 0;
+    }
+
+    fclose(fp);
+    return 1;
+}
+
+int save_disk_file(unsigned char *fln, void *ptr, unsigned int length)
+{
+    FILE *fp;
+
+    unlink(fln);
+    fp = fopen(fln, "wb");
+    if (fp == NULL)
+    {
+        return 0;
+    }
+    if (fwrite(ptr, length, 1, fp) < 1)
+    {
+        fclose(fp);
+        return 0;
+    }
+    fclose(fp);
+    return 1;
+}
+#endif
 
 // module: FILEIO
 // size: 0x55
