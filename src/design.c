@@ -25,7 +25,11 @@ ups_t ups[UPS_COUNT] = {
     {"Diamond", 250, 0, 0, 0},
     {"Goblet", 500, 0, 0, 0},
     {"Crown", 1000, 0, 0, 0},
+#if VERSION_PROTO
     {"Heal (green)", 0, 15, 0, 0},
+#else
+    {"Heal (green)", 0, 10, 0, 0},
+#endif
     {"Crystal", 0, 0, 0, 1},
     {"Hurt", 0, 0, 0, 2},
     {"Add shot", 0, 0, 1, 0},
@@ -38,7 +42,11 @@ ups_t ups[UPS_COUNT] = {
     {"Kill", 0, 0, 0, 9},
     {"Wizard note", 0, 0, 0, 10},
     {"Laser Shot", 0, 0, 0, 11},
+#if VERSION_PROTO
     {"Unused", 0, 0, 0, 0},
+#else
+    {"FISCHER PRICE", 0, 0, 0, 12},
+#endif
     {"Unused", 0, 0, 0, 0},
     {"Unused", 0, 0, 0, 0},
     {"Unused", 0, 0, 0, 0},
@@ -47,7 +55,7 @@ ups_t ups[UPS_COUNT] = {
 
 // addr: 192E:1788
 // size: 80
-int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
+int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT + 1] = {
     {0, 0, 1, 1, 2, 2, 3, 3, 3, 0},
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
@@ -55,7 +63,7 @@ int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
 
 // addr: 192E:17D8
 // size: 80
-int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
+int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT + 1] = {
     {0, 1, 2, 3, 4, 5, 6, 7, 8, 0},
     {9, 10, 11, 12, 13, 14, 15, 16, 17, 0},
     {18, 19, 20, 21, 22, 23, 24, 25, 26, 0},
@@ -63,11 +71,13 @@ int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
 
 // addr: 192E:1828
 // size: 80
-int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
+int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT + 1] = {
     {0, 0, 1, 1, 2, 2, 3, 3, 3, 0},
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
     {12, 12, 13, 13, 14, 14, 15, 15, 15, 0}};
+
+#if VERSION_PROTO
 
 // module: DESIGN
 // size: 0x1a
@@ -389,7 +399,7 @@ void show_design_screen(void)
                 show_marker_cursor(x, y, 2);
             }
             if ((showswitchrange) && (slx <= (sdx + x)) && ((sdx + x) <= srx) &&
-                                                               (sty <= (sdy + y)) && ((sdy + y) <= sby))
+                (sty <= (sdy + y)) && ((sdy + y) <= sby))
             {
                 show_marker_cursor(x, y, 0x58);
             }
@@ -1590,3 +1600,5 @@ void design(void)
     }
     play_imf_file(MUSIC_TITLE);
 }
+
+#endif

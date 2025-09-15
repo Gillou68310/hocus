@@ -5,7 +5,7 @@ BUILD_PATH\src\gr.obj +
 BUILD_PATH\src\fileio.obj +
 BUILD_PATH\asm\v11\src\menus.obj +
 BUILD_PATH\src\features.obj +
-BUILD_PATH\asm\v11\data\src\design.obj +
+BUILD_PATH\src\design.obj +
 BUILD_PATH\asm\v11\src\play.obj +
 BUILD_PATH\asm\v11\src\play2.obj +
 BUILD_PATH\asm\v11\src\soundfx.obj +
