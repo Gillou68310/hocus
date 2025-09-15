@@ -4,7 +4,7 @@ BUILD_PATH\asm\v10\src\hocus.obj +
 BUILD_PATH\asm\v10\src\gr.obj +
 BUILD_PATH\asm\v10\src\fileio.obj +
 BUILD_PATH\asm\v10\src\menus.obj +
-BUILD_PATH\asm\v10\src\features.obj +
+BUILD_PATH\src\features.obj +
 BUILD_PATH\asm\v10\data\src\design.obj +
 BUILD_PATH\asm\v10\src\play.obj +
 BUILD_PATH\asm\v10\src\play2.obj +
