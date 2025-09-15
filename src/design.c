@@ -25,7 +25,11 @@ ups_t ups[UPS_COUNT] = {
     {"Diamond", 250, 0, 0, 0},
     {"Goblet", 500, 0, 0, 0},
     {"Crown", 1000, 0, 0, 0},
+#ifdef PROTO
     {"Heal (green)", 0, 15, 0, 0},
+#else
+    {"Heal (green)", 0, 10, 0, 0},
+#endif
     {"Crystal", 0, 0, 0, 1},
     {"Hurt", 0, 0, 0, 2},
     {"Add shot", 0, 0, 1, 0},
@@ -38,7 +42,11 @@ ups_t ups[UPS_COUNT] = {
     {"Kill", 0, 0, 0, 9},
     {"Wizard note", 0, 0, 0, 10},
     {"Laser Shot", 0, 0, 0, 11},
+#ifdef PROTO
     {"Unused", 0, 0, 0, 0},
+#else
+    {"FISCHER PRICE", 0, 0, 0, 12},
+#endif
     {"Unused", 0, 0, 0, 0},
     {"Unused", 0, 0, 0, 0},
     {"Unused", 0, 0, 0, 0},
@@ -68,6 +76,8 @@ int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT] = {
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
     {12, 12, 13, 13, 14, 14, 15, 15, 15, 0}};
+
+#ifdef PROTO
 
 // module: DESIGN
 // size: 0x1a
@@ -1590,3 +1600,5 @@ void design(void)
     }
     play_imf_file(199);
 }
+
+#endif
