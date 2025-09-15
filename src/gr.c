@@ -27,6 +27,28 @@ void settext()
     screen(1);
 }
 
+#ifndef PROTO
+void sub_15D8E(int page)
+{
+    unsigned int addr;
+    unsigned char raddr;
+
+    addr = vgapofs[page];
+    while ((inportb(0x3da) & 8))
+        ;
+
+    outportb(0x3d4, 0xc);
+    raddr = addr >> 8;
+    outportb(0x3d5, raddr);
+    outportb(0x3d4, 0xd);
+    raddr = addr;
+    outportb(0x3d5, raddr);
+    while (!(inportb(0x3da) & 8))
+        ;
+    vpg = page;
+}
+#endif
+
 // module: GR
 // size: 0x48
 // addr: 0520:0056
@@ -130,8 +152,13 @@ void setvga(void)
     SET320X200();
     for (i = 0; i < VGA_PAGE_COUNT; i++)
     {
+#ifndef PROTO
+        vgapofs[i] = i * (VGA_PAGE_SIZE + 128);
+        vgap[i] = vgabase + i * (VGA_PAGE_SIZE + 128);
+#else
         vgapofs[i] = i * VGA_PAGE_SIZE;
         vgap[i] = vgabase + i * VGA_PAGE_SIZE;
+#endif
         setmem(vgap[i], VGA_PAGE_SIZE, 0);
     }
     setapage(0);
@@ -476,6 +503,9 @@ void load_pcx(int db_rec, int setpal)
     // size: 4
     long length;
 
+#ifndef PROTO
+    open_database();
+#endif
     get_offset_length(db_rec, &offset, &length);
     load_to_byte_pointer(offset, sizeof(PCXHEAD), &header.manufacturer);
     load_to_byte_pointer((offset + length) - sizeof(palette), sizeof(palette), palette);
@@ -494,6 +524,9 @@ void load_pcx(int db_rec, int setpal)
     depth = header.ymax - header.ymin + 1;
     bytes = header.bytes_per_line;
     unpackpcxfile();
+#ifndef PROTO
+    close_database();
+#endif
 }
 
 // module: GR
@@ -539,6 +572,9 @@ void show_bin(int db_rec)
     // size: 4
     long offset;
 
+#ifndef PROTO
+    open_database();
+#endif
     get_offset(db_rec, &offset);
     load_to_byte_pointer(offset, sizeof(palette), palette);
     point_to_data(offset + sizeof(palette));
@@ -550,6 +586,9 @@ void show_bin(int db_rec)
             vga[i] = fgetc(databasefp);
         }
     }
+#ifndef PROTO
+    close_database();
+#endif
 }
 
 // module: GR
@@ -570,6 +609,9 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
     // size: 4
     long offset;
 
+#ifndef PROTO
+    open_database();
+#endif
     get_offset(db_rec, &offset);
     load_to_byte_pointer(offset, sizeof(grphdr_t), &grphdr);
     latches(0);
@@ -584,6 +626,9 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
             }
         }
     }
+#ifndef PROTO
+    close_database();
+#endif
 }
 
 // module: GR
@@ -595,10 +640,16 @@ void restore_palette_fragment(int db_rec, int s, int setpal)
     // size: 2
     // int s;
 
+#ifndef PROTO
+    open_database();
+#endif
     s *= 3;
     load_file_to_byte_pointer(db_rec, palette + s);
     if (setpal != 0)
     {
         write_pels(palette, 0, 0x100);
     }
+#ifndef PROTO
+    close_database();
+#endif
 }
