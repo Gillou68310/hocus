@@ -63,8 +63,20 @@ CFLAGS   := -ml -y -a -K -Iinclude -I%BCC31%\include
 LDFLAGS  := /m /s /c /l /v /L%BCC31%\lib
 
 ifeq ($(VERSION),proto)
-    CFLAGS += -DPROTO
+    CFLAGS += -DVERSION_PROTO=1
+else ifeq ($(VERSION),v10)
+    CFLAGS += -DVERSION_10=1
+else ifeq ($(VERSION),v11)
+    CFLAGS += -DVERSION_11=1
+else ifeq ($(VERSION),demo10)
+    CFLAGS += -DVERSION_DEMO10=1
+else ifeq ($(VERSION),demo11)
+    CFLAGS += -DVERSION_DEMO11=1
 else
+$(error Invalid VERSION variable detected. Please use either 'proto', 'v10', 'v11', 'demo10' or 'demo11')
+endif
+
+ifneq ($(VERSION),proto)
     CFLAGS += -2
 endif
 

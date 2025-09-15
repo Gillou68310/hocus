@@ -18,8 +18,8 @@ void pick_mtrig(void);
 void design(void);
 
 extern ups_t ups[UPS_COUNT];
-extern int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT];
-extern int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT];
-extern int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT];
+extern int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT+1];
+extern int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT+1];
+extern int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT+1];
 
 #endif

@@ -13,7 +13,7 @@
 
 // addr: 192E:0A34
 // size: 72
-unsigned int time2beat[GAME_COUNT][LEVEL_COUNT - 1] = {
+unsigned int time2beat[GAME_COUNT][LEVEL_COUNT] = {
     {0x78, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
     {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
     {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
@@ -918,9 +918,9 @@ void do_line_menu(unsigned char *msg, int fn)
     x = (SCREEN_WIDTH - x) / 2;
     y = 107;
     pstr(x, y, 5, msg);
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[fn])) / 2, 0xbc, 4, footers[fn]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     fade_in(0x14);
 }
 
@@ -950,9 +950,9 @@ void do_title_line_menu(unsigned char *tit, unsigned char *msg, int fn)
     x = pstrlen(msg);
     x = (SCREEN_WIDTH - x) / 2;
     pstr(x, y + 0x14, 3, msg);
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[fn])) / 2, 0xbc, 4, footers[fn]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     fade_in(0x14);
 }
 
@@ -1109,9 +1109,9 @@ void do_def_menu(int kn)
     strcat(dline, keymenu[kn]);
     pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[7])) / 2, 0xbc, 4, footers[7]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     for (i = 0; i < 6; i++)
     {
         x = 0x1B;
@@ -1191,9 +1191,9 @@ start:
     y = 0x3e;
     pstr((SCREEN_WIDTH - pstrlen("Select a key to define")) / 2, y, 5, "Select a key to define");
     y += 0x14;
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[7])) / 2, 0xbc, 4, footers[7]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     for (i = 0; i < 8; i++)
     {
         strcpy(dline, " ");
@@ -1289,9 +1289,9 @@ void do_menu(void)
     {
         y = ((0x90 - (menu_item_num * 10)) / 2) + 0x28;
     }
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[menu_footer])) / 2, 0xbc, 4, footers[menu_footer]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     iconx = (x - 0x18) / 4;
     iconpos = 0;
     for (i = s; i < menu_item_num; i++)
@@ -1371,9 +1371,9 @@ void get_hiscore(int g, int slot)
     strcat(dline, itoa(g + 1, dumnum, 10));
     pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[6])) / 2, 0xbc, 4, footers[6]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     for (i = 0; i < 5; i++)
     {
         s = 3;
@@ -1489,9 +1489,9 @@ void do_show_hiscores(int demomode)
     strcat(dline, itoa(g + 1, dumnum, 10));
     pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[2])) / 2, 0xbc, 4, footers[2]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     for (i = 0; i < 5; i++)
     {
         s = 3;
@@ -1827,9 +1827,9 @@ void save_game(void)
     strcpy(dline, "Select SAVE slot");
     pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
-    restore_graphics_fragment(9, 0, 0xB8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xB8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[4])) / 2, 0xbc, 4, footers[4]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     iconpos = 0;
     iconx = 4;
     for (i = 0; i < 9; i++)
@@ -2034,9 +2034,9 @@ int restore_game(void)
     strcpy(dline, "Select RESTORE slot");
     pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 5, dline);
     y += 0x14;
-    restore_graphics_fragment(9, 0, 0xB8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xB8);
     pstrsh((SCREEN_WIDTH - pstrlen(footers[4])) / 2, 0xbc, 4, footers[4]);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     iconpos = 0;
     iconx = 4;
     for (i = 0; i < 9; i++)
@@ -2133,7 +2133,7 @@ int restore_game(void)
     }
     if (key == KEY_RETURN)
     {
-        load_file_to_byte_pointer(1, &game_config);
+        load_file_to_byte_pointer(OFFSET_CONFIG, &game_config);
         game = game_config.game[gs];
         level = game_config.level[gs];
         skill = game_config.skill[gs];
@@ -2260,8 +2260,8 @@ void calibrate_from_game(void)
     fade_out(0x14);
     MCPY(savepalette, palette, sizeof(palette));
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
     calibrate_joystick();
     MCPY(palette, savepalette, sizeof(palette));
     scopy(0, 1);
@@ -2289,8 +2289,8 @@ void save_menu(void)
     fade_out(0x14);
     MCPY(savepalette, palette, sizeof(palette));
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
     save_game();
     MCPY(palette, savepalette, sizeof(palette));
     scopy(0, 1);
@@ -2321,8 +2321,8 @@ int restore_menu(void)
     fade_out(0x14);
     MCPY(savepalette, palette, sizeof(palette));
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
     exitcode = restore_game();
     if (exitcode == 0)
     {
@@ -2361,8 +2361,8 @@ int quit_menu(void)
     fade_out(0x14);
     MCPY(savepalette, palette, sizeof(palette));
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
     exitcode = confirm_quit();
     if (exitcode == 0)
     {
@@ -2402,7 +2402,7 @@ void do_info_screen(int page, int limit)
     setapage(0);
     clearscreen();
     setvpage(0);
-    restore_graphics_fragment(9, 0, 0xb8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xb8);
     if (limit == 1)
     {
         strcpy(dline, footers[2]);
@@ -2430,7 +2430,7 @@ void do_info_screen(int page, int limit)
         }
     }
     pstrsh((SCREEN_WIDTH - pstrlen(dline)) / 2, 0xbc, 4, dline);
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
 
     for (i = 0, y = 0; i < inf.num; i++)
     {
@@ -2561,7 +2561,7 @@ void do_ordering_info(void)
     page = 0;
     do
     {
-        load_file_to_byte_pointer(page + 0x2a, &inf);
+        load_file_to_byte_pointer(page + OFFSET_ORDER, &inf);
         do_info_screen(page, 0x16);
         page = get_page_key(page, 0x16);
     } while (page != -1);
@@ -2572,7 +2572,7 @@ void do_ordering_info(void)
 // addr: 05E0:33D6
 void do_cantplay_info(void)
 {
-    load_file_to_byte_pointer(0x40, &inf);
+    load_file_to_byte_pointer(OFFSET_REGISTER, &inf);
     do_info_screen(0, 1);
     get_any_key();
 }
@@ -2596,9 +2596,9 @@ void do_credits(void)
     quit = 0;
     fade_out(0x14);
 
-    while ((page < 8) && !quit)
+    while ((page < CREDIT_COUNT) && !quit)
     {
-        load_pcx(page + 0x14, 0);
+        load_pcx(page + OFFSET_CREDIT, 0);
         fade_in(0x14);
         gametimer = clk_times;
         while ((clk_times - gametimer) < 3000)
@@ -2628,8 +2628,8 @@ void do_credits(void)
         page++;
     }
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
 }
 
 // module: MENUS
@@ -2644,9 +2644,9 @@ void do_previews(void)
     // size: 2
     int page;
 
-    for (page = 0; page < 10; page++)
+    for (page = 0; page < PREVIEW_COUNT; page++)
     {
-        show_bin(page + 0x20);
+        show_bin(page + OFFSET_PREVIEW);
         while (kbhit() != 0)
         {
             getch();
@@ -2676,8 +2676,8 @@ void do_previews(void)
         }
     }
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
 }
 
 // module: MENUS
@@ -2715,8 +2715,8 @@ void do_help(int insidegame)
         fade_out(0x14);
         MCPY(savepalette, palette, sizeof(palette));
         clear_palette();
-        restore_palette_fragment(7, 0, 0);
-        restore_palette_fragment(8, 0x80, 0);
+        restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+        restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
         clear_palette();
         setapage(0);
         clearscreen();
@@ -2733,9 +2733,9 @@ void do_help(int insidegame)
     }
     quit = 0;
     (void)quit;
-    while (page < 4)
+    while (page < HELP_COUNT)
     {
-        load_pcx(page + 0x1c, 0);
+        load_pcx(page + OFFSET_HELP, 0);
         fade_in(0x14);
         gametimer = clk_times;
         (void)gametimer;
@@ -2787,8 +2787,8 @@ void do_help(int insidegame)
     else
     {
         clear_palette();
-        restore_palette_fragment(7, 0, 0);
-        restore_palette_fragment(8, 0x80, 0);
+        restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+        restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
     }
 }
 
@@ -2819,8 +2819,8 @@ int play_menu(void)
     fade_out(0x14);
     MCPY(savepalette, palette, sizeof(palette));
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
     exitcode = 0;
     select = 0;
     while (select != -1)
@@ -2892,7 +2892,7 @@ int play_menu(void)
                 }
                 else
                 {
-                    play_imf_file(0xC7);
+                    play_imf_file(MUSIC_TITLE);
                 }
                 goto label;
             case 2:
@@ -3080,9 +3080,9 @@ int do_eval(int didit, int tra, int trf, int mnstrs, int mnstrhts)
         pstr((SCREEN_WIDTH - pstrlen(dline)) / 2, y, 2, dline);
         y += 24;
     }
-    restore_graphics_fragment(9, 0, 0xB8);
+    restore_graphics_fragment(OFFSET_BOTTOM, 0, 0xB8);
     pstrsh((SCREEN_WIDTH - pstrlen("Press any key")) / 2, 0xbc, 4, "Press any key");
-    restore_graphics_fragment(10, 0, 0);
+    restore_graphics_fragment(OFFSET_HOCUS, 0, 0);
     fade_in(0x14);
     y = 0;
     while (kbhit() != 0)
@@ -3145,11 +3145,11 @@ void do_winscrn1(void)
     clearscreen();
     setvpage(2);
     setapage(1);
-    load_pcx(0x4d, 0);
+    load_pcx(OFFSET_WIN, 0);
     memcpy(temppal, palette, sizeof(palette));
     setapage(0);
-    load_pcx(4, 0);
-    load_and_play_VOC(0xd2);
+    load_pcx(OFFSET_WARP, 0);
+    load_and_play_VOC(OFFSET_SOUND+3);
     setvpage(0);
     fade_in(0x3c);
     fade_in_white();
@@ -3162,6 +3162,6 @@ void do_winscrn1(void)
         ;
     fade_out(0x14);
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
 }

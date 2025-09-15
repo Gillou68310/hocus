@@ -9,20 +9,20 @@
 // addr: 09E5:000B
 void title(void)
 {
-    fade_out(0x28);
+    fade_out(40);
     setapage(0);
     setvpage(0);
-    load_pcx(2, 0);
-    play_imf_file(0xc4);
-    fade_in(0x14);
+    load_pcx(OFFSET_APOGEE, 0);
+    play_imf_file(MUSIC_FANFARE);
+    fade_in(20);
     snoozekey(6000);
-    fade_out(0x1e);
-    play_imf_file(199);
+    fade_out(30);
+    play_imf_file(MUSIC_TITLE);
     setapage(0);
     setvpage(0);
-    load_pcx(3, 0);
-    fade_in(0x28);
-    load_and_play_VOC(0xcf);
+    load_pcx(OFFSET_TITLE, 0);
+    fade_in(40);
+    load_and_play_VOC(OFFSET_SOUND+0);
     snoozekey(4000);
-    fade_out(0x1e);
+    fade_out(30);
 }

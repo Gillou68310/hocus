@@ -47,7 +47,7 @@ ups_t ups[UPS_COUNT] = {
 
 // addr: 192E:1788
 // size: 80
-int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT] = {
+int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
     {0, 0, 1, 1, 2, 2, 3, 3, 3, 0},
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
@@ -55,7 +55,7 @@ int plat_pcx_ofs[GAME_COUNT][LEVEL_COUNT] = {
 
 // addr: 192E:17D8
 // size: 80
-int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT] = {
+int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
     {0, 1, 2, 3, 4, 5, 6, 7, 8, 0},
     {9, 10, 11, 12, 13, 14, 15, 16, 17, 0},
     {18, 19, 20, 21, 22, 23, 24, 25, 26, 0},
@@ -63,7 +63,7 @@ int lvl_info_ofs[GAME_COUNT][LEVEL_COUNT] = {
 
 // addr: 192E:1828
 // size: 80
-int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT] = {
+int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT+1] = {
     {0, 0, 1, 1, 2, 2, 3, 3, 3, 0},
     {4, 4, 5, 5, 6, 6, 7, 7, 7, 0},
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
@@ -961,7 +961,7 @@ void load_tag_sprites(void)
         if (mtags[i].mnum != -1)
         {
             pos = mtags[i].mnum;
-            point_to_data_record(0x4e);
+            point_to_data_record(OFFSET_SPRITES);
             fseek(databasefp, (pos * sizeof(sprite_t)), 1);
             fread(&sprite[s], sizeof(sprite_t), 1, databasefp);
             s++;
@@ -1182,7 +1182,7 @@ void design(void)
     load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
     setmem(swe, 0x3840, 0);
     setapage(1);
-    load_pcx(plat_pcx_ofs[game][level] + 0x49, 0);
+    load_pcx(plat_pcx_ofs[game][level] + OFFSET_TILE, 0);
     read_pels(palette, 0, 0x100);
     scopy(2, 1);
     setapage(0);
@@ -1588,5 +1588,5 @@ void design(void)
             }
         }
     }
-    play_imf_file(199);
+    play_imf_file(MUSIC_TITLE);
 }

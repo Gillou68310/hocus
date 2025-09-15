@@ -289,9 +289,9 @@ void normal_exit(void)
     gotoxy(1, 0x18);
     read_pels(palette, 0, 0x100);
     clear_palette();
-    load_file_to_byte_pointer(0xeb, textscreen);
+    load_file_to_byte_pointer(OFFSET_DOSMSG, textscreen);
     fade_in(0x1e);
-    load_and_play_VOC(0xd4);
+    load_and_play_VOC(OFFSET_SOUND+5);
     while (SB_VOCPlaying() != 0)
         ;
     kill_sound_drivers();

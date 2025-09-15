@@ -11,13 +11,13 @@
 #include "joystick.h"
 #include "menus.h"
 
-int song2play[GAME_COUNT][LEVEL_COUNT - 1] = {
+int song2play[GAME_COUNT][LEVEL_COUNT] = {
     {3, 3, 4, 4, 0, 0, 2, 2, 2},
     {9, 9, 7, 7, 8, 8, 1, 1, 1},
     {4, 4, 0, 0, 7, 7, 6, 6, 6},
     {2, 2, 8, 8, 9, 9, 5, 5, 5}};
 
-int lrelev[GAME_COUNT][LEVEL_COUNT][2] = {
+int lrelev[GAME_COUNT][LEVEL_COUNT+1][2] = {
     {{-1, -1},
      {-1, -1},
      {-1, -1},
@@ -1509,10 +1509,10 @@ void load_sprites(void)
         if (sload[s] != -1)
         {
             pos = sload[s];
-            point_to_data_record(0x4e);
+            point_to_data_record(OFFSET_SPRITES);
             fseek(databasefp, (pos * sizeof(sprite_t)), 1);
             fread(&sprite[s], sizeof(sprite_t), 1, databasefp);
-            point_to_data_record(0x4e);
+            point_to_data_record(OFFSET_SPRITES);
             fseek(databasefp, sprite[s].fpos, 1);
             fread(spr_code[s], sprite[s].codesize, 1, databasefp);
             setapage(2);
@@ -3251,7 +3251,7 @@ start:
     setapage(1);
     clearscreen();
     setvpage(0);
-    play_imf_file(song2play[game][level] + 0xc5);
+    play_imf_file(song2play[game][level] + (OFFSET_MUSIC+1));
     do_anm = 0;
     flash_flag = 0;
     hinwarp = 0;
@@ -3351,7 +3351,7 @@ start:
         }
     }
     setapage(3);
-    load_pcx(plat_pcx_ofs[game][level] + 0x49, 1);
+    load_pcx(plat_pcx_ofs[game][level] + OFFSET_TILE, 1);
     read_pels(palette, 0, 0x100);
 
     s = 0;
@@ -3404,20 +3404,20 @@ start:
     }
     load_sprites();
     setapage(3);
-    load_pcx(bdrop_pcxpal_ofs[game][level] + 0x45, 0);
-    restore_palette_fragment(7, 0, 1);
-    restore_palette_fragment(bdrop_pcxpal_ofs[game][level] + 0x41, 0x80, 1);
-    restore_graphics_fragment(0xb, 0, 0xa0);
-    restore_graphics_fragment(0xe, 0, 0xb4);
+    load_pcx(bdrop_pcxpal_ofs[game][level] + OFFSET_BACKPCX, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 1);
+    restore_palette_fragment(bdrop_pcxpal_ofs[game][level] + OFFSET_BACKPAL, 0x80, 1);
+    restore_graphics_fragment(OFFSET_HUDSTUFF, 0, 0xa0);
+    restore_graphics_fragment(OFFSET_BULLIT, 0, 0xb4);
     fade_out(1);
     setapage(0);
-    restore_graphics_fragment(0xc, 0, 0xa0);
+    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
     setapage(1);
-    restore_graphics_fragment(0xc, 0, 0xa0);
+    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
     setapage(0);
-    restore_graphics_fragment(0xc, 0, 0xa0);
+    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
     setapage(1);
-    restore_graphics_fragment(0xc, 0, 0xa0);
+    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
     count_crystals();
     crystals_found = 0;
     health = 100;
@@ -3433,7 +3433,7 @@ start:
 
     if (demomode == 2)
     {
-        load_file_to_byte_pointer(level / 2 + 0xf, buf64);
+        load_file_to_byte_pointer(level / 2 + OFFSET_DEMO, buf64);
         demolimit = *(int16_t *)buf64;
     }
     if ((game == 3) && (level == 8))
@@ -4400,7 +4400,7 @@ start:
                 }
                 else
                 {
-                    play_imf_file(song2play[game][level] + 0xc5);
+                    play_imf_file(song2play[game][level] + (OFFSET_MUSIC+1));
                 }
             }
             if ((adlib == 0) && (blaster == 0))
@@ -4443,9 +4443,9 @@ start:
     fade_out(0x14);
     if (done != 2)
     {
-        restore_palette_fragment(7, 0, 0);
-        restore_palette_fragment(8, 0x80, 0);
-        play_imf_file(199);
+        restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+        restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
+        play_imf_file(MUSIC_TITLE);
     }
     if (hdone == 1)
     {

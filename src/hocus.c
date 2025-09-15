@@ -388,10 +388,10 @@ void new_program(void)
         }
     }
 
-    load_file_to_byte_pointer(0, font);
-    load_file_to_byte_pointer(5, sine_cosine_table);
-    load_file_to_byte_pointer(6, rnd);
-    load_file_to_byte_pointer(1, &game_config);
+    load_file_to_byte_pointer(OFFSET_FONT, font);
+    load_file_to_byte_pointer(OFFSET_SINCOS, sine_cosine_table);
+    load_file_to_byte_pointer(OFFSET_RANDOM, rnd);
+    load_file_to_byte_pointer(OFFSET_CONFIG, &game_config);
 
     for (i = 0; i < 8; i++)
     {
@@ -449,13 +449,13 @@ void main(int argc, unsigned char **argv)
     new_program();
     title();
     clear_palette();
-    restore_palette_fragment(7, 0, 0);
-    restore_palette_fragment(8, 0x80, 0);
+    restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
+    restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
 
     while (!done)
     {
         setapage(3);
-        restore_graphics_fragment(0xe, 0, 0xb4);
+        restore_graphics_fragment(OFFSET_BULLIT, 0, 0xb4);
         select = do_main_menu();
         switch (select)
         {
@@ -563,7 +563,7 @@ void main(int argc, unsigned char **argv)
                 }
                 else
                 {
-                    play_imf_file(0xC7);
+                    play_imf_file(MUSIC_TITLE);
                 }
                 goto label2;
             case 2:
@@ -617,8 +617,8 @@ void main(int argc, unsigned char **argv)
     setapage(0);
     setvpage(0);
     srand(time(0x0));
-    show_bin((((long int)rand() * 10) / 0x8000) + 0x20);
-    restore_graphics_fragment(0xD, 0, 0xA0);
+    show_bin((((long int)rand() * 10) / 0x8000) + OFFSET_PREVIEW);
+    restore_graphics_fragment(OFFSET_OLD_HUD, 0, 0xA0);
     strcpy(dline, "Check out the entire 4 game series!");
     pstrol2((SCREEN_WIDTH - pstrlen(dline)) / 2, 0xAA, 7, dline);
     strcpy(dline, "Order Hocus Pocus today!");
