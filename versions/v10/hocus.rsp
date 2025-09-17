@@ -27,7 +27,6 @@ BUILD_PATH\asm\v10\audiolib\multivoc.obj +
 BUILD_PATH\asm\v10\audiolib\user.obj +
 BUILD_PATH\asm\v10\audiolib\seg025.obj +
 BUILD_PATH\asm\v10\data\audiolib\oldtimbr.obj +
-BUILD_PATH\asm\v10\data\audiolib\pad.obj +
 BUILD_PATH\src\borland.obj
 BUILD_PATH\hocus.exe
 BUILD_PATH\hocus.map

@@ -1,5 +1,6 @@
 from pathlib import Path
 from splat.scripts import split
+import ida_nalt
 import idc
 
 #TODO: Unhide all
@@ -8,8 +9,11 @@ import debugpy
 debugpy.listen(("localhost", 5678),in_process_debug_adapter=True)
 debugpy.wait_for_client()
 
-VERSION = "v10"
-path =  Path("versions") / VERSION / "hocus.yaml"
+path = ida_nalt.get_input_file_path()
+exe = path.split("\\")[-1]
+version = exe.split(".")[1]
+
+path =  Path("versions") / version / "hocus.yaml"
 config = split.conf.load([path])
 
 if "jwasm" in split.options.opts.asm_path.as_posix():

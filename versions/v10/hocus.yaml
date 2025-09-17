@@ -64,10 +64,10 @@ segments:
       - {start: 0x21D4B, type: data, name: audiolib/music}
       - {start: 0x21E00, type: data, name: audiolib/al_midi}
       - {start: 0x2216D, type: data, name: audiolib/mpu401}
-      - {start: 0x2217C, type: data, name: audiolib/blaster}
+      - {start: 0x2217B, type: data, name: audiolib/blaster}
       - {start: 0x22415, type: data, name: audiolib/pas16}
       - {start: 0x2251F, type: data, name: audiolib/sndsrc}
-      - {start: 0x225A6, type: data, name: audiolib/dma}
+      - {start: 0x225A5, type: data, name: audiolib/dma}
       - {start: 0x22689, type: data, name: audiolib/multivoc}
       - {start: 0x22782, type: data, name: audiolib/oldtimbr}
       - {start: 0x22FFC, type: .data}
@@ -81,7 +81,6 @@ segments:
       - {start: 0x2C2D8, type: bss, name: audiolib/pas16}
       - {start: 0x2C2F4, type: bss, name: audiolib/sndsrc}
       - {start: 0x2C30E, type: bss, name: audiolib/multivoc}
-      - {start: 0x2C332, type: bss, name: audiolib/pad}
       - {start: 0x2C4BE, type: .bss}
   - [0x2C670]
 
