@@ -82,7 +82,7 @@ for seg_ea in idautils.Segments():
     seg_name = ida_segment.get_segm_name(seg)
     if seg_name == 'seg000':
         continue
-    if seg_name == 'seg026':
+    if seg_name == 'seg025':
         break
     for head in idautils.Heads(seg.start_ea, seg.end_ea):
         inst = idc.GetDisasm(head)
