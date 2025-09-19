@@ -1,0 +1,94 @@
+name: Hocus Pocus (Shareware 1.1)
+sha1: d9929b0a068952f26000f7e093c08f204d4f62e4
+options:
+  basename: hocus
+  base_path: ../..
+  asm_path: asm/demo11
+  asset_path: assets/demo11
+  target_path: hocus.demo11.exe
+  platform: dos
+  is_unsupported_platform: true
+  allow_segment_overrides: true
+  extensions_path: tools/splat_ext/dos
+segments:
+  - name: mz_header
+    start: 0x0
+    type: bin
+
+  - name: code
+    start: 0x01C00
+    type: code
+    vram: 0x10000
+    subsegments:
+      #TEXT
+      - {start: 0x01C00, type: bin}
+      - {start: 0x0708F, type: asm, align: 1, name: src/hocus}
+      - {start: 0x07A70, type: asm, align: 1, name: src/gr}
+      - {start: 0x085A7, type: asm, align: 1, name: src/fileio}
+      - {start: 0x0886F, type: asm, align: 1, name: src/menus}
+      - {start: 0x0D53C, type: asm, align: 1, name: src/features}
+      - {start: 0xD5D6, type: asm, align: 1, name: src/play}
+      - {start: 0x14024, type: asm, align: 1, name: src/play2}
+      - {start: 0x15239, type: asm, align: 1, name: src/soundfx}
+      - {start: 0x154A8, type: asm, align: 1, name: src/util}
+      - {start: 0x15EB1, type: asm, align: 1, name: src/seg010}
+      - {start: 0x15ECB, type: asm, align: 2, name: src/seg011}
+      - {start: 0x15F2E, type: asm, align: 1, name: audiolib/ll_man}
+      - {start: 0x16029, type: asm, align: 1, name: audiolib/midi}
+      - {start: 0x16B92, type: asm, align: 1, name: audiolib/task_man}
+      - {start: 0x1721B, type: asm, align: 1, name: audiolib/fx_man}
+      - {start: 0x1788B, type: asm, align: 1, name: audiolib/music}
+      - {start: 0x17CED, type: asm, align: 1, name: audiolib/al_midi}
+      - {start: 0x18C4D, type: asm, align: 1, name: audiolib/mpu401}
+      - {start: 0x18E58, type: asm, align: 1, name: audiolib/blaster}
+      - {start: 0x19E3E, type: asm, align: 1, name: audiolib/pas16}
+      - {start: 0x1AC43, type: asm, align: 1, name: audiolib/sndsrc}
+      - {start: 0x1B06F, type: asm, align: 1, name: audiolib/dma}
+      - {start: 0x1B328, type: asm, align: 1, name: audiolib/multivoc}
+      - {start: 0x1BF0E, type: asm, align: 1, name: audiolib/user}
+      - {start: 0x1BFF4, type: asm, align: 1, name: audiolib/seg025}
+      - {start: 0x1C2F8, type: bin}
+      #DATA
+      - {start: 0x1F050, type: .data}
+      - {start: 0x1F0E4, type: data, name: src/hocus}
+      - {start: 0x1FCFB, type: data, name: src/gr}
+      - {start: 0x1FD0F, type: data, name: src/fileio}
+      - {start: 0x1FD27, type: data, name: src/menus}
+      - {start: 0x20A2A, type: data, name: src/design}
+      - {start: 0x20EFE, type: data, name: src/play}
+      - {start: 0x210F7, type: data, name: src/soundfx}
+      - {start: 0x21121, type: data, name: src/util}
+      - {start: 0x212D5, type: data, name: audiolib/midi}
+      - {start: 0x2130A, type: data, name: audiolib/task_man}
+      - {start: 0x21318, type: data, name: audiolib/fx_man}
+      - {start: 0x21369, type: data, name: audiolib/music}
+      - {start: 0x2141E, type: data, name: audiolib/al_midi}
+      - {start: 0x2178B, type: data, name: audiolib/mpu401}
+      - {start: 0x21799, type: data, name: audiolib/blaster}
+      - {start: 0x21A33, type: data, name: audiolib/pas16}
+      - {start: 0x21B3D, type: data, name: audiolib/sndsrc}
+      - {start: 0x21BC3, type: data, name: audiolib/dma}
+      - {start: 0x21CA7, type: data, name: audiolib/multivoc}
+      - {start: 0x21DA0, type: data, name: audiolib/oldtimbr}
+      - {start: 0x2261A, type: .data}
+      #BSS
+      - {start: 0x22CF6, type: bss, name: src/globals}
+      - {start: 0x2B414, type: bss, name: audiolib/midi}
+      - {start: 0x2B440, type: bss, name: audiolib/task_man}
+      - {start: 0x2B44C, type: bss, name: audiolib/music}
+      - {start: 0x2B478, type: bss, name: audiolib/al_midi}
+      - {start: 0x2B8E2, type: bss, name: audiolib/blaster}
+      - {start: 0x2B900, type: bss, name: audiolib/pas16}
+      - {start: 0x2B91C, type: bss, name: audiolib/sndsrc}
+      - {start: 0x2B936, type: bss, name: audiolib/multivoc}
+      - {start: 0x2BAE6, type: .bss}
+  - [0x2BCA0]
+
+
+
+
+
+
+
+
+

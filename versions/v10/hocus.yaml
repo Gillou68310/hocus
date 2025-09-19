@@ -57,7 +57,7 @@ segments:
       - {start: 0x21402, type: data, name: src/design}
       - {start: 0x218D6, type: data, name: src/play}
       - {start: 0x21ACF, type: data, name: src/soundfx}
-      - {start: 0x21AFC, type: data, name: src/util}
+      - {start: 0x21AF9, type: data, name: src/util}
       - {start: 0x21CB8, type: data, name: audiolib/midi}
       - {start: 0x21CEC, type: data, name: audiolib/task_man}
       - {start: 0x21CFA, type: data, name: audiolib/fx_man}
