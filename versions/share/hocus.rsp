@@ -1,0 +1,33 @@
+c0l.obj + 
+BUILD_PATH\asm\share\data\src\globals.obj +
+BUILD_PATH\asm\share\src\hocus.obj +
+BUILD_PATH\asm\share\src\gr.obj +
+BUILD_PATH\asm\share\src\fileio.obj +
+BUILD_PATH\asm\share\src\menus.obj +
+BUILD_PATH\asm\share\src\features.obj +
+BUILD_PATH\asm\share\data\src\design.obj +
+BUILD_PATH\asm\share\src\play.obj +
+BUILD_PATH\asm\share\src\play2.obj +
+BUILD_PATH\asm\share\src\soundfx.obj +
+BUILD_PATH\asm\share\src\util.obj +
+BUILD_PATH\asm\share\src\seg010.obj +
+BUILD_PATH\asm\share\src\seg011.obj +
+BUILD_PATH\asm\share\audiolib\ll_man.obj +
+BUILD_PATH\asm\share\audiolib\midi.obj +
+BUILD_PATH\asm\share\audiolib\task_man.obj +
+BUILD_PATH\asm\share\audiolib\fx_man.obj +
+BUILD_PATH\asm\share\audiolib\music.obj +
+BUILD_PATH\asm\share\audiolib\al_midi.obj +
+BUILD_PATH\asm\share\audiolib\mpu401.obj +
+BUILD_PATH\asm\share\audiolib\blaster.obj +
+BUILD_PATH\asm\share\audiolib\pas16.obj +
+BUILD_PATH\asm\share\audiolib\sndsrc.obj +
+BUILD_PATH\asm\share\audiolib\dma.obj +
+BUILD_PATH\asm\share\audiolib\multivoc.obj +
+BUILD_PATH\asm\share\audiolib\user.obj +
+BUILD_PATH\asm\share\audiolib\seg025.obj +
+BUILD_PATH\asm\share\data\audiolib\oldtimbr.obj +
+BUILD_PATH\src\borland.obj
+BUILD_PATH\hocus.exe
+BUILD_PATH\hocus.map
+emu.lib mathl.lib cl.lib

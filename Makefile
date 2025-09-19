@@ -92,11 +92,11 @@ clean:
 
 $(BUILD_DIR)/%.obj: %.c
 	@$(PRINT)$(GREEN)Compiling C file: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
-	$(V)$(DOSEMU) "$(CC) $(OPTFLAGS) $(CFLAGS) -c -o$(subst /,\,$@) $(subst /,\,$<)" | { $(GREP) "Warning|Error" || true; }
+	$(V)$(DOSEMU) "$(CC) $(OPTFLAGS) $(CFLAGS) -c -o$(subst /,\,$@) $(subst /,\,$<)" | { $(GREP) "Warning|Error|Fatal" || true; }
 
 $(BUILD_DIR)/%.obj: %.asm
 	@$(PRINT)$(GREEN)Assembling asm file: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
-	$(V)$(DOSEMU) "$(AS) $(ASFLAGS) $(subst /,\,$<),$(subst /,\,$@)" | { $(GREP) "\*Warning\*|\*Error\*" || true; }
+	$(V)$(DOSEMU) "$(AS) $(ASFLAGS) $(subst /,\,$<),$(subst /,\,$@)" | { $(GREP) "\*Warning\*|\*Error\*|\*Fatal\*" || true; }
 
 $(BUILD_DIR)/$(LD_SCRIPT): $(VERSION_DIR)/$(LD_SCRIPT)
 	@$(PRINT)$(GREEN)Preprocessing linker script: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
