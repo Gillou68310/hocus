@@ -27,7 +27,7 @@ segments:
       - {start: 0x085A7, type: asm, align: 1, name: src/fileio}
       - {start: 0x0886F, type: asm, align: 1, name: src/menus}
       - {start: 0x0D53C, type: asm, align: 1, name: src/features}
-      - {start: 0xD5D6, type: asm, align: 1, name: src/play}
+      - {start: 0x0D5D6, type: asm, align: 1, name: src/play}
       - {start: 0x14024, type: asm, align: 1, name: src/play2}
       - {start: 0x15239, type: asm, align: 1, name: src/soundfx}
       - {start: 0x154A8, type: asm, align: 1, name: src/util}
