@@ -659,6 +659,10 @@ EXTERN unsigned char star_clrcnt[75];
 // size: 75
 EXTERN unsigned char star_clrplus[75];
 
+#if VERSION_11 || VERSION_DEMO11
+EXTERN FILE *database_file;
+#endif
+
 // addr: 192E:53F6
 // size: 128
 EXTERN PCXHEAD header;

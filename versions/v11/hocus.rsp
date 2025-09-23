@@ -1,7 +1,7 @@
 c0l.obj + 
 BUILD_PATH\asm\v11\data\src\globals.obj +
 BUILD_PATH\asm\v11\src\hocus.obj +
-BUILD_PATH\asm\v11\src\gr.obj +
+BUILD_PATH\src\gr.obj +
 BUILD_PATH\src\fileio.obj +
 BUILD_PATH\asm\v11\src\menus.obj +
 BUILD_PATH\src\features.obj +

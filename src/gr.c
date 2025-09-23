@@ -27,6 +27,28 @@ void settext()
     screen(1);
 }
 
+#ifndef VERSION_PROTO
+void sub_15D8E(int page)
+{
+    unsigned int addr;
+    unsigned char raddr;
+
+    addr = vgapofs[page];
+    while ((inportb(0x3da) & 8))
+        ;
+
+    outportb(0x3d4, 0xc);
+    raddr = addr >> 8;
+    outportb(0x3d5, raddr);
+    outportb(0x3d4, 0xd);
+    raddr = addr;
+    outportb(0x3d5, raddr);
+    while (!(inportb(0x3da) & 8))
+        ;
+    vpg = page;
+}
+#endif
+
 // module: GR
 // size: 0x48
 // addr: 0520:0056
@@ -130,8 +152,13 @@ void setvga(void)
     SET320X200();
     for (i = 0; i < VGA_PAGE_COUNT; i++)
     {
+#ifndef VERSION_PROTO
+        vgapofs[i] = i * (VGA_PAGE_SIZE + 128);
+        vgap[i] = vgabase + i * (VGA_PAGE_SIZE + 128);
+#else
         vgapofs[i] = i * VGA_PAGE_SIZE;
         vgap[i] = vgabase + i * VGA_PAGE_SIZE;
+#endif
         setmem(vgap[i], VGA_PAGE_SIZE, 0);
     }
     setapage(0);
@@ -476,6 +503,9 @@ void load_pcx(int db_rec, int setpal)
     // size: 4
     long length;
 
+#ifndef VERSION_PROTO
+    open_database();
+#endif
     get_offset_length(db_rec, &offset, &length);
     load_to_byte_pointer(offset, sizeof(PCXHEAD), &header.manufacturer);
     load_to_byte_pointer((offset + length) - sizeof(palette), sizeof(palette), palette);
@@ -494,7 +524,104 @@ void load_pcx(int db_rec, int setpal)
     depth = header.ymax - header.ymin + 1;
     bytes = header.bytes_per_line;
     unpackpcxfile();
+#ifndef VERSION_PROTO
+    close_database();
+#endif
 }
+
+#if VERSION_11 || VERSION_DEMO11
+void unpackpcxfile_from_file(void)
+{
+    // register: SI
+    // size: 2
+    int nn;
+    // register: DI
+    // size: 2
+    int n;
+    // stack: [BP-2]
+    // size: 2
+    int c;
+    // stack: [BP-4]
+    // size: 2
+    int i;
+    // stack: [BP-6]
+    // size: 2
+    int j;
+    // stack: [BP-326]
+    // size: 320
+    unsigned char line[4][VGA_PLANE_WIDTH];
+
+    for (i = 0; i < depth; i++)
+    {
+        n = nn = 0;
+        do
+        {
+            c = fgetc(database_file) & 0xFF;
+            if ((c & 0xc0) == 0xc0)
+            {
+                j = c & 0x3f;
+                c = fgetc(database_file);
+                while (j-- != 0)
+                {
+                    line[nn][n >> VGA_PLANE_SHIFT] = c;
+                    n++;
+                    nn++;
+                    if (nn > 3)
+                    {
+                        nn = 0;
+                    }
+                }
+            }
+            else
+            {
+                line[nn][n >> VGA_PLANE_SHIFT] = c;
+                n++;
+                nn++;
+                if (nn > 3)
+                {
+                    nn = 0;
+                }
+            }
+        } while (n < bytes);
+
+        latches(0);
+        outportb(0x3c4, 2);
+        j = i * sizeof(line[0]);
+        outportb(0x3c5, 1);
+        MCPY(&vga[j], line[0], sizeof(line[0]));
+        outportb(0x3c5, 2);
+        MCPY(&vga[j], line[1], sizeof(line[0]));
+        outportb(0x3c5, 4);
+        MCPY(&vga[j], line[2], sizeof(line[0]));
+        outportb(0x3c5, 8);
+        MCPY(&vga[j], line[3], sizeof(line[0]));
+    }
+}
+
+int load_pcx_from_file(char *path)
+{
+    int i;
+
+    database_file = fopen(path, "rb");
+    if (database_file == NULL)
+        return 0;
+
+    fread(&header, sizeof(PCXHEAD), 1, database_file);
+    fseek(database_file, -(int)sizeof(palette), 2);
+    fread(palette, sizeof(palette), 1, database_file);
+    for (i = 0; i < sizeof(palette); i++)
+    {
+        palette[i] >>= 2;
+    }
+    fseek(database_file, sizeof(PCXHEAD), 0);
+    width = header.xmax - header.xmin + 1;
+    depth = header.ymax - header.ymin + 1;
+    bytes = header.bytes_per_line;
+    unpackpcxfile_from_file();
+    fclose(database_file);
+    return 1;
+}
+#endif
 
 // module: GR
 // size: 0x8a
@@ -539,6 +666,9 @@ void show_bin(int db_rec)
     // size: 4
     long offset;
 
+#ifndef VERSION_PROTO
+    open_database();
+#endif
     get_offset(db_rec, &offset);
     load_to_byte_pointer(offset, sizeof(palette), palette);
     point_to_data(offset + sizeof(palette));
@@ -550,6 +680,9 @@ void show_bin(int db_rec)
             vga[i] = fgetc(databasefp);
         }
     }
+#ifndef VERSION_PROTO
+    close_database();
+#endif
 }
 
 // module: GR
@@ -570,6 +703,9 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
     // size: 4
     long offset;
 
+#ifndef VERSION_PROTO
+    open_database();
+#endif
     get_offset(db_rec, &offset);
     load_to_byte_pointer(offset, sizeof(grphdr_t), &grphdr);
     latches(0);
@@ -584,6 +720,9 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
             }
         }
     }
+#ifndef VERSION_PROTO
+    close_database();
+#endif
 }
 
 // module: GR
@@ -595,10 +734,16 @@ void restore_palette_fragment(int db_rec, int s, int setpal)
     // size: 2
     // int s;
 
+#ifndef VERSION_PROTO
+    open_database();
+#endif
     s *= 3;
     load_file_to_byte_pointer(db_rec, palette + s);
     if (setpal != 0)
     {
         write_pels(palette, 0, 0x100);
     }
+#ifndef VERSION_PROTO
+    close_database();
+#endif
 }
