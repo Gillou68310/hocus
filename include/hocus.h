@@ -11,5 +11,8 @@ extern unsigned char pc_key[8];
 extern unsigned char *errmsg[2];
 extern unsigned char *vgabase;
 extern int VOC_priority[12][3];
+#ifndef VERSION_PROTO
+extern int word_2E70E;
+#endif
 
 #endif
