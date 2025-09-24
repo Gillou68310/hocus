@@ -11,9 +11,9 @@ BUILD_PATH\src\play2.obj +
 BUILD_PATH\src\soundfx.obj +
 BUILD_PATH\src\util.obj +
 BUILD_PATH\src\digisnd.obj +
-BUILD_PATH\src\seg012.obj +
+BUILD_PATH\src\memcpy.obj +
 BUILD_PATH\src\joystick.obj +
-BUILD_PATH\src\seg014.obj +
+BUILD_PATH\src\video.obj +
 BUILD_PATH\src\borland.obj
 BUILD_PATH\hocus.exe
 BUILD_PATH\hocus.map

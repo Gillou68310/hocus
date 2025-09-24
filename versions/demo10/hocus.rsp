@@ -10,8 +10,8 @@ BUILD_PATH\asm\demo10\src\play.obj +
 BUILD_PATH\asm\demo10\src\play2.obj +
 BUILD_PATH\asm\demo10\src\soundfx.obj +
 BUILD_PATH\asm\demo10\src\util.obj +
-BUILD_PATH\asm\demo10\src\seg010.obj +
-BUILD_PATH\asm\demo10\src\seg011.obj +
+BUILD_PATH\src\memcpy.obj +
+BUILD_PATH\src\video.obj +
 BUILD_PATH\asm\demo10\audiolib\ll_man.obj +
 BUILD_PATH\asm\demo10\audiolib\midi.obj +
 BUILD_PATH\asm\demo10\audiolib\task_man.obj +
