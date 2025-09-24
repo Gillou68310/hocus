@@ -77,7 +77,7 @@ $(error Invalid VERSION variable detected. Please use either 'proto', 'v10', 'v1
 endif
 
 ifneq ($(VERSION),proto)
-    CFLAGS += -2
+    CFLAGS += -2 -Iaudiolib
 endif
 
 ### Sources ###

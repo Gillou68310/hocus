@@ -10,6 +10,14 @@ typedef unsigned int uint16_t;
 typedef long int32_t;
 typedef unsigned long uint32_t;
 
+#if VERSION_PROTO
+#include "digisnd.h"
+#else
+#include "task_man.h"
+#define DISABLE_INTERRUPTS() asm { pushf; cli }
+#define ENABLE_INTERRUPTS() asm { popf; }
+#endif
+
 #include "defs.h"
 #include "types.h"
 #include "globals.h"

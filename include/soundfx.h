@@ -12,6 +12,7 @@ void SD_Startup(void);
 void SD_Shutdown(void);
 void pascal SD_STARTMUSIC(int16_t *musicp);
 void play_imf_file(int db_rec);
+extern unsigned int TickBase;
 #else
 void play_imf_file(int db_rec, int);
 #endif
@@ -22,7 +23,5 @@ void kick_on_adlib_and_blaster(void);
 void load_and_play_VOC(int db_record);
 void SD_MusicOff(void);
 void kill_sound_drivers(void);
-
-extern unsigned int TickBase;
 
 #endif

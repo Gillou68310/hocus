@@ -73,6 +73,7 @@ segments:
       - {start: 0x2232E, type: .data}
       #BSS
       - {start: 0x22A06, type: bss, name: src/globals}
+      - {start: 0x2B112, type: bss, name: src/util}
       - {start: 0x2B11C, type: bss, name: audiolib/midi}
       - {start: 0x2B148, type: bss, name: audiolib/task_man}
       - {start: 0x2B154, type: bss, name: audiolib/music}

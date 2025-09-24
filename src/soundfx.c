@@ -2,7 +2,6 @@
 #include "common.h"
 #include "util.h"
 #include "fileio.h"
-#include "digisnd.h"
 #include "hocus.h"
 
 #define TIMER_INTERRUPT 8

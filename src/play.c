@@ -649,7 +649,7 @@ void show_hitbar(int i)
     for (i = 0; i < nb; i++)
     {
         c = 0x6F - (i / 10);
-        /*TODO: Is this correct?*/
+        // TODO: Is this correct?
         ((line_t)vga)[0x98][i + 1] = c;
         ((line_t)vga)[0x99][i + 1] = c;
         ((line_t)vga)[0x9A][i + 1] = c;

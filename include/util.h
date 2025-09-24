@@ -19,4 +19,9 @@ void alloc_dwords(int32_t **buf, long dwords, unsigned char *id);
 void get_offset_length(int db_rec, long *offset, long *length);
 void get_offset(int db_rec, long *offset);
 
+#ifndef VERSION_PROTO
+void joy_23E9E();
+void joy_23F9D();
+#endif
+
 #endif

@@ -28,7 +28,7 @@ void settext()
 }
 
 #ifndef VERSION_PROTO
-void sub_15D8E(int page)
+void gr_15D8E(int page)
 {
     unsigned int addr;
     unsigned char raddr;

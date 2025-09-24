@@ -10,6 +10,7 @@ typedef struct config_t
     int16_t music;
     // offset: 4 (2 bytes)
     int16_t joystick;
+#if VERSION_PROTO
     // offset: 6 (2 bytes)
     uint16_t jxmin;
     // offset: 8 (2 bytes)
@@ -18,6 +19,16 @@ typedef struct config_t
     uint16_t jymin;
     // offset: 12 (2 bytes)
     uint16_t jymax;
+#else
+    uint16_t unk6;
+    uint16_t jxmin;
+    uint16_t joyx;
+    uint16_t jxmax;
+    uint16_t jymin;
+    uint16_t joyy;
+    uint16_t jymax;
+    uint16_t unk14;
+#endif
     // offset: 14 (8 bytes)
     unsigned char pckey[8];
     // offset: 22 (18 bytes)
@@ -36,6 +47,12 @@ typedef struct config_t
     unsigned char hname[GAME_COUNT][5][26];
     // offset: 876 (80 bytes)
     int32_t hiscore[GAME_COUNT][5];
+#ifndef VERSION_PROTO
+    int16_t fx_card;
+    int16_t fx_voices;
+    int16_t fx_channels;
+    int16_t music_card;
+#endif
 } config_t;
 
 // size: 4

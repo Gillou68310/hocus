@@ -9,7 +9,7 @@ BUILD_PATH\src\design.obj +
 BUILD_PATH\asm\demo11\src\play.obj +
 BUILD_PATH\asm\demo11\src\play2.obj +
 BUILD_PATH\asm\demo11\src\soundfx.obj +
-BUILD_PATH\asm\demo11\src\util.obj +
+BUILD_PATH\src\util.obj +
 BUILD_PATH\src\memcpy.obj +
 BUILD_PATH\src\video.obj +
 BUILD_PATH\asm\demo11\audiolib\ll_man.obj +

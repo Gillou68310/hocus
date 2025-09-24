@@ -47,7 +47,7 @@ void title(void)
     setvpage(0);
     load_pcx(OFFSET_TITLE, 0);
 #if VERSION_10 || VERSION_11
-    if (word_2E70E)
+    if (hocus_2E70E)
         restore_graphics_fragment(OFFSET_REGIST, 0, 0xbc);
 #endif
     fade_in(40);

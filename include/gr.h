@@ -32,7 +32,7 @@ void restore_graphics_fragment(int db_rec, int sx, int sy);
 void restore_palette_fragment(int db_rec, int s, int setpal);
 
 #ifndef VERSION_PROTO
-void sub_15D8E(int page);
+void gr_15D8E(int page);
 #endif
 
 #if VERSION_11 || VERSION_DEMO11

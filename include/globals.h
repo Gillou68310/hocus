@@ -679,6 +679,10 @@ EXTERN unsigned int depth;
 // size: 2
 EXTERN unsigned int bytes;
 
+#ifndef VERSION_PROTO
+EXTERN task *audio_task;
+#endif
+
 // addr: 192E:53EE
 // size: 2
 EXTERN int indemo;
@@ -694,6 +698,21 @@ EXTERN long total_ticks;
 // addr: 192E:53E2
 // size: 4
 EXTERN long musiclooped;
+
+#ifndef VERSION_PROTO
+EXTERN int JoyX;
+EXTERN int JoyY;
+EXTERN int button1;
+EXTERN int button2;
+#if VERSION_11 || VERSION_DEMO11
+EXTERN int button3;
+EXTERN int button4;
+#endif
+EXTERN int joy_34B02;
+EXTERN int joy_34B00;
+EXTERN int joy_34AFE;
+EXTERN int joy_34AFC;
+#endif
 
 // addr: 192E:4C12
 // size: 2000
@@ -794,6 +813,10 @@ EXTERN unsigned char muskey;
 // addr: 192E:4B95
 // size: 1
 EXTERN unsigned char sndkey;
+
+#ifndef VERSION_PROTO
+EXTERN unsigned char key_342AB;
+#endif
 
 // addr: 192E:4B94
 // size: 1
