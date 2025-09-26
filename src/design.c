@@ -25,7 +25,7 @@ ups_t ups[UPS_COUNT] = {
     {"Diamond", 250, 0, 0, 0},
     {"Goblet", 500, 0, 0, 0},
     {"Crown", 1000, 0, 0, 0},
-#if VERSION_PROTO
+#if PROTO
     {"Heal (green)", 0, 15, 0, 0},
 #else
     {"Heal (green)", 0, 10, 0, 0},
@@ -42,7 +42,7 @@ ups_t ups[UPS_COUNT] = {
     {"Kill", 0, 0, 0, 9},
     {"Wizard note", 0, 0, 0, 10},
     {"Laser Shot", 0, 0, 0, 11},
-#if VERSION_PROTO
+#if PROTO
     {"Unused", 0, 0, 0, 0},
 #else
     {"FISCHER PRICE", 0, 0, 0, 12},
@@ -77,7 +77,7 @@ int bdrop_pcxpal_ofs[GAME_COUNT][LEVEL_COUNT + 1] = {
     {8, 8, 9, 9, 10, 10, 11, 11, 11, 0},
     {12, 12, 13, 13, 14, 14, 15, 15, 15, 0}};
 
-#if VERSION_PROTO
+#if PROTO
 
 // module: DESIGN
 // size: 0x1a
@@ -971,7 +971,7 @@ void load_tag_sprites(void)
         if (mtags[i].mnum != -1)
         {
             pos = mtags[i].mnum;
-            point_to_data_record(OFFSET_SPRITES);
+            point_to_data_record(DB_SPRITES);
             fseek(databasefp, (pos * sizeof(sprite_t)), 1);
             fread(&sprite[s], sizeof(sprite_t), 1, databasefp);
             s++;
@@ -1174,25 +1174,25 @@ void design(void)
     palette_pnt = 0;
     blx = brx = bty = bby = 0;
     block = 0;
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_LVLINFO, &lvlinfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_LVLINFO, &lvlinfo);
     dx = lvlinfo.startx;
     dy = lvlinfo.starty;
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ANMINFO, &anminfo);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WARPS, warps);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SWITCHES, switches);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_RTRIPS, rtrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ETRIPS, etrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTAGS, mtags);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_ANMINFO, &anminfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_WARPS, warps);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_SWITCHES, switches);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_RTRIPS, rtrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_ETRIPS, etrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_MTAGS, mtags);
     load_tag_sprites();
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTRIGGERS, mtriggers);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_BKG, bkg);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLD, sld);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLDSAV, sldsav);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_MTRIGGERS, mtriggers);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_BKG, bkg);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_SLD, sld);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_SLDSAV, sldsav);
     memcpy(sld, sldsav, 0x3840);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_FNC, fnc);
     setmem(swe, 0x3840, 0);
     setapage(1);
-    load_pcx(plat_pcx_ofs[game][level] + OFFSET_TILE, 0);
+    load_pcx(plat_pcx_ofs[game][level] + DB_TILE, 0);
     read_pels(palette, 0, 0x100);
     scopy(2, 1);
     setapage(0);
@@ -1410,56 +1410,56 @@ void design(void)
             {
                 lvlinfo.startx = dx;
                 lvlinfo.starty = dy;
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_LVLINFO, &lvlinfo);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_LVLINFO, &lvlinfo);
                 strcpy(dline, "LVLINF");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, &lvlinfo, sizeof(lvlinfo));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WARPS, warps);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_WARPS, warps);
                 strcpy(dline, "WARPS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, warps, sizeof(warps));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SWITCHES, switches);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_SWITCHES, switches);
                 strcpy(dline, "SWITCH");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, switches, sizeof(switches));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_RTRIPS, rtrips);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_RTRIPS, rtrips);
                 strcpy(dline, "RTRIPS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, rtrips, sizeof(rtrips));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ETRIPS, etrips);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_ETRIPS, etrips);
                 strcpy(dline, "ETRIPS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, etrips, sizeof(etrips));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTAGS, mtags);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_MTAGS, mtags);
                 strcpy(dline, "MTAGS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, mtags, sizeof(mtags));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTRIGGERS, mtriggers);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_MTRIGGERS, mtriggers);
                 strcpy(dline, "MTRIGS");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, mtriggers, sizeof(mtriggers));
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_BKG, bkg);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_BKG, bkg);
                 strcpy(dline, "BKG");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, bkg, 0x3840);
                 memcpy(sldsav, sld, 0x3840);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLDSAV, sldsav);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_SLDSAV, sldsav);
                 strcpy(dline, "SLDSAV");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
@@ -1516,14 +1516,14 @@ void design(void)
                         }
                     }
                 }
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLD, sld);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_SLD, sld);
                 strcpy(dline, "SLD");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
                 strcat(dline, ".LVL");
                 save_disk_file(dline, sld, 0x3840);
                 memcpy(sld, sldsav, 0x3840);
-                save_file_from_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
+                save_file_from_byte_pointer(lvl_info_ofs[game][level] + DB_FNC, fnc);
                 strcpy(dline, "FNC");
                 strcat(dline, itoa(game + 1, dumnum, 10));
                 strcat(dline, itoa(level + 1, dumnum, 10));
@@ -1598,7 +1598,7 @@ void design(void)
             }
         }
     }
-    play_imf_file(MUSIC_TITLE);
+    play_imf_file(DB_MUSIC_TITLE);
 }
 
 #endif

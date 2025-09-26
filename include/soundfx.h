@@ -1,7 +1,7 @@
 #ifndef __SOUNDFX_H__
 #define __SOUNDFX_H__
 
-#if VERSION_PROTO
+#if PROTO
 void pascal OB(unsigned int porta, unsigned char abyte);
 void alOut(unsigned char n, unsigned char b);
 void pascal SDL_SETTIMER0(int speed);

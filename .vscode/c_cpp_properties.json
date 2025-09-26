@@ -9,7 +9,7 @@
                 "${workspaceFolder}/audiolib"
             ],
             "defines": [
-                "VERSION_PROTO"
+                "PROTO"
             ],
             "cStandard": "c89",
             "intelliSenseMode": "${default}"

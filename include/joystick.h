@@ -1,6 +1,7 @@
 #ifndef __JOYSTICK_H__
 #define __JOYSTICK_H__
 
+#if PROTO
 int JOY_Start(unsigned int joy);
 void JOY_ShutDownStick(unsigned int joy);
 void JOY_SetScale(unsigned int joy);
@@ -24,5 +25,6 @@ extern int button1;
 extern int button2;
 extern int button3;
 extern int button4;
+#endif
 
 #endif

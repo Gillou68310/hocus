@@ -10,7 +10,7 @@ typedef unsigned int uint16_t;
 typedef long int32_t;
 typedef unsigned long uint32_t;
 
-#if VERSION_PROTO
+#if PROTO
 #include "digisnd.h"
 #else
 #include "task_man.h"

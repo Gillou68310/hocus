@@ -1509,10 +1509,10 @@ void load_sprites(void)
         if (sload[s] != -1)
         {
             pos = sload[s];
-            point_to_data_record(OFFSET_SPRITES);
+            point_to_data_record(DB_SPRITES);
             fseek(databasefp, (pos * sizeof(sprite_t)), 1);
             fread(&sprite[s], sizeof(sprite_t), 1, databasefp);
-            point_to_data_record(OFFSET_SPRITES);
+            point_to_data_record(DB_SPRITES);
             fseek(databasefp, sprite[s].fpos, 1);
             fread(spr_code[s], sprite[s].codesize, 1, databasefp);
             setapage(2);
@@ -3251,7 +3251,7 @@ start:
     setapage(1);
     clearscreen();
     setvpage(0);
-    play_imf_file(song2play[game][level] + (OFFSET_MUSIC+1));
+    play_imf_file(song2play[game][level] + (DB_MUSIC+1));
     do_anm = 0;
     flash_flag = 0;
     hinwarp = 0;
@@ -3313,21 +3313,21 @@ start:
         sc_life[i] = -1;
     }
 
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_LVLINFO, &lvlinfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_LVLINFO, &lvlinfo);
     hxpos = lvlinfo.startx * 2;
     hylpos = lvlinfo.starty * 16;
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ANMINFO, &anminfo);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WIZNOTES, wiznotes);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_WARPS, warps);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SWITCHES, switches);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_RTRIPS, rtrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_ETRIPS, etrips);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTAGS, mtags);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_MTRIGGERS, mtriggers);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_BKG, bkg);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLD, sld);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_SLDSAV, sldsav);
-    load_file_to_byte_pointer(lvl_info_ofs[game][level] + OFFSET_FNC, fnc);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_ANMINFO, &anminfo);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_WIZNOTES, wiznotes);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_WARPS, warps);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_SWITCHES, switches);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_RTRIPS, rtrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_ETRIPS, etrips);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_MTAGS, mtags);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_MTRIGGERS, mtriggers);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_BKG, bkg);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_SLD, sld);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_SLDSAV, sldsav);
+    load_file_to_byte_pointer(lvl_info_ofs[game][level] + DB_FNC, fnc);
     setmem(swe, 0x3840, 0);
     treasures = treasuresfound = 0;
 
@@ -3351,7 +3351,7 @@ start:
         }
     }
     setapage(3);
-    load_pcx(plat_pcx_ofs[game][level] + OFFSET_TILE, 1);
+    load_pcx(plat_pcx_ofs[game][level] + DB_TILE, 1);
     read_pels(palette, 0, 0x100);
 
     s = 0;
@@ -3404,20 +3404,20 @@ start:
     }
     load_sprites();
     setapage(3);
-    load_pcx(bdrop_pcxpal_ofs[game][level] + OFFSET_BACKPCX, 0);
-    restore_palette_fragment(OFFSET_GAMEPAL, 0, 1);
-    restore_palette_fragment(bdrop_pcxpal_ofs[game][level] + OFFSET_BACKPAL, 0x80, 1);
-    restore_graphics_fragment(OFFSET_HUDSTUFF, 0, 0xa0);
-    restore_graphics_fragment(OFFSET_BULLIT, 0, 0xb4);
+    load_pcx(bdrop_pcxpal_ofs[game][level] + DB_BACKPCX, 0);
+    restore_palette_fragment(DB_GAMEPAL, 0, 1);
+    restore_palette_fragment(bdrop_pcxpal_ofs[game][level] + DB_BACKPAL, 0x80, 1);
+    restore_graphics_fragment(DB_HUDSTUFF, 0, 0xa0);
+    restore_graphics_fragment(DB_BULLIT, 0, 0xb4);
     fade_out(1);
     setapage(0);
-    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
+    restore_graphics_fragment(DB_NEW_HUD, 0, 0xa0);
     setapage(1);
-    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
+    restore_graphics_fragment(DB_NEW_HUD, 0, 0xa0);
     setapage(0);
-    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
+    restore_graphics_fragment(DB_NEW_HUD, 0, 0xa0);
     setapage(1);
-    restore_graphics_fragment(OFFSET_NEW_HUD, 0, 0xa0);
+    restore_graphics_fragment(DB_NEW_HUD, 0, 0xa0);
     count_crystals();
     crystals_found = 0;
     health = 100;
@@ -3433,7 +3433,7 @@ start:
 
     if (demomode == 2)
     {
-        load_file_to_byte_pointer(level / 2 + OFFSET_DEMO, buf64);
+        load_file_to_byte_pointer(level / 2 + DB_DEMO, buf64);
         demolimit = *(int16_t *)buf64;
     }
     if ((game == 3) && (level == 8))
@@ -4400,7 +4400,7 @@ start:
                 }
                 else
                 {
-                    play_imf_file(song2play[game][level] + (OFFSET_MUSIC+1));
+                    play_imf_file(song2play[game][level] + (DB_MUSIC+1));
                 }
             }
             if ((adlib == 0) && (blaster == 0))
@@ -4443,9 +4443,9 @@ start:
     fade_out(0x14);
     if (done != 2)
     {
-        restore_palette_fragment(OFFSET_GAMEPAL, 0, 0);
-        restore_palette_fragment(OFFSET_MENUPAL, 0x80, 0);
-        play_imf_file(MUSIC_TITLE);
+        restore_palette_fragment(DB_GAMEPAL, 0, 0);
+        restore_palette_fragment(DB_MENUPAL, 0x80, 0);
+        play_imf_file(DB_MUSIC_TITLE);
     }
     if (hdone == 1)
     {

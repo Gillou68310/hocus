@@ -12,7 +12,7 @@
 // size: 4
 void(interrupt *oldk_handler)(void);
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 unsigned int TickBase = 0x8c;
 int word_3A1E6;
 int word_3A1E4;
@@ -44,7 +44,7 @@ void start_audio_task(void)
 void stop_audio_task(void)
 {
     TS_Terminate(audio_task);
-#if VERSION_11 || VERSION_DEMO11
+#if FINAL
     TS_Shutdown();
 #endif
 }
@@ -90,7 +90,7 @@ int snoozekey(int micros)
 
     while (((clk_times - st) < micros) && (kbhit() == 0) && (get_menu_joystick() != 3))
     {
-#if VERSION_PROTO
+#if PROTO
         ;
 #else
         wait_for_retrace();
@@ -112,7 +112,7 @@ void clear_keys(void)
 {
     cukey = ukey = dkey = lkey = rkey = fkey = jkey = qkey = pgupkey = pgdnkey = 0;
     ukeyclr = jkeyclr = fkeyclr = 1;
-#if VERSION_PROTO
+#if PROTO
     f2key = f3key = f10key = helpkey = calkey = 0;
 #else
     f2key = f3key = f10key = helpkey = calkey = key_342AB = 0;
@@ -120,7 +120,7 @@ void clear_keys(void)
     pause = 0;
 }
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 void flush_keyboard(void)
 {
     // stack: [BP-16]
@@ -138,7 +138,7 @@ void flush_keyboard(void)
 // addr: 14B9:013B
 void install_key_handler(void)
 {
-#if VERSION_PROTO
+#if PROTO
     clear_keys();
     asm cli;
     oldk_handler = getvect(9);
@@ -166,7 +166,7 @@ void install_key_handler(void)
 // addr: 14B9:016B
 void disable_key_handler(void)
 {
-#if VERSION_PROTO
+#if PROTO
     asm cli;
     setvect(9, oldk_handler);
     asm sti;
@@ -190,7 +190,7 @@ void interrupt key_handler(void)
     i = inportb(0x61);
     outportb(0x61, i | 0x80);
     outportb(0x61, i);
-#if VERSION_PROTO
+#if PROTO
     if ((hdead == 0) && (hdone == 0) && (indemo == 0))
 #else
     if ((game_config.joystick == 0) && (hdead == 0) && (hdone == 0) && (indemo == 0))
@@ -257,7 +257,7 @@ void interrupt key_handler(void)
             fkeyclr = 1;
         }
     }
-#ifndef VERSION_PROTO
+#ifndef PROTO
     if (gkey == 0x21)
     {
         word_3A1E6 = 0;
@@ -281,7 +281,7 @@ void interrupt key_handler(void)
         hskey = 1;
         hgkey = 1;
     }
-#if VERSION_10 || VERSION_11
+#ifndef DEMO
     if ((word_3A1E6) == 0x378)
     {
         if (hsupershot == 0)
@@ -322,7 +322,7 @@ void interrupt key_handler(void)
     {
         pgdnkey = 0;
     }
-#if VERSION_PROTO
+#if PROTO
     if ((gkey == 0x3b) || (gkey == 1))
 #else
     if (gkey == 1)
@@ -330,7 +330,7 @@ void interrupt key_handler(void)
     {
         qkey = 1;
     }
-#if VERSION_PROTO
+#if PROTO
     if ((gkey == 0xbb) || (gkey == 0x81))
 #else
     if (gkey == 0x81)
@@ -350,7 +350,7 @@ void interrupt key_handler(void)
     {
         f10key = 1;
     }
-#if VERSION_PROTO
+#if PROTO
     if (gkey == 0x23)
 #else
     if (gkey == 0x3b)
@@ -370,7 +370,7 @@ void interrupt key_handler(void)
     {
         sndkey = 1;
     }
-#ifndef VERSION_PROTO
+#ifndef PROTO
     if (gkey == 0x2f)
     {
         key_342AB = 1;
@@ -379,7 +379,7 @@ void interrupt key_handler(void)
     outportb(0x20, 0x20);
 }
 
-#if VERSION_PROTO
+#if PROTO
 // module: UTIL
 // size: 0x28
 // addr: 14B9:045E
@@ -436,14 +436,14 @@ void normal_exit(void)
     unsigned char *textscreen;
 
     textscreen = (unsigned char *)0xb8000000;
-#if VERSION_PROTO
+#if PROTO
     settext();
     gotoxy(1, 0x18);
     read_pels(palette, 0, 0x100);
     clear_palette();
-    load_file_to_byte_pointer(OFFSET_DOSMSG, textscreen);
+    load_file_to_byte_pointer(DB_DOSMSG, textscreen);
     fade_in(0x1e);
-    load_and_play_VOC(OFFSET_SOUND + 5);
+    load_and_play_VOC(DB_SOUND5);
     while (SB_VOCPlaying() != 0)
         ;
     kill_sound_drivers();
@@ -455,10 +455,10 @@ void normal_exit(void)
     gotoxy(1, 0x18);
     read_pels(palette, 0, 0x100);
     clear_palette();
-#if VERSION_DEMO10 || VERSION_DEMO11
-    load_file_to_byte_pointer(OFFSET_DOSSHARE, buf64);
+#if DEMO
+    load_file_to_byte_pointer(DB_DOSSHARE, buf64);
 #else
-    load_file_to_byte_pointer(OFFSET_DOSREG, buf64);
+    load_file_to_byte_pointer(DB_DOSREG, buf64);
 #endif
     MCPY(textscreen, buf64, 4000);
     fade_in(0x1e);
@@ -468,7 +468,7 @@ void normal_exit(void)
 #endif
 }
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 void nomem_exit(void)
 {
     settext();
@@ -476,10 +476,10 @@ void nomem_exit(void)
     kill_sound_drivers();
     stop_audio_task();
     printf(
-#if VERSION_10 || VERSION_DEMO10
-        "Not enough memory to run Hocus Pocus Version 1.0\n\n"
-#else
+#if FINAL
         "Not enough memory to run Hocus Pocus.\n\n"
+#else
+        "Not enough memory to run Hocus Pocus Version 1.0\n\n"
 #endif
         "You need 580,000 (567 KB) to run Hocus Pocus. Try the following\n"
         "remedies to increase your amount of free memory.\n\n"
@@ -500,7 +500,7 @@ void nomem_exit(void)
 void terminate(unsigned char *str)
 {
     kill_sound_drivers();
-#if VERSION_PROTO
+#if PROTO
     close_database();
 #endif
     settext();
@@ -514,7 +514,7 @@ void terminate(unsigned char *str)
 void terminate_emsg(int emsg, unsigned char *str2)
 {
     kill_sound_drivers();
-#if VERSION_PROTO
+#if PROTO
     close_database();
 #endif
     settext();
@@ -529,7 +529,7 @@ void alloc_bytes(unsigned char **buf, long bytes, unsigned char *id)
 {
     if ((*buf = _fmalloc(bytes)) == NULL)
     {
-#if VERSION_PROTO
+#if PROTO
         terminate_emsg(0, id);
 #else
         (void)id;
@@ -545,7 +545,7 @@ void alloc_words(int16_t **buf, long words, unsigned char *id)
 {
     if ((*buf = _fmalloc(words)) == NULL)
     {
-#if VERSION_PROTO
+#if PROTO
         terminate_emsg(0, id);
 #else
         (void)id;
@@ -561,7 +561,7 @@ void alloc_dwords(int32_t **buf, long dwords, unsigned char *id)
 {
     if ((*buf = _fmalloc(dwords)) == NULL)
     {
-#if VERSION_PROTO
+#if PROTO
         terminate_emsg(0, id);
 #else
         (void)id;
@@ -591,7 +591,7 @@ void get_offset(int db_rec, long *offset)
     *offset = db[db_rec].ofs;
 }
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 void joy_23E9E()
 {
     char i;
@@ -623,7 +623,7 @@ void joy_23E9E()
         {
             button2 = 1;
         }
-#if VERSION_11 || VERSION_DEMO11
+#if FINAL
         if ((i & 0x40) != 0)
         {
             button3 = 0;
@@ -748,7 +748,7 @@ void joy_23F9D()
         {
             button2 = 1;
         }
-#if VERSION_11 || VERSION_DEMO11
+#if FINAL
         if ((i & 0x40) != 0)
         {
             button3 = 0;

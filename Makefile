@@ -30,6 +30,7 @@ endif
 VERSION_DIR  := versions/$(VERSION)
 DOS_EXE      := $(BUILD_DIR)/$(TARGET).exe
 LD_SCRIPT    := $(TARGET).rsp
+BCC_DIR      := %BCC31%
 
 ### Tools ###
 PYTHON     := python3
@@ -37,10 +38,11 @@ DIFF       := $(PYTHON) tools/diff.py
 MKDIR      := mkdir -p
 GREP       := grep -E
 SED        := sed
-DOSEMU	   := HOME="." dosemu -quiet -dumb -K . -E
-AS         := %BCC31%\bin\tasm
-LD         := %BCC31%\bin\tlink
-CC         := %BCC31%\bin\bcc
+ECHO       := echo
+DOSEMU     := HOME="." dosemu -quiet -dumb -K . -E
+AS         := bin\tasm
+LD         := bin\tlink
+CC         := bin\bcc
 
 PRINT := printf '
  ENDCOLOR := \033[0m
@@ -59,19 +61,19 @@ ENDLINE := \n'
 ### Compiler Options ###
 OPTFLAGS ?=
 ASFLAGS  := /e /ml
-CFLAGS   := -ml -y -a -K -Iinclude -I%BCC31%\include
-LDFLAGS  := /m /s /c /l /v /L%BCC31%\lib
+CFLAGS   := -ml -y -a -K -Iinclude -Isrc
+LDFLAGS  := /m /s /c /l /v
 
 ifeq ($(VERSION),proto)
-    CFLAGS += -DVERSION_PROTO=1
+    CFLAGS += -DPROTO=1
 else ifeq ($(VERSION),v10)
-    CFLAGS += -DVERSION_10=1
+    CFLAGS +=
 else ifeq ($(VERSION),v11)
-    CFLAGS += -DVERSION_11=1
+    CFLAGS += -DFINAL=1
 else ifeq ($(VERSION),demo10)
-    CFLAGS += -DVERSION_DEMO10=1
+    CFLAGS += -DDEMO=1
 else ifeq ($(VERSION),demo11)
-    CFLAGS += -DVERSION_DEMO11=1
+    CFLAGS += -DDEMO=1 -DFINAL=1
 else
 $(error Invalid VERSION variable detected. Please use either 'proto', 'v10', 'v11', 'demo10' or 'demo11')
 endif
@@ -93,9 +95,9 @@ $(shell $(MKDIR) $(OBJDIRS))
 $(BUILD_DIR)/src/digisnd.obj: OPTFLAGS := -O2
 $(BUILD_DIR)/src/digisnd.obj: CFLAGS := $(filter-out -a -K,$(CFLAGS))
 
+$(BUILD_DIR)/audiolib/%.obj: BCC_DIR := %BCC20%
 $(BUILD_DIR)/audiolib/%.obj: OPTFLAGS := -O -G
-$(BUILD_DIR)/audiolib/%.obj: CFLAGS := -ml -y -2 -Iaudiolib -I%BCC20%\include
-$(BUILD_DIR)/audiolib/%.obj: CC := %BCC20%\bin\bcc
+$(BUILD_DIR)/audiolib/%.obj: CFLAGS := -ml -y -2 -Iaudiolib
 
 all: $(DOS_EXE)
 
@@ -104,11 +106,15 @@ clean:
 
 $(BUILD_DIR)/%.obj: %.c
 	@$(PRINT)$(GREEN)Compiling C file: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
-	$(V)$(DOSEMU) "$(CC) $(OPTFLAGS) $(CFLAGS) -c -o$(subst /,\,$@) $(subst /,\,$<)" | { $(GREP) "Warning|Error|Fatal" || true; }
+	$(V)$(ECHO) "$(OPTFLAGS) $(CFLAGS) -c -o$(subst /,\,$@) $(subst /,\,$<)" > $(BUILD_DIR)/$*.rsp && \
+	$(DOSEMU) "$(BCC_DIR)\$(CC) -I$(BCC_DIR)\include @$(subst /,\,$(BUILD_DIR)/$*.rsp)" | \
+	{ $(GREP) "Warning|Error|Fatal" || true; }
 
 $(BUILD_DIR)/%.obj: %.asm
 	@$(PRINT)$(GREEN)Assembling asm file: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
-	$(V)$(DOSEMU) "$(AS) $(ASFLAGS) $(subst /,\,$<),$(subst /,\,$@)" | { $(GREP) "\*Warning\*|\*Error\*|\*Fatal\*" || true; }
+	$(V)$(ECHO) "$(ASFLAGS) $(subst /,\,$<),$(subst /,\,$@)" > $(BUILD_DIR)/$*.rsp && \
+	$(DOSEMU) "$(BCC_DIR)\$(AS) @$(subst /,\,$(BUILD_DIR)/$*.rsp)" | \
+	{ $(GREP) "\*Warning\*|\*Error\*|\*Fatal\*" || true; }
 
 $(BUILD_DIR)/$(LD_SCRIPT): $(VERSION_DIR)/$(LD_SCRIPT)
 	@$(PRINT)$(GREEN)Preprocessing linker script: $(ENDGREEN)$(BLUE)$<$(ENDBLUE)$(ENDLINE)
@@ -116,7 +122,8 @@ $(BUILD_DIR)/$(LD_SCRIPT): $(VERSION_DIR)/$(LD_SCRIPT)
 
 $(DOS_EXE): $(BUILD_DIR)/$(LD_SCRIPT) $(OBJECTS)
 	@$(PRINT)$(GREEN)Linking DOS file: $(ENDGREEN)$(BLUE)$@$(ENDBLUE)$(ENDLINE)
-	$(V)$(DOSEMU) "$(LD) $(LDFLAGS) @$(subst /,\\,$<)" | { $(GREP) "Warning|Error|Fatal" || true; }
+	$(V)$(DOSEMU) "$(BCC_DIR)\$(LD) $(LDFLAGS) /L$(BCC_DIR)\lib @$(subst /,\\,$<)" | \
+	{ $(GREP) "Warning|Error|Fatal" || true; }
 ifeq ($(COMPARE),1)
 	@$(DIFF) $(BASE_EXE) $(DOS_EXE)
 endif

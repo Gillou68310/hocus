@@ -8,7 +8,7 @@ void point_to_data_record(int db_rec);
 void load_to_byte_pointer(long offset, long length, void *ptr);
 void save_from_byte_pointer(long offset, long length, void *ptr);
 void load_file_to_byte_pointer(int db_rec, void *ptr);
-#if VERSION_PROTO
+#if PROTO
 long load_disk_file(unsigned char *fln, void *ptr);
 void save_disk_file(unsigned char *fln, void *ptr, unsigned int length);
 #else

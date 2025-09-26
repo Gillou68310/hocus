@@ -27,7 +27,7 @@ void settext()
     screen(1);
 }
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 void gr_15D8E(int page)
 {
     unsigned int addr;
@@ -152,7 +152,7 @@ void setvga(void)
     SET320X200();
     for (i = 0; i < VGA_PAGE_COUNT; i++)
     {
-#ifndef VERSION_PROTO
+#ifndef PROTO
         vgapofs[i] = i * (VGA_PAGE_SIZE + 128);
         vgap[i] = vgabase + i * (VGA_PAGE_SIZE + 128);
 #else
@@ -503,7 +503,7 @@ void load_pcx(int db_rec, int setpal)
     // size: 4
     long length;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
     open_database();
 #endif
     get_offset_length(db_rec, &offset, &length);
@@ -524,12 +524,12 @@ void load_pcx(int db_rec, int setpal)
     depth = header.ymax - header.ymin + 1;
     bytes = header.bytes_per_line;
     unpackpcxfile();
-#ifndef VERSION_PROTO
+#ifndef PROTO
     close_database();
 #endif
 }
 
-#if VERSION_11 || VERSION_DEMO11
+#if FINAL
 void unpackpcxfile_from_file(void)
 {
     // register: SI
@@ -666,7 +666,7 @@ void show_bin(int db_rec)
     // size: 4
     long offset;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
     open_database();
 #endif
     get_offset(db_rec, &offset);
@@ -680,7 +680,7 @@ void show_bin(int db_rec)
             vga[i] = fgetc(databasefp);
         }
     }
-#ifndef VERSION_PROTO
+#ifndef PROTO
     close_database();
 #endif
 }
@@ -703,7 +703,7 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
     // size: 4
     long offset;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
     open_database();
 #endif
     get_offset(db_rec, &offset);
@@ -720,7 +720,7 @@ void restore_graphics_fragment(int db_rec, int sx, int sy)
             }
         }
     }
-#ifndef VERSION_PROTO
+#ifndef PROTO
     close_database();
 #endif
 }
@@ -734,7 +734,7 @@ void restore_palette_fragment(int db_rec, int s, int setpal)
     // size: 2
     // int s;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
     open_database();
 #endif
     s *= 3;
@@ -743,7 +743,7 @@ void restore_palette_fragment(int db_rec, int s, int setpal)
     {
         write_pels(palette, 0, 0x100);
     }
-#ifndef VERSION_PROTO
+#ifndef PROTO
     close_database();
 #endif
 }

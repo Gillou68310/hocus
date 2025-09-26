@@ -72,7 +72,7 @@ void load_file_to_byte_pointer(int db_rec, void *ptr)
     fread(ptr, length, 1, databasefp);
 }
 
-#if VERSION_PROTO
+#if PROTO
 // module: FILEIO
 // size: 0xa9
 // addr: 05B3:015D

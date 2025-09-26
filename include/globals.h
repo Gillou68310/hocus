@@ -659,7 +659,7 @@ EXTERN unsigned char star_clrcnt[75];
 // size: 75
 EXTERN unsigned char star_clrplus[75];
 
-#if VERSION_11 || VERSION_DEMO11
+#if FINAL
 EXTERN FILE *database_file;
 #endif
 
@@ -679,7 +679,7 @@ EXTERN unsigned int depth;
 // size: 2
 EXTERN unsigned int bytes;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 EXTERN task *audio_task;
 #endif
 
@@ -699,12 +699,12 @@ EXTERN long total_ticks;
 // size: 4
 EXTERN long musiclooped;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 EXTERN int JoyX;
 EXTERN int JoyY;
 EXTERN int button1;
 EXTERN int button2;
-#if VERSION_11 || VERSION_DEMO11
+#if FINAL
 EXTERN int button3;
 EXTERN int button4;
 #endif
@@ -814,7 +814,7 @@ EXTERN unsigned char muskey;
 // size: 1
 EXTERN unsigned char sndkey;
 
-#ifndef VERSION_PROTO
+#ifndef PROTO
 EXTERN unsigned char key_342AB;
 #endif
 
@@ -968,11 +968,11 @@ EXTERN int current_sound_priority;
 
 // addr: 192E:3EFC
 // size: 48
-EXTERN unsigned char *sfx_mem[12];
+EXTERN unsigned char *sfx_mem[SOUND_COUNT];
 
 // addr: 192E:3ECC
 // size: 48
-EXTERN int16_t *pcs_mem[12];
+EXTERN int16_t *pcs_mem[SOUND_COUNT];
 
 // addr: 192E:3ECA
 // size: 2

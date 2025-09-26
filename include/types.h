@@ -10,7 +10,7 @@ typedef struct config_t
     int16_t music;
     // offset: 4 (2 bytes)
     int16_t joystick;
-#if VERSION_PROTO
+#if PROTO
     // offset: 6 (2 bytes)
     uint16_t jxmin;
     // offset: 8 (2 bytes)
@@ -47,11 +47,20 @@ typedef struct config_t
     unsigned char hname[GAME_COUNT][5][26];
     // offset: 876 (80 bytes)
     int32_t hiscore[GAME_COUNT][5];
-#ifndef VERSION_PROTO
+#ifndef PROTO
     int16_t fx_card;
     int16_t fx_voices;
     int16_t fx_channels;
     int16_t music_card;
+    int16_t music_addr;
+    int16_t unk3CE;
+    int16_t unk3D0;
+    int16_t unk3D2;
+    int16_t unk3D4;
+    int16_t unk3D6;
+    int16_t fx_vol;
+    int16_t music_vol;
+    int16_t unk3DC;
 #endif
 } config_t;
 
@@ -93,13 +102,13 @@ typedef struct lvlinfo_t
 } lvlinfo_t;
 
 // size: 8
-typedef struct struct_70
+typedef struct db_t
 {
     // offset: 0 (4 bytes)
     long ofs;
     // offset: 4 (4 bytes)
     long len;
-} struct_70;
+} db_t;
 
 // size: 128
 typedef struct PCXHEAD
