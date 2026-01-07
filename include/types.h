@@ -50,7 +50,7 @@ typedef struct config_t
 #ifndef PROTO
     int16_t fx_card;
     int16_t fx_voices;
-    int16_t fx_channels;
+    int16_t fx_samplebits;
     int16_t music_card;
     int16_t music_addr;
     int16_t unk3CE;

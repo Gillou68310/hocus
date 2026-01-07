@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -42,7 +42,7 @@ RUN wget "https://github.com/decompme/compilers/releases/download/compilers/bcc2
 COPY requirements.txt /pip3/
 COPY tools/tdinfo-parser/requirements.txt /pip3/tools/tdinfo-parser/
 WORKDIR /pip3
-RUN pip3 install -r requirements.txt --break-system-packages
+RUN pip3 install -r requirements.txt
 
 RUN useradd -ms /bin/bash hocus
 RUN mkdir /hocus

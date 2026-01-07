@@ -12,21 +12,21 @@ BUILD_PATH\asm\v10\src\soundfx.obj +
 BUILD_PATH\src\util.obj +
 BUILD_PATH\src\memcpy.obj +
 BUILD_PATH\src\video.obj +
-BUILD_PATH\asm\v10\audiolib\ll_man.obj +
-BUILD_PATH\asm\v10\audiolib\midi.obj +
-BUILD_PATH\asm\v10\audiolib\task_man.obj +
-BUILD_PATH\asm\v10\audiolib\fx_man.obj +
-BUILD_PATH\asm\v10\audiolib\music.obj +
-BUILD_PATH\asm\v10\audiolib\al_midi.obj +
-BUILD_PATH\asm\v10\audiolib\mpu401.obj +
-BUILD_PATH\asm\v10\audiolib\blaster.obj +
-BUILD_PATH\asm\v10\audiolib\pas16.obj +
-BUILD_PATH\asm\v10\audiolib\sndsrc.obj +
-BUILD_PATH\asm\v10\audiolib\dma.obj +
-BUILD_PATH\asm\v10\audiolib\multivoc.obj +
-BUILD_PATH\asm\v10\audiolib\user.obj +
-BUILD_PATH\asm\v10\audiolib\seg025.obj +
-BUILD_PATH\asm\v10\data\audiolib\oldtimbr.obj +
+BUILD_PATH\audiolib\ll_man.obj +
+BUILD_PATH\audiolib\midi.obj +
+BUILD_PATH\audiolib\task_man.obj +
+BUILD_PATH\audiolib\fx_man.obj +
+BUILD_PATH\audiolib\music.obj +
+BUILD_PATH\audiolib\al_midi.obj +
+BUILD_PATH\audiolib\mpu401.obj +
+BUILD_PATH\audiolib\blaster.obj +
+BUILD_PATH\audiolib\pas16.obj +
+BUILD_PATH\audiolib\sndsrc.obj +
+BUILD_PATH\audiolib\dma.obj +
+BUILD_PATH\audiolib\multivoc.obj +
+BUILD_PATH\audiolib\user.obj +
+BUILD_PATH\audiolib\seg025.obj +
+BUILD_PATH\audiolib\timbre.obj +
 BUILD_PATH\src\borland.obj
 BUILD_PATH\hocus.exe
 BUILD_PATH\hocus.map
