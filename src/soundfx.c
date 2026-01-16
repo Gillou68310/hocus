@@ -4,6 +4,135 @@
 #include "fileio.h"
 #include "hocus.h"
 
+#ifndef PROTO
+#include "music.h"
+#include "fx_man.h"
+
+void play_game_sound(int snd_num)
+{
+    if (game_config.soundfx != 0)
+    {
+        if (blaster != 0)
+        {
+            FX_PlayVOC((fx_voc*)sfx_mem[snd_num], 0xff, 7, VOC_priority[snd_num][2]);
+        }
+        else
+        {
+            if(snd_num >= 14)
+            {
+                return;
+            }
+            if ((pcs_sampleplaying == 0) || (current_sound_priority <= VOC_priority[snd_num][2]))
+            {
+                current_sound_priority = VOC_priority[snd_num][2];
+                pcs_sample = snd_num;
+                pcs_sample_pnt = 0;
+                pcs_sampleplaying = 1;
+            }
+        }
+    }
+}
+
+void play_VOC(unsigned char *vocptr)
+{
+     FX_PlayVOC((fx_voc*)vocptr, 0xff, 7, 1);
+}
+
+void kick_on_adlib_and_blaster(void)
+{
+    fx_device device;
+    int ret;
+    
+#if FINAL
+    printf("\nHOCUS POCUS Version 1.1\n");
+#else
+    printf("\nHOCUS POCUS Version 1.0\n");
+#endif
+
+    adlib = blaster = 1;
+    if (nocard != 0){
+        adlib = blaster = 0;
+        return;
+    }
+
+    if(game_config.fx_card != -1)
+    {
+        ret = FX_SetupCard(game_config.fx_card,&device);
+        if(ret != FX_Ok)
+        {
+            blaster = 0;
+            printf("\n%s\n", FX_ErrorString(FX_Error));
+            exit(3);
+        }
+        ret = FX_Init(game_config.fx_card, game_config.fx_voices, game_config.fx_samplebits);
+        if(ret != FX_Ok)
+        {
+            blaster = 0;
+            printf("\n%s\n", FX_ErrorString(FX_Error));
+            exit(3);
+        }
+        FX_SetVolume(game_config.fx_vol);
+    }
+    else
+    {
+        blaster = 0;
+    }
+    if(game_config.music_card != -1)
+    {
+        ret = MUSIC_Init(game_config.music_card,game_config.music_addr);
+        if(ret != MUSIC_Ok)
+        {
+            adlib = 0;
+            printf("\n%s\n", MUSIC_ErrorString(MUSIC_Error));
+            exit(3);
+        }
+        MUSIC_SetVolume(game_config.music_vol);
+    }
+    else
+    {
+        adlib = 0;
+        game_config.music = 0;
+    }
+}
+
+void load_and_play_VOC(int db_record)
+{
+    open_database();
+    load_file_to_byte_pointer(db_record, buf64);
+    close_database();
+
+    if ((blaster != 0) && (game_config.soundfx != 0))
+    {
+        FX_PlayVOC((fx_voc*)buf64, 0xff, 7, 1);
+    }
+}
+
+void play_imf_file(int db_rec, int loopflag)
+{
+    long offset;
+    long length;
+
+    open_database();
+    get_offset_length(db_rec, &offset, &length);
+    if ((game_config.music != 0) && (adlib != 0))
+    {
+        load_to_byte_pointer(offset, length, imf_music);
+        MUSIC_PlaySong((unsigned char*)imf_music, loopflag);
+    }
+    close_database();
+}
+
+void SD_MusicOff(void)
+{
+    MUSIC_StopSong();
+}
+
+void kill_sound_drivers(void)
+{
+    FX_Shutdown();
+    MUSIC_Shutdown();
+}
+#else
 #define TIMER_INTERRUPT 8
 
 // addr: 192E:1CE8
@@ -364,3 +493,4 @@ void kill_sound_drivers(void)
     SD_Shutdown();
     SB_Shutdown();
 }
+#endif

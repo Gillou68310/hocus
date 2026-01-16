@@ -14,8 +14,7 @@ typedef unsigned long uint32_t;
 #include "digisnd.h"
 #else
 #include "task_man.h"
-#define DISABLE_INTERRUPTS() asm { pushf; cli }
-#define ENABLE_INTERRUPTS() asm { popf; }
+#include "interrup.h"
 #endif
 
 #include "defs.h"

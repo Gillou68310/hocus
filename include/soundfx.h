@@ -14,7 +14,7 @@ void pascal SD_STARTMUSIC(int16_t *musicp);
 void play_imf_file(int db_rec);
 extern unsigned int TickBase;
 #else
-void play_imf_file(int db_rec, int);
+void play_imf_file(int db_rec, int loopflag);
 #endif
 
 void play_game_sound(int snd_num);
